@@ -1,0 +1,50 @@
+module.exports.info = {
+	name: "career",
+	description: "View recent MMR changes of an user",
+	aliases: ["mmr-changes", "mmr-history"],
+	usage: ['username'],
+	ratelimit: true,
+	module: "Statistics"
+}
+
+const request = require('request');
+const Discord = require('discord.js')
+
+module.exports.execute = async (client, message, args, send) => {
+	let query = args
+
+	if (!args.join(" ").includes("#")) return send(message, "User not found. Usage: `v!career <name#tag>`\nExample: `v!career 100T Asuna#1111`")
+
+		let name = query.join(" ").split("#").shift()
+	let tag = query.join(" ").split("#").pop()
+	let nametag = `${name}#${tag}`
+	let region;
+	if (client.accounts.has(nametag.toLowerCase())) region = client.accounts.get(nametag.toLowerCase())
+		else return client.newUser(nametag, this.info.name, message)
+
+	let mm;
+	let wait = new Discord.EmbedBuilder()
+	.setColor(428985)
+	.setTitle("Searching...")
+	await send(message, {embeds: [wait]})
+	.then(m => mm = m)
+	require('request')(`https://api.henrikdev.xyz/valorant/v1/mmr-history/${region}/${name}/${tag}`, async (err, res, body) => {
+
+		if (err || JSON.parse(body).status !== 200) return send(message, client.notFound(JSON.parse(body).message))
+			let data = JSON.parse(body)
+		data = data.data
+		if (!data) return send(message, client.notFound(JSON.parse(body).message))
+
+			let statEmbed = new Discord.EmbedBuilder()
+		.setColor(342852)
+		.setTitle("Career - " + args.join(" "))
+		.addField("Current Rank", data[0].currenttierpatched, true)
+		.setDescription(data.map(change => {
+			return `**${change.currenttierpatched}**: ${change.ranking_in_tier}/100 RR (${(change.mmr_change_to_last_game < 0 ? client.downEmoji + " " + change.mmr_change_to_last_game : client.upEmoji + " +" + change.mmr_change_to_last_game)} RR)  ELO: ${change.elo}`
+		}).join("\n"))
+		.setFooter("To view match history, use v!matches command")
+		.setThumbnail(`https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_${data[0].currenttier}.png`)
+		send(mm, {edit: true, embeds: [statEmbed]})
+
+	})
+}

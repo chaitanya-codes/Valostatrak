@@ -1,0 +1,164 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
+const { Client, Collection } = require("discord.js")
+const Discord = require('discord.js')
+const client = new Discord.Client({
+  disableEveryone: true,
+  intents: ['Guilds', 'GuildMessages', 'GuildMessageReactions']
+})
+const fs = require('fs')
+const Enmap = require("enmap")
+
+client.commands = new Collection()
+client.ratelimits = new Discord.Collection()
+client.bypassed = new Discord.Collection()
+client.triviaStatsTemp = new Discord.Collection()
+client.triviaStats = new Enmap({
+  name: "stats",
+  autoFetch: true
+})
+client.accounts = new Enmap({
+  name: "accounts",
+  autoFetch: true
+})
+client.linked = new Enmap({
+  name: "linked",
+  autoFetch: true
+})
+
+const Topgg = require("@top-gg/sdk")
+const webhook = new Topgg.Webhook('valorant')
+
+const express = require("express")
+const app = express()
+app.get("/", (req, res) => {
+  res.send("Running")
+})
+app.listen(8081)
+
+app.post("/dblwebhook", webhook.listener(vote => {
+  client.guilds.cache.get('501396018395480065').channels.cache.get('522420279352492049').send("<@" + vote.user + "> voted for me on top.gg!")
+  client.bypassed.set(vote.user, true)
+}))
+const { AutoPoster } = require('topgg-autoposter')
+const ap = AutoPoster(process.env.DBL_TOKEN, client)
+ap.on('posted', () => {
+  console.log('Posted stats to Top.gg!')
+})
+
+client.send = async (response, object = {}) => {
+  let sendObject = {}
+  let sendback;
+  let channel;
+  if (response instanceof Discord.Message) channel = response.channel
+    else if (response instanceof Discord.Interaction) {
+      object.interaction = response
+      channel = response.channel
+    } else channel = response
+    if (!response || !object) return console.error("No value was given to send/edit.")
+      if (!channel) return console.error("No channel provided to send in.")
+
+        if (object.edit && object.timeout) {
+          await require('util').promisify(setTimeout)(object.timeout)
+          delete object["timeout"]
+        }
+
+        if (typeof object === "string") sendObject["content"] = object
+          else if (object instanceof Discord.Embed) sendObject["embeds"] = [object].flat(Infinity)
+            else if (object instanceof Discord.Attachment) sendObject["files"] = [object].flat(Infinity)
+              else if (typeof object === 'object') {
+                Object.keys(object).map((key, n) => {
+                  if (["embeds", "components"].includes(key.toLowerCase())) sendObject[key] = [object[key]].flat(Infinity)
+                    else sendObject[key] = object[key]
+                  })
+              }
+
+              if (response instanceof Discord.Interaction) {
+                delete sendObject["interaction"]
+                if (object.defer) {
+                  response.deferReply()
+                  delete sendObject["defer"]
+                }
+                if (object.edit) {
+                  delete sendObject["edit"]
+                  await response.editReply(sendObject).catch(e => console.log(e))
+                  await response.fetchReply().then(m => sendBack = m).catch(e => console.log(e))
+                } else {
+                  sendObject["fetchReply"] = true
+                  await response.reply(sendObject)
+                  .then(m => sendBack = m)
+                  .catch(e => response.followUp(sendObject).then(m => sendBack = m).catch(e => console.log(e)))
+                }
+              } else {
+                if (object.edit) {
+                  delete sendObject["edit"]
+                  await response.edit(sendObject).then(m => sendBack = m).catch(e => console.log(e))
+                } else {
+                  if (object.reply) {
+                    delete sendObject["reply"]
+                    await response.reply(sendObject).then(m => sendBack = m).catch(e => console.log(e))
+                  } else await channel.send(sendObject).then(m => sendBack = m).catch(e => console.log(e))
+                }
+              }
+              if (!sendBack) return console.log("FAILED TO SEND: \n" + sendObject)
+                return sendBack;
+            }
+            client.embed = (object = {}) => {
+              if (object.descriptionLink) object.description = `[${embedData.description}](${object.descriptionLink})`
+                if (object.footer && typeof object.footer !== "object") object.footer = {"text": object.footer}
+                  if (object.author && object.author.tag) object.author = {"name": (object.author.tag ? object.author.tag : object.author.toString()), "iconURL": (object.author.displayAvatarURL ? object.author.displayAvatarURL() : null)}
+                    if (object.fields && object.fields[0][0]) object.fields = object.fields.map(f => {return{name: f[0], value: String(f[1]), inline: object.inlineFields || false}})
+                      if (object.image && !object.image.url) object.image = {url: object.image} 
+                        if (object.thumbnail && !object.thumbnail.url) object.thumbnail = {url: object.thumbnail}
+                          const embedObject = new Discord.Embed(object)
+                        return embedObject;
+                      }
+
+                      client.notFound = (error) => {
+                        return client.embed({title: "User not found", description: (error ? `Error: ${error}` : "This could be because of API issues / ratelimit. Please recheck the username#tag and try again later")})
+                      }
+
+                      client.newUser = async (id, cmd, message, sub) => {
+                        if (client.accounts.has(id.toLowerCase())) return;
+                        let name = id.split("#").shift()
+                        let tag = id.split("#").pop()
+
+                        let msg = await client.send(message, client.embed({color: "346264", title: "Searching for " + id + "... (first time search)", footer: "This is only for first-time search of a riot ID", description: "Fetching region " + client.emojis.cache.get('588824651132567677').toString()}))
+
+                        await require('request')(`http://api.henrikdev.xyz/valorant/v1/account/${name}/${tag}`, async (err, res, body) => {
+                          if (err || JSON.parse(body).status !== 200) return client.send(msg, {edit: true, content: "User not found (you do not need to include the region anymore).", embeds: []})
+                            let data = JSON.parse(body)
+                          data = data.data
+                          if (data && data.region) await client.accounts.set(id.toLowerCase(), data.region)
+                            else return client.send(msg, {embeds: [], edit: true, content: "User not found (you do not need to include the region anymore)."})
+                              let m = await client.send(msg, {edit: true, embeds: client.embed({color: "565473", title: "Found " + id, description: ":white_check_mark: Added to list for faster search next time\nRe-executing the command..."})})
+                            let arg = [id]
+                            if (sub) arg = [sub].concat(arg)
+                              await client.commands.get(cmd).execute(client, message, arg, client.send)
+                            await client.wait(2500)
+                            return m.delete()
+                          })
+                      }
+                      const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.js'))
+
+                      for (const file of commandFiles) {
+                        const command = require(`./src/commands/${file}`)
+                        if (!command || !command.info || !command.info.name || !command.execute) console.log('[ValoStatrack] Error in file ' + file + '! File not loaded.')
+                          client.commands.set(command.info.name, command)
+                        console.log(`[ValoStatrack] Loaded Command ${command.info.name}`)
+                      }
+
+                      client.on('ready', () => require('./src/events/ready.js').Ready(client))
+                      client.on('messageCreate', message => require('./src/events/messageCreate.js').Message(client, message))
+                      client.on('interactionCreate', interaction => require('./src/events/interactionCreate.js').Interaction(client, interaction))
+                      client.on('guildCreate', guild => require('./src/events/guildCreate.js').guildCreate(client, guild))
+                      client.on('guildDelete', guild => require('./src/events/guildDelete.js').guildDelete(client, guild))
+
+                      client.on('error', err => console.log(err.stack))
+
+                      process.on("uncaughtException", (err) => {
+                        console.error(`There was an uncaught error:\n${err.stack ?? err.toString()}`)
+                      })
+
+                      client.login(process.env.BOT_TOKEN)
