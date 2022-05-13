@@ -1,0 +1,14 @@
+{
+	"responses": {
+		
+	},
+	"bot": {
+		"owner": {
+			"id": ["485885170080022556"]
+		},
+		"version": "0.5",
+		"invite": "https://discord.com/api/oauth2/authorize?client_id=855083775460769793&permissions=8&scope=bot",
+		"support": "https://discord.gg/pbJhJ33",
+		"avatar": "https://cdn.discordapp.com/avatars/641953588158922762/204d6bf63a6e25d6eb592c4d793e24a8.png"
+	}
+}
