@@ -132,7 +132,7 @@ client.send = async (response, object = {}) => {
                           data = data.data
                           if (data && data.region) await client.accounts.set(id.toLowerCase(), data.region)
                             else return client.send(msg, {embeds: [], edit: true, content: "User not found (you do not need to include the region anymore)."})
-                              let m = await client.send(msg, {edit: true, embeds: client.embed({color: "565473", title: "Found " + id, description: ":white_check_mark: Added to list for faster search next time\nRe-executing the command..."})})
+                              let m = await client.send(msg, {edit: true, embeds: client.embed({footer: "If it does not work automatically, please run the command again.", color: "565473", title: "Found " + id, description: ":white_check_mark: Added to list for faster search next time\nRe-executing the command..."})})
                             let arg = [id]
                             if (sub) arg = [sub].concat(arg)
                               await client.commands.get(cmd).execute(client, message, arg, client.send)

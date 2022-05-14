@@ -29,7 +29,7 @@ module.exports.execute = async (client, message, args, send) => {
     const Discord = require('discord.js')
   const modal = new Discord.ModalBuilder()
   .setCustomId('modal')
-  .setTitle('Verification')
+  .setTitle('Evaluate Code')
   const actionrow = new Discord.ActionRowBuilder().addComponents([new Discord.TextInputBuilder()
     .setCustomId("code")
     .setLabel("Code")
@@ -88,11 +88,25 @@ module.exports.execute = async (client, message, args, send) => {
          setTimeout(() => {send(msg, {edit: true, embeds: [evalEmbed]})}, 1500)
        })
      } else send(j, {embeds: [evalEmbed]})
-   }
-   catch (err) {
-     evalEmbed.setDescription(':inbox_tray: INPUT:```js\n' + code + '```\n :outbox_tray: ERROR: ```js\n' + clean(err) + '\n```')
-     send(j, {embeds: [evalEmbed]})
-   }
+
+     if (evalEmbed.data.description.length >= 1500) {
+      const clean = text => {
+        if (typeof(text) === "string")
+          return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203))
+        else
+          return text
+      }
+      await require('fs').writeFile('src/eval.txt', `${clean(evaled)}`, (err, out) => {
+        if (err) console.log(err)
+      })
+      send(msg, {files: ['src/eval.txt']})
+    }
+
+  }
+  catch (err) {
+   evalEmbed.setDescription(':inbox_tray: INPUT:```js\n' + code + '```\n :outbox_tray: ERROR: ```js\n' + clean(err) + '\n```')
+   send(j, {embeds: [evalEmbed]})
  }
+}
 })
 }
