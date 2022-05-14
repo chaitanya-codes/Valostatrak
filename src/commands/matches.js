@@ -39,7 +39,7 @@ module.exports.execute = async (client, message, args, send) => {
 					let wait = new Discord.EmbedBuilder()
 					.setColor(428985)
 					.setTitle("Searching...")
-					.setFooter("This can take up to 30 seconds. If it still does not work, valorant API might be down.")
+					.setFooter({text:"This can take up to 30 seconds. If it still does not work, valorant API might be down."})
 					await send(message, {embeds: [wait]})
 					.then(m => mm = m)
 					await require('request')(`https://api.henrikdev.xyz/valorant/v3/matches/${region}/${name}/${tag}` + (matchType ? `?filter=${matchType}` : ''), async (err, res, body) => {
@@ -58,7 +58,7 @@ module.exports.execute = async (client, message, args, send) => {
 									let matchesEmbed = new Discord.EmbedBuilder()
 								.setColor(348425)
 								.setTitle("Recent 5 Matches - " + args.join(" "))
-								.setFooter("You can use the buttons below to view every round of a match")
+								.setFooter({text:"You can use the buttons below to view every round of a match"})
 								let emoji;
 								let player;
 								let searchedPlayerTeam2;
@@ -135,8 +135,8 @@ module.exports.execute = async (client, message, args, send) => {
 													.setColor(473825)
 													.setThumbnail(maps.filter(m => m.displayName.toLowerCase() === match.metadata.map.toLowerCase())[0].splash)
 													.setDescription("Round " + (round.winning_team === "Blue" ? "Lost" : "Won"))
-													.addField("Kills", "__TEAM__\n"+killsTeam.join("\n")+"\n\n__ENEMY__\n"+killsEnemy.join("\n"))
-													.addField("Round outcome", round.end_type, true)
+													.addFields([{name: "Kills", value: "__TEAM__\n"+killsTeam.join("\n")+"\n\n__ENEMY__\n"+killsEnemy.join("\n")},
+													{name: "Round outcome", value: round.end_type, inline: true}])
 													if (round.bomb_planted) newEmb.addField("Bomb planted", "By "+round.plant_events.planted_by["display_name"], true)
 														if (round.bomb_defused) newEmb.addField("Bomb defused", "By "+round.defuse_events.defused_by["display_name"], true)
 															msg.edit({embeds: [newEmb], components: [row2]})
