@@ -14,7 +14,7 @@ const createButton = (value, id) => {
 	let button = new Discord.ButtonBuilder()
 	.setCustomId(id)
 	.setEmoji(value)
-	.setStyle('PRIMARY')
+	.setStyle('Primary')
 	return button
 }
 const weapons = {}

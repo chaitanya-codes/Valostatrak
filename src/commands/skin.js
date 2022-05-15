@@ -37,7 +37,7 @@ module.exports.execute = async (client, message, args, send) => {
 							emb.setFooter({text: "If you want to see different skin levels and the preview of this skin ingame, use the button below"})
 
 							let row = new Discord.ActionRowBuilder()
-							.addComponents(new Discord.ButtonBuilder().setLabel("View skin levels and preview").setCustomId("levels").setStyle("PRIMARY"), new Discord.ButtonBuilder().setLabel("View skin color variants").setCustomId("colors").setStyle("PRIMARY"))
+							.addComponents(new Discord.ButtonBuilder().setLabel("View skin levels and preview").setCustomId("levels").setStyle("Primary"), new Discord.ButtonBuilder().setLabel("View skin color variants").setCustomId("colors").setStyle("Primary"))
 							let m = await send(message, {embeds: [emb], components: [row]})
 							let page = 0;
 							let preview;
@@ -48,7 +48,7 @@ module.exports.execute = async (client, message, args, send) => {
 							}
 
 							let row2 = new Discord.ActionRowBuilder()
-							.addComponents([new Discord.ButtonBuilder().setEmoji("⬅️").setCustomId("left").setDisabled(true).setStyle("SECONDARY"), new Discord.ButtonBuilder().setEmoji("➡️").setCustomId("right").setStyle("SECONDARY")])
+							.addComponents([new Discord.ButtonBuilder().setEmoji("⬅️").setCustomId("left").setDisabled(true).setStyle("Secondary"), new Discord.ButtonBuilder().setEmoji("➡️").setCustomId("right").setStyle("Secondary")])
 
 							let filter = i => i.user.id === message.author.id
 							let coll = m.createMessageComponentCollector({filter, time: 90000, errors: ['time']})

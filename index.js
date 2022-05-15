@@ -65,7 +65,7 @@ client.send = async (response, object = {}) => {
         }
 
         if (typeof object === "string") sendObject["content"] = object
-          else if (object instanceof Discord.Embed) sendObject["embeds"] = [object].flat(Infinity)
+          else if (object instanceof Discord.Embed || object instanceof Discord.EmbedBuilder) sendObject["embeds"] = [object].flat(Infinity)
             else if (object instanceof Discord.Attachment) sendObject["files"] = [object].flat(Infinity)
               else if (typeof object === 'object') {
                 Object.keys(object).map((key, n) => {

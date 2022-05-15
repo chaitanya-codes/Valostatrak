@@ -16,7 +16,7 @@ module.exports.Message = async (client, message) => {
   if (!command) return;
   if (client.ratelimits.has(message.author.id)) {
     const { EnumResolvers } = require('discord.js')
-    let row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setLabel("Vote on top.gg").setURL("https://top.gg/bot/855083775460769793/vote").setStyle(EnumResolvers.resolveButtonStyle("LINK"))])
+    let row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setLabel("Vote on top.gg").setURL("https://top.gg/bot/855083775460769793/vote").setStyle(EnumResolvers.resolveButtonStyle("Link"))])
     if (client.ratelimits.get(message.author.id) === true && message.author.id !== "833792409539444746") return client.send(message, {embeds: [{description: "There's a cooldown after using statistics related commands, you need to wait 10 seconds after the command.\n*You can bypass this for 12 hours if you vote using the button below, to reduce cooldown to 3 seconds.*"}], components: [row]})
   } else if (command.info.ratelimit) client.ratelimit(message.author.id)
 try {

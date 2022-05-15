@@ -18,7 +18,7 @@ module.exports.execute = async (client, message, args, send) => {
 
 			await request("https://api.henrikdev.xyz/valorant/v2/leaderboard/" + args[0].toLowerCase(), async (err, res, body) => {
 				if (err) console.log(err)
-					let row = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setStyle("SUCCESS").setCustomId("back").setEmoji("◀️").setDisabled(true), new Discord.ButtonBuilder().setStyle("SUCCESS").setCustomId("next").setEmoji("▶️"), new Discord.ButtonBuilder().setCustomId("imm").setStyle("SECONDARY").setLabel("Skip to immortal").setEmoji("855816089937641475"))
+					let row = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setStyle("Success").setCustomId("back").setEmoji("◀️").setDisabled(true), new Discord.ButtonBuilder().setStyle("Success").setCustomId("next").setEmoji("▶️"), new Discord.ButtonBuilder().setCustomId("imm").setStyle("Secondary").setLabel("Skip to immortal").setEmoji("855816089937641475"))
 				let page = 0
 				if (body) {
 					body = JSON.parse(body)

@@ -84,9 +84,9 @@ module.exports.execute = async (client, message, args, send) => {
 				let linked = client.linked.get(message.author.id)
 				if (!linked) return send(message, "You have not linked your valorant account with the bot!")
 					const EnumResolvers = Discord.EnumResolvers
-				const row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setCustomId("private").setLabel("Statistics are public").setStyle(EnumResolvers.resolveButtonStyle("PRIMARY")), new Discord.ButtonBuilder().setCustomId("remove").setLabel("Remove account from bot").setStyle(EnumResolvers.resolveButtonStyle("SECONDARY"))])
+				const row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setCustomId("private").setLabel("Statistics are public").setStyle(EnumResolvers.resolveButtonStyle("Primary")), new Discord.ButtonBuilder().setCustomId("remove").setLabel("Remove account from bot").setStyle(EnumResolvers.resolveButtonStyle("Secondary"))])
 				const emb = new Discord.EmbedBuilder().setTitle("Account Settings").setDescription("Statistics by default are set to be public which allows anyone to view your account info, however you can turn this off to only let you see your account statistics.\nYou can re-link your account by removing the linked account if you edited username.")
-				if (linked.private) row.components[0].setLabel("Statistics are private").setStyle(EnumResolvers.resolveButtonStyle("DANGER"))
+				if (linked.private) row.components[0].setLabel("Statistics are private").setStyle(EnumResolvers.resolveButtonStyle("Danger"))
 					let m = await send(message, {embeds: [emb], components: [row]})
 				let filt = (i) => i.user.id === message.author.id
 				let col = m.createMessageComponentCollector({filt, time: 30000})

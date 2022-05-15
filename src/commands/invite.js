@@ -9,7 +9,7 @@ module.exports.execute = (client, message, args, send) => {
 	let Discord = require('discord.js')
 	let createButton = (obj) => {
 		let b = new Discord.ButtonBuilder()
-		.setStyle("LINK")
+		.setStyle("Link")
 		.setLabel(obj.label)
 		.setURL(obj.link)
 		return b;
