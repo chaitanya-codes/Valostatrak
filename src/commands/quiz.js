@@ -13,8 +13,8 @@ module.exports.execute = async (client, message, args, send) => {
 		if (!client.triviaStats.has(message.author.id)) client.triviaStats.set(message.author.id, 0)
 			if (!client.triviaStatsTemp.has(message.author.id)) client.triviaStatsTemp.set(message.author.id, 0)
 				let filt = m => m.user.id === message.author.id
-			let row1 = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setLabel("This server").setCustomId("server").setStyle("SECONDARY"), new Discord.ButtonBuilder().setLabel("Global").setCustomId("global").setStyle("SUCCESS").setDisabled(true)])
-			let row2 = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setLabel("Today").setCustomId("temp").setStyle("SECONDARY"), new Discord.ButtonBuilder().setLabel("All time").setCustomId("all").setStyle("SUCCESS").setDisabled(true)])
+			let row1 = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setLabel("This server").setCustomId("server").setStyle("Secondary"), new Discord.ButtonBuilder().setLabel("Global").setCustomId("global").setStyle("Success").setDisabled(true)])
+			let row2 = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setLabel("Today").setCustomId("temp").setStyle("Secondary"), new Discord.ButtonBuilder().setLabel("All time").setCustomId("all").setStyle("Success").setDisabled(true)])
 			let lb;
 			let server = false;
 			let temp = false;
@@ -38,8 +38,8 @@ module.exports.execute = async (client, message, args, send) => {
 				})})
 			}
 			let colorButton = (row, opposite) => {
-				row.components[0].setStyle((opposite ? "SECONDARY" : "SUCCESS")).setDisabled((opposite ? false : true))
-				row.components[1].setStyle((opposite ? "SUCCESS" : "SECONDARY")).setDisabled((opposite ? true : false))
+				row.components[0].setStyle((opposite ? "Secondary" : "Success")).setDisabled((opposite ? false : true))
+				row.components[1].setStyle((opposite ? "Success" : "Secondary")).setDisabled((opposite ? true : false))
 			}
 			if (args[0].toLowerCase() === 'global') {server = false; temp = false; colorButton(row1, true); colorButton(row2, true)} 
 			await order()
@@ -98,7 +98,7 @@ module.exports.execute = async (client, message, args, send) => {
 							.setImage(randomSkin.displayIcon)
 							.setFooter("You have 12 seconds to guess")
 
-							let row = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("again").setLabel("Play Again").setStyle("SUCCESS"))
+							let row = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setCustomId("again").setLabel("Play Again").setStyle("Success"))
 							let createCollector = (m) => {
 								let filter = i => 1===1
 								let col = m.createMessageComponentCollector({filter, errors: ['time'], time:40000})

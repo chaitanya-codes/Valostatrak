@@ -41,7 +41,7 @@ module.exports.execute = async (client, message, args, send) => {
 				let button = new Discord.ButtonBuilder()
 				.setCustomId(value)
 				.setLabel()
-				.setStyle('SECONDARY')
+				.setStyle('Secondary')
 				return button
 			}
 

@@ -19,8 +19,8 @@ module.exports.execute = async (client, message, args, send) => {
 		const emojis = {
 			0: '0⃣', 1: '1⃣', 2: '2⃣', 3: '3⃣', 4: '4⃣', 5: '5⃣', 6: '6⃣', 7: '7⃣', 8: '8⃣', 9: '9⃣', 10: '🔟'
 		}
-		let row = new Discord.ActionRowBuilder().addComponents([1, 2, 3, 4, 5].map(e => new Discord.ButtonBuilder().setStyle("SECONDARY").setCustomId(String(e)).setEmoji(emojis[e])))
-		let row2 = new Discord.ActionRowBuilder().addComponents([6, 7, 8, 9, 10].map(e => new Discord.ButtonBuilder().setStyle("SECONDARY").setCustomId(String(e)).setEmoji(emojis[e])))
+		let row = new Discord.ActionRowBuilder().addComponents([1, 2, 3, 4, 5].map(e => new Discord.ButtonBuilder().setStyle("Secondary").setCustomId(String(e)).setEmoji(emojis[e])))
+		let row2 = new Discord.ActionRowBuilder().addComponents([6, 7, 8, 9, 10].map(e => new Discord.ButtonBuilder().setStyle("Secondary").setCustomId(String(e)).setEmoji(emojis[e])))
 		row.components[0].setDisabled(true)
 		let data = findContract.content
 		let chapter = 0
