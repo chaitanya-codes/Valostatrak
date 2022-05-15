@@ -40,6 +40,7 @@ module.exports.execute = async (client, message, args, send) => {
   let filt = (i) => i.user.id === message.author.id
   message.awaitModalSubmit({filt, time: 45000})
   .then(async j => {
+    j.deferReply()
     let code = j.fields.fields.get('code').data.value
     args = code.split(" ")
     if (!code) return message.followUp("What to eval :/")

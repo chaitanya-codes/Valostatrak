@@ -1,7 +1,7 @@
 module.exports.info = {
-	name: "help",
-	description: "Get help with the bot's commands",
-	aliases: ["help-bot", "commands"],
+  name: "help",
+  description: "Get help with the bot's commands",
+  aliases: ["help-bot", "commands"],
   usage: ["command"],
   optional: true,
   module: "Other"
@@ -19,7 +19,7 @@ let helpEmb = new Discord.EmbedBuilder()
 .setColor(753221)
 .setTitle("Commands")
 .setFooter({text:"Most commands powered by https://valorant-api.com"})
-Object.keys(sortedCmds).forEach((key, n) => helpEmb.addFields({name: key, value: (key === "Other" ? sortedCmds[key].join(", ") : sortedCmds[key].join("\n")), inline: true}))
+Object.keys(sortedCmds).forEach((key, n) => helpEmb.addFields([{name: key, value: (key === "Other" ? sortedCmds[key].join(", ") : sortedCmds[key].join("\n")), inline: true}]))
 if (!args[0]) send(message, {embeds: [helpEmb]})
 else {
   const { commands } = client

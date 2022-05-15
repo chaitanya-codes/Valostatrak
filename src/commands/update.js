@@ -6,6 +6,7 @@ module.exports.info = {
 }
 
 module.exports.execute = (client, message, args, send) => {
+	message.deferUpdate()
 	let updatesChannel = client.channels.cache.get('974211599176974396')
 
 	updatesChannel.messages.fetch({ limit: 10 })
