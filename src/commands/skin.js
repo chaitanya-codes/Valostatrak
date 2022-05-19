@@ -37,14 +37,13 @@ module.exports.execute = async (client, message, args, send) => {
 							emb.setFooter({text: "If you want to see different skin levels and the preview of this skin ingame, use the button below"})
 
 							let row = new Discord.ActionRowBuilder()
-							.addComponents(new Discord.ButtonBuilder().setLabel("View skin levels and preview").setCustomId("levels").setStyle("Primary"), new Discord.ButtonBuilder().setLabel("View skin color variants").setCustomId("colors").setStyle("Primary"))
+							.addComponents([new Discord.ButtonBuilder().setLabel("View skin levels and preview").setCustomId("levels").setStyle("Primary"), new Discord.ButtonBuilder().setLabel("View skin color variants").setCustomId("colors").setStyle("Primary")])
 							let m = await send(message, {embeds: [emb], components: [row]})
 							let page = 0;
-							let preview;
 							let skinLevels = client.skinLevelData.filter(s => s.displayName?.toLowerCase().startsWith(findSkin.displayName?.toLowerCase()))
 
-							const showLevel = (p) => {
-								send(preview, {edit: true, components: [row2], content: `${findSkin.displayName} - Level ${p + 1}\n` + skinLevels[p].streamedVideo || "No video found!"})
+							const showLevel = (p, int) => {
+								send(int, {edit: true, components: [row2], content: `${findSkin.displayName} - Level ${p + 1}\n` + skinLevels[p].streamedVideo || "No video found!"})
 							}
 
 							let row2 = new Discord.ActionRowBuilder()
@@ -54,42 +53,40 @@ module.exports.execute = async (client, message, args, send) => {
 							let coll = m.createMessageComponentCollector({filter, time: 90000, errors: ['time']})
 							
 							coll.on('collect', async i => {
-
 								if (i.customId === 'levels') {
 									m.edit({components: []})
 									if (!skinLevels || !skinLevels[0]) return send(message, "ERROR!")
-										preview = await send(message, {content: `${findSkin.displayName} - Level 1\n` + skinLevels[0].streamedVideo, components: [row2]})
+									let preview =	await send(i, {content: `${findSkin.displayName} - Level 1\n` + skinLevels[0].streamedVideo, components: [row2]})
 									let coll2 = preview.createMessageComponentCollector({filter, time: 90000, errors: ['time']})
 									coll2.on('collect', async i2 => {
 										if (i2.customId === 'left') {
 											page--;
 											if ((page + 1) <= skinLevels.length) row2.components[1].setDisabled(false)
 												if (page <= 0) row2.components[0].setDisabled(true)
-													showLevel(page)
+													showLevel(page, i2)
 											} else if (i2.customId === 'right') {
 												page++;
 												if ((page + 1) >= skinLevels.length) row2.components[1].setDisabled(true)
 													row2.components[0].setDisabled(false)
-												showLevel(page)
+												showLevel(page, i2)
 											}
 										})
 								} else if (i.customId === 'colors') {
-									if (!findSkin.chromas || !findSkin.chromas.length) return send(message, "This skin does not have color variants")
+									if (!findSkin.chromas || !findSkin.chromas.length) return send(i, "This skin does not have color variants")
 										m.edit({components: []})
-									let clr = await m.edit({embeds: [m.embeds[0].setTitle(findSkin.chromas[page].displayName).setImage(findSkin.chromas[page].displayIcon)], components: [row2]})
-									
+									let clr = await send(i, {edit: true, embeds: [Discord.EmbedBuilder.from(m.embeds[0].data).setTitle(findSkin.chromas[page].displayName).setImage(findSkin.chromas[page].displayIcon)], components: [row2]})
 									let coll3 = clr.createMessageComponentCollector({filter, time: 90000, errors: ['time']})
 									coll3.on('collect', async i2 => {
 										if (i2.customId === 'left') {
 											page--;
 											if ((page + 1) <= findSkin.chromas.length) row2.components[1].setDisabled(false)
 												if (page <= 0) row2.components[0].setDisabled(true)
-													m.edit({embeds: [m.embeds[0].setTitle(findSkin.chromas[page].displayName).setImage(findSkin.chromas[page].displayIcon)], components: [row2]})
+													send(i2, {edit: true, embeds: [Discord.EmbedBuilder.from(m.embeds[0].data).setTitle(findSkin.chromas[page].displayName).setImage(findSkin.chromas[page].displayIcon)], components: [row2]})
 											} else if (i2.customId === 'right') {
 												page++;
 												if ((page + 1) >= findSkin.chromas.length) row2.components[1].setDisabled(true)
 													row2.components[0].setDisabled(false)
-												send(m, {edit: true, embeds: [m.embeds[0].setTitle(findSkin.chromas[page].displayName).setImage(findSkin.chromas[page].displayIcon)], components: [row2]})
+												send(i2, {edit: true, embeds: [Discord.EmbedBuilder.from(m.embeds[0].data).setTitle(findSkin.chromas[page].displayName).setImage(findSkin.chromas[page].displayIcon)], components: [row2]})
 											}
 										})
 								}

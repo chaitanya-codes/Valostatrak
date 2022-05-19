@@ -18,7 +18,7 @@ module.exports.execute = async (client, message, args, send) => {
 	let tag = args.join(" ").split("#").pop()
 	let region;
 	if (client.accounts.has(args.join(" ").toLowerCase())) region = client.accounts.get(name.toLowerCase())
-		else return client.newUser(args.join(" "), this.info.name, j, 'link')
+		else return client.newUser(args.join(" "), this.info.name, message, 'link')
 
 			let subcommand = args[0].toLowerCase()
 		if (subcommand === 'find') {

@@ -82,7 +82,7 @@ client.send = async (response, object = {}) => {
                 }
                 if (object.edit) {
                   delete sendObject["edit"]
-                  await response.editReply(sendObject).catch(e => console.log(e))
+                  await response.editReply(sendObject).catch(e => response.update(sendObject).then(m => sendBack = m).catch(e => console.log(e)))
                   await response.fetchReply().then(m => sendBack = m).catch(e => console.log(e))
                 } else {
                   sendObject["fetchReply"] = true
