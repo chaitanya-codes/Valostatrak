@@ -18,16 +18,16 @@ module.exports.execute = async (client, message, args, send) => {
 
 			await request("https://api.henrikdev.xyz/valorant/v2/leaderboard/" + args[0].toLowerCase(), async (err, res, body) => {
 				if (err) console.log(err)
-					let row = new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setStyle("Success").setCustomId("back").setEmoji("◀️").setDisabled(true), new Discord.ButtonBuilder().setStyle("Success").setCustomId("next").setEmoji("▶️"), new Discord.ButtonBuilder().setCustomId("imm").setStyle("Secondary").setLabel("Skip to immortal").setEmoji("855816089937641475"))
+					let row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setStyle("Success").setCustomId("back").setEmoji("◀️").setDisabled(true), new Discord.ButtonBuilder().setStyle("Success").setCustomId("next").setEmoji("▶️"), new Discord.ButtonBuilder().setCustomId("imm").setStyle("Secondary").setLabel("Skip to immortal").setEmoji(client.emojis.cache.get("855816089937641475"))])
 				let page = 0
 				if (body) {
 					body = JSON.parse(body)
 					let emb = new Discord.EmbedBuilder()
 					.setTitle("Leaderboard | " + args[0])
 					.setColor(382348)
-					.addField("Thresholds (Minimum RR needed)", `**Radiant**: ${body['radiant_threshold']}RR | **IMM 3**: ${body['immortal_3_threshold']}RR | **IMM 2**: ${body['immortal_2_threshold']}RR | **IMM 1**: ${body['immortal_1_threshold']}RR`)
-					.addField("Total players in leaderboard", String(body['total_players']))
-					.setFooter("Last update: " + new Date(body['last_update'] * 1000))
+					.addFields([{name: "Thresholds (Minimum RR needed)", value: `**Radiant**: ${body['radiant_threshold']}RR | **IMM 3**: ${body['immortal_3_threshold']}RR | **IMM 2**: ${body['immortal_2_threshold']}RR | **IMM 1**: ${body['immortal_1_threshold']}RR`},
+					{name: "Total players in leaderboard", value: String*(body['total_players'])}])
+					.setFooter({text: "Last update: " + new Date(body['last_update'] * 1000)})
 					let getPlayers = async (p) => {
 						let i = 0
 						return await body.players.slice(p * 10).map(player => {

@@ -16,7 +16,7 @@ module.exports.execute = async (client, message, args, send) => {
     let findMap = maps.filter(m => m.displayName.toLowerCase() === args.join(' ').toLowerCase())[0]
   if (!findMap) return send(message, "Map not found.")
     let row = new Discord.ActionRowBuilder()
-  .addComponents(new Discord.SelectMenuBuilder().addOptions(maps.map(m => {return {label: m.displayName.toLowerCase(), value: m.displayName.toLowerCase()}})).setCustomId("maps").setPlaceholder("Select map"))
+  .addComponents([new Discord.SelectMenuBuilder().addOptions(maps.map(m => {return {label: m.displayName.toLowerCase(), value: m.displayName.toLowerCase()}})).setCustomId("maps").setPlaceholder("Select map")])
   let mapEmb = new Discord.EmbedBuilder()
   .setTitle("Map - " + findMap.displayName)
   .setThumbnail(findMap.splash)
