@@ -79,7 +79,7 @@ module.exports.execute = async (client, message, args, send) => {
 							.setFields([{name: "Wins", value: String(bySeason.wins)},
 								{name: "Number of games played", value: String(bySeason.number_of_games)},
 								{name: "Rank in this act", value: bySeason.final_rank_patched}])
-							send(msg, {edit: true, embeds: [newEmb]})
+							send(i, {edit: true, embeds: [newEmb]})
 						} else if (id === 'current') send(msg, {edit: true, embeds: [statEmbed]})
 					})
 					collector.on('end', collected => {})
@@ -87,8 +87,8 @@ module.exports.execute = async (client, message, args, send) => {
 
 				const canvas = new Canvas.createCanvas(550, 300)
 				let ctx = canvas.getContext('2d')
-				let downImg = await Canvas.loadImage(client.guilds.cache.get("855091537696129064").emojis.cache.get("912824511961894963").url)
-				let upImg = await Canvas.loadImage(client.guilds.cache.get("855091537696129064").emojis.cache.get("912824525840842772").url)
+				let downImg = await Canvas.loadImage(client.downEmoji.url)
+				let upImg = await Canvas.loadImage(client.upEmoji.url)
 				let rankImg = await Canvas.loadImage(`https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_${currentData.currenttier}.png`)
 				ctx.drawImage(rankImg, canvas.width / 1.1, 0, 50, 50)
 				ctx.fillStyle = '#baa096'

@@ -27,6 +27,6 @@ module.exports.Ready = async (client) => {
 			setTimeout(() => client.ratelimits.set(id, false), time)
 	}
 
-	client.upEmoji = client.guilds.cache.get("855091537696129064").emojis.cache.get("912824525840842772").toString()
-	client.downEmoji = client.guilds.cache.get("855091537696129064").emojis.cache.get("912824511961894963").toString()
+	client.upEmoji = client.emojis.cache.get("977208845774495744")
+	client.downEmoji = client.emojis.cache.get("977208908970065940")
 }
