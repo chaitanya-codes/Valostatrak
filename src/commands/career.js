@@ -40,7 +40,7 @@ module.exports.execute = async (client, message, args, send) => {
 		.setTitle("Career - " + args.join(" "))
 		.addFields([{name: "Current Rank", value: data[0].currenttierpatched, inline: true}])
 		.setDescription(data.map(change => {
-			return `**${change.currenttierpatched}**: ${change.ranking_in_tier}/100 RR (${(change.mmr_change_to_last_game < 0 ? client.downEmoji + " " + change.mmr_change_to_last_game : client.upEmoji + " +" + change.mmr_change_to_last_game)} RR)  ELO: ${change.elo}`
+			return `**${change.currenttierpatched}**: ${change.ranking_in_tier}/100 RR (${(change.mmr_change_to_last_game < 0 ? client.downEmoji.toString() + " " + change.mmr_change_to_last_game : client.upEmoji.toString() + " +" + change.mmr_change_to_last_game)} RR)  ELO: ${change.elo}`
 		}).join("\n"))
 		.setFooter({text: "To view match history, use v!matches command"})
 		.setThumbnail(`https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_${data[0].currenttier}.png`)

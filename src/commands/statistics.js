@@ -58,7 +58,7 @@ module.exports.execute = async (client, message, args, send) => {
 				.setColor(342852)
 				.setTitle("Statistics - " + args.join(" "))
 				.setFields([{name: "Rank", value: (currentData.currenttierpatched ? currentData.currenttierpatched + `\n${currentData.ranking_in_tier}/100 ${rr || ""}` : "Unranked")},
-					{name: "Recent MMR change", value: String((currentData.mmr_change_to_last_game < 0 ? client.downEmoji + " " + currentData.mmr_change_to_last_game : client.upEmoji + " +" + currentData.mmr_change_to_last_game)), inline: true},
+					{name: "Recent MMR change", value: String((currentData.mmr_change_to_last_game < 0 ? client.downEmoji.toString() + " " + currentData.mmr_change_to_last_game : client.upEmoji.toString() + " +" + currentData.mmr_change_to_last_game)), inline: true},
 					{name: "ELO", value: String(currentData.elo), inline: true}])
 				.setFooter({text: "To view match history, use v!matches command"})
 				.setThumbnail(`https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_${currentData.currenttier}.png`)
