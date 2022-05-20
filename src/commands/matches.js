@@ -68,7 +68,7 @@ module.exports.execute = async (client, message, args, send) => {
 									opponentTeam2 = (searchedPlayerTeam2 === "blue" ? "red" : "blue")
 									player = match.players.all_players.filter(pl => pl.name.toLowerCase() === name.toLowerCase())[0]
 									let kda = String(player.stats.kills+"/"+player.stats.deaths+"/"+player.stats.assists)
-									emoji = await client.guilds.cache.get("855091537696129064").emojis.cache.find(e => e.name === player.character.toLowerCase())
+									emoji = await client.guilds.cache.get("501396018395480065").emojis.cache.find(e => e.name === player.character.toLowerCase())
 									if (!emoji) emoji = ''
 										else emoji = emoji.toString()
 											matchesEmbed.addField(String(num+1) + ") " + match.metadata.map + ` (${match.metadata.mode})`, emoji + `K/D/A: ${kda}\n${(match.teams[searchedPlayerTeam2]?.has_won ? "**Won " : "**Lost ") + match.teams[searchedPlayerTeam2]?.rounds_won + " - " + match.teams[opponentTeam2]?.rounds_won}**\n`+ match.metadata.game_start_patched, true)
@@ -106,20 +106,20 @@ module.exports.execute = async (client, message, args, send) => {
 													let opponentTeam = (searchedPlayer.team === "Blue" ? "Red" : "Blue")
 													let kills = round.player_stats.forEach(async p => {
 														findPlayer = match.players.all_players.filter(pl => pl.puuid === p.player_puuid)[0]
-														playerEmoji = client.guilds.cache.get("855091537696129064").emojis.cache.find(e => e.name === findPlayer.character.toLowerCase())
+														playerEmoji = client.guilds.cache.get("501396018395480065").emojis.cache.find(e => e.name === findPlayer.character.toLowerCase())
 														if (!playerEmoji) playerEmoji = ''
 															else playerEmoji = playerEmoji.toString()
 																let killed = p.kill_events.map(kill => {
 																	if (p.player_puuid === kill.victim_puuid) {p.kills--;
 																		return ""}
 																		let victim = match.players.all_players.filter(pl => pl.puuid === kill.victim_puuid)[0]
-																		return client.guilds.cache.get("855091537696129064").emojis.cache.find(e => e.name === victim.character.toLowerCase()).toString()
+																		return client.guilds.cache.get("501396018395480065").emojis.cache.find(e => e.name === victim.character.toLowerCase()).toString()
 																	}).join("")
 
 															if (p.kill_events.length >0) {
 																let namee = weapons[p.kill_events[0].damage_weapon_id.toLowerCase()]
 																if (!namee) namee = 'Melee'
-																	let emote = client.guilds.cache.get("855091537696129064").emojis.cache.find(e => e.name === namee?.toLowerCase())
+																	let emote = client.guilds.cache.get("501396018395480065").emojis.cache.find(e => e.name === namee?.toLowerCase())
 																if (emote) gun = emote.toString()
 																	else if (p.kill_events[0].damage_weapon_id.toLowerCase() === 'grenadeability') gun ="💣"
 																		else gun = ''
