@@ -23,8 +23,8 @@ module.exports.execute = async (client, message, args, send) => {
 				.setColor(388422)
 				.setImage(findWeapon.displayIcon)
 				if (findWeapon && findWeapon.shopData) {
-					emb.addField("Category", findWeapon.shopData.category, true)
-					emb.addField("Cost", String(findWeapon.shopData.cost), true)
+					emb.addFields([{name: "Category", value: findWeapon.shopData.category, inline: true},
+					{name: "Cost", value: String(findWeapon.shopData.cost), inline: true}])
 					emb.setDescription(`**Fire rate**: ${String(findWeapon.weaponStats.fireRate)}
 						**Magazine size**: ${String(findWeapon.weaponStats.magazineSize)}
 						**Equip time**: ${String(findWeapon.weaponStats.equipTimeSeconds)} second(s)

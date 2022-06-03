@@ -80,7 +80,7 @@ module.exports.execute = async (client, message, args, send) => {
 								{name: "Number of games played", value: String(bySeason.number_of_games)},
 								{name: "Rank in this act", value: bySeason.final_rank_patched}])
 							send(i, {edit: true, embeds: [newEmb]})
-						} else if (id === 'current') send(msg, {edit: true, embeds: [statEmbed]})
+						} else if (id === 'current') send(i, {edit: true, embeds: [statEmbed]})
 					})
 					collector.on('end', collected => {})
 				})
@@ -111,6 +111,6 @@ module.exports.execute = async (client, message, args, send) => {
 					ctx.fillText(args.join(" "), canvas.width / 3.3, 75)
 
 					let image = new Discord.Attachment(canvas.toBuffer(), 'test.png')
-					send(message, image)
+	//				send(message, image)
 				})
 }

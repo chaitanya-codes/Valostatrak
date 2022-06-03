@@ -38,7 +38,7 @@ module.exports.execute = async (client, message, args, send) => {
   modal.addComponents([actionrow])
   message.showModal(modal)
   let filt = (i) => i.user.id === message.author.id
-  message.awaitModalSubmit({filt, time: 45000})
+  message.awaitModalSubmit({filt, time: 90000})
   .then(async j => {
     j.deferReply()
     let code = j.fields.fields.get('code').data.value
@@ -110,4 +110,5 @@ module.exports.execute = async (client, message, args, send) => {
  }
 }
 })
+  .catch(e => {})
 }
