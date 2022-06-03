@@ -11,17 +11,17 @@ const request = require('request');
 const Discord = require('discord.js')
 
 module.exports.execute = async (client, message, args, send) => {
-
+  let subcommand = args[0].toLowerCase()
 	args.shift()
 
 	let name = args.join(" ").split("#").shift()
 	let tag = args.join(" ").split("#").pop()
 	let region;
-	if (client.accounts.has(args.join(" ").toLowerCase())) region = client.accounts.get(name.toLowerCase())
-		else return client.newUser(args.join(" "), this.info.name, message, 'link')
 
-			let subcommand = args[0].toLowerCase()
-		if (subcommand === 'find') {
+	if (client.accounts.has(args.join(" ").toLowerCase())) region = client.accounts.get(name.toLowerCase())
+		else return client.newUser(args.join(" "), this.info.name, message, subcommand)
+
+  if (subcommand === 'find') {
 			if (!args.join(" ").includes("#")) return message.reply("Account not found. Usage: `v!account <name#tagg>`\nExample: `v!account 100T Asuna#1111`")
 
 				if (tag.split(" ")[1]) return message.reply("You don't have to include the region for this command")
@@ -83,10 +83,9 @@ module.exports.execute = async (client, message, args, send) => {
 			else if (subcommand === 'settings') {
 				let linked = client.linked.get(message.author.id)
 				if (!linked) return send(message, "You have not linked your valorant account with the bot!")
-					const EnumResolvers = Discord.EnumResolvers
-				const row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setCustomId("private").setLabel("Statistics are public").setStyle(EnumResolvers.resolveButtonStyle("Primary")), new Discord.ButtonBuilder().setCustomId("remove").setLabel("Remove account from bot").setStyle(EnumResolvers.resolveButtonStyle("Secondary"))])
+				const row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setCustomId("private").setLabel("Statistics are public").setStyle("Primary"), new Discord.ButtonBuilder().setCustomId("remove").setLabel("Remove account from bot").setStyle("Secondary")])
 				const emb = new Discord.EmbedBuilder().setTitle("Account Settings").setDescription("Statistics by default are set to be public which allows anyone to view your account info, however you can turn this off to only let you see your account statistics.\nYou can re-link your account by removing the linked account if you edited username.")
-				if (linked.private) row.components[0].setLabel("Statistics are private").setStyle(EnumResolvers.resolveButtonStyle("Danger"))
+				if (linked.private) row.components[0].setLabel("Statistics are private").setStyle("Danger")
 					let m = await send(message, {embeds: [emb], components: [row]})
 				let filt = (i) => i.user.id === message.author.id
 				let col = m.createMessageComponentCollector({filt, time: 30000})

@@ -123,7 +123,7 @@ client.send = async (response, object = {}) => {
                         if (client.accounts.has(id.toLowerCase())) return;
                         let name = id.split("#").shift()
                         let tag = id.split("#").pop()
-
+                        if (!name || !tag) return client.send(message, "Format for username is `name#tag`")
                         let msg = await client.send(message, client.embed({color: "346264", title: "Searching for " + id + "... (first time search)", footer: "This is only for first-time search of a riot ID", description: "Fetching region " + client.emojis.cache.get('588824651132567677').toString()}))
 
                         await require('request')(`http://api.henrikdev.xyz/valorant/v1/account/${name}/${tag}`, async (err, res, body) => {

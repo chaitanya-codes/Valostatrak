@@ -38,7 +38,7 @@ module.exports.execute = async (client, message, args, send) => {
 						if (!entity) entity = client.buddiesData.filter(a => a.levels.some(l => l.uuid === lvl.reward.uuid))[0].levels.filter(l => l.uuid === lvl.reward.uuid)[0]
 							let emb = new Discord.EmbedBuilder()
 						.setTitle(findContract.displayName)
-						.setDescription(client.guilds.cache.get("855091537696129064").emojis.cache.find(e => e.name === findContract.displayName.replace(" Contract", "").toLowerCase()).toString())
+						.setDescription(client.guilds.cache.get("501396018395480065").emojis.cache.find(e => e.name === findContract.displayName.replace(" Contract", "").toLowerCase()).toString())
 						.setColor('Random')
 						.setImage(entity?.displayIcon || entity?.displayIcon2 || null)
 						.addFields([{name: "CHAPTER " + (chapter + 1) + " LEVEL " + (level + 1), value: "** **"},
