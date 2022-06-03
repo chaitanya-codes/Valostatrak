@@ -127,11 +127,11 @@ client.send = async (response, object = {}) => {
                         let msg = await client.send(message, client.embed({color: "346264", title: "Searching for " + id + "... (first time search)", footer: "This is only for first-time search of a riot ID", description: "Fetching region " + client.emojis.cache.get('588824651132567677').toString()}))
 
                         await require('request')(`http://api.henrikdev.xyz/valorant/v1/account/${name}/${tag}`, async (err, res, body) => {
-                          if (err || JSON.parse(body).status !== 200) return client.send(msg, {edit: true, content: "User not found (you do not need to include the region anymore).", embeds: []})
+                          if (err || JSON.parse(body).status !== 200) return client.send(msg, {edit: true, content: "User not found. Make sure you typed the name and tag correctly in format `name#tag`", embeds: []})
                             let data = JSON.parse(body)
                           data = data.data
                           if (data && data.region) await client.accounts.set(id.toLowerCase(), data.region)
-                            else return client.send(msg, {embeds: [], edit: true, content: "User not found (you do not need to include the region anymore)."})
+                            else return client.send(msg, {embeds: [], edit: true, content: "User not found. Make sure you typed the name and tag correctly in format `name#tag`"})
                               let m = await client.send(msg, {edit: true, embeds: client.embed({footer: "If it does not work automatically, please run the command again.", color: "565473", title: "Found " + id, description: ":white_check_mark: Added to list for faster search next time\nRe-executing the command..."})})
                             let arg = [id]
                             if (sub) arg = [sub].concat(arg)
