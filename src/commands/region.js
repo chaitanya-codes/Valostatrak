@@ -12,11 +12,11 @@ const request = require('request')
 module.exports.execute = async (client, message, args, send) => {
 
 	let region = args[0]
-	if (!region || !['eu', 'na', 'kr', 'ap'].includes(region.toLowerCase())) return send(message, "You need to type the region codename to see its status. Usage: `v!region <region>` (Region can be eu, na, kr, ap)")
+	if (!region || !['eu', 'na', 'kr', 'ap'].includes(region.toLowerCase())) return send(message, "You need to type the region codename to see its status. Usage: `/region <region>` (Region can be eu, na, kr, ap)")
 		await request(`http://api.henrikdev.xyz/valorant/v1/version/${region.toLowerCase()}`, async (err, res, body) => {
 			await request(`https://api.henrikdev.xyz/valorant/v1/status/${region.toLowerCase()}`, async (err2, res2, body2) => {
 
-				if (err || err2 || JSON.parse(body).status !== 200) return send(message, "There was an error fetching version for that region! Try checking v!status of that region")
+				if (err || err2 || JSON.parse(body).status !== 200) return send(message, "There was an error fetching version for that region! Try checking /status of that region")
 					let version = JSON.parse(body).data
 				let status = JSON.parse(body2).data
 

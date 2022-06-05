@@ -13,7 +13,7 @@ const Discord = require('discord.js')
 module.exports.execute = async (client, message, args, send) => {
 	let query = args
 
-	if (!args.join(" ").includes("#")) return send(message, "User not found. Usage: `v!career <name#tag>`\nExample: `v!career 100T Asuna#1111`")
+	if (!args.join(" ").includes("#")) return send(message, "User not found. Usage: `/career <name#tag>`\nExample: `/career 100T Asuna#1111`")
 
 		let name = query.join(" ").split("#").shift()
 	let tag = query.join(" ").split("#").pop()
@@ -42,7 +42,7 @@ module.exports.execute = async (client, message, args, send) => {
 		.setDescription(data.map(change => {
 			return `**${change.currenttierpatched}**: ${change.ranking_in_tier}/100 RR (${(change.mmr_change_to_last_game < 0 ? client.downEmoji.toString() + " " + change.mmr_change_to_last_game : client.upEmoji.toString() + " +" + change.mmr_change_to_last_game)} RR)  ELO: ${change.elo}`
 		}).join("\n"))
-		.setFooter({text: "To view match history, use v!matches command"})
+		.setFooter({text: "To view match history, use /matches command"})
 		.setThumbnail(`https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_${data[0].currenttier}.png`)
 		send(mm, {edit: true, embeds: [statEmbed]})
 

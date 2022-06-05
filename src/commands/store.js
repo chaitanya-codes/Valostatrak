@@ -25,7 +25,7 @@ module.exports.execute = async (client, message, args, send) => {
 		featuredBundle.Bundle.Items.map(i => {
 			let find = client.skinLevelData.filter(e => e.uuid === i.Item?.ItemID || null)
 			if (find && find[0]) embed.addFields([{name: find[0].displayName + (i.Item.Amount > 1 ? ` - ${i.Item.Amount}` : ''), value: `[${i.BasePrice}](${find[0].streamedVideo}) VP`, inline: true}])
-				links.push({name: find[0].displayName || '', preview: find[0].streamedVideo})
+				links.push({name: find[0]?.displayName || '', preview: find[0]?.streamedVideo})
 		})
 		
 		let row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setCustomId("preview").setLabel("Preview skins").setStyle("Secondary")])
@@ -41,17 +41,17 @@ module.exports.execute = async (client, message, args, send) => {
 			.addComponents([new Discord.ButtonBuilder().setEmoji("⬅️").setCustomId("left").setDisabled(true).setStyle("Secondary"), new Discord.ButtonBuilder().setEmoji("➡️").setCustomId("right").setStyle("Secondary")])
 
 			if (i.customId === 'preview') {
-				send(i, {edit: true, embeds: [], content: links[0].name + '\n' + links[0].preview, components: [row]})
+				send(i, {edit: true, embeds: [], content: (links[0]?.name || 'No skin to preview') + '\n' + links[0].preview || '', components: [row]})
 			} else if (i.customId === 'left') {
 				page--;
 				if ((page + 1) <= links.length) row.components[1].setDisabled(false)
 					if (page <= 0) row.components[0].setDisabled(true)
-						send(i, {edit: true, embeds: [], content: links[page].name + '\n' + links[page].preview, components: [row]})
+						send(i, {edit: true, embeds: [], content: (links[page].name || 'No skin to preview') + '\n' + links[page].preview || '', components: [row]})
 				} else if (i.customId === 'right') {
 					page++;
 					if ((page + 1) >= links.length) row.components[1].setDisabled(true)
 						row.components[0].setDisabled(false)
-					send(i, {edit: true, embeds: [], content: links[page].name + '\n' + links[page].preview, components: [row]})
+					send(i, {edit: true, embeds: [], content: (links[page].name || 'No skin to preview') + '\n' + links[page].preview || '', components: [row]})
 				}
 
 			})

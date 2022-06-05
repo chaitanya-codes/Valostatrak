@@ -8,7 +8,7 @@ module.exports.info = {
 
 module.exports.execute = async (client, message, args, send) => {
 	const Discord = require('discord.js')
-	if (!args[0]) return send(message, "Command Usage: `v!buddy <buddyName>`\nExample: `v!buddy Spectrum`\nTo get a list of buddies, use `v!buddy list`")
+	if (!args[0]) return send(message, "Command Usage: `/buddy <buddyName>`\nExample: `/buddy Spectrum`\nTo get a list of buddies, use `/buddy list`")
 		let buddyName = args.join(' ')
 	if (!client.buddiesData) return send(message, "The bot just started, please wait until valorant-api.com is initialized.")
 		if (buddyName === 'list') {
@@ -30,5 +30,5 @@ module.exports.execute = async (client, message, args, send) => {
 			.setImage(findBuddy.displayIcon)
 			if (findBuddy?.levels?.length) emb.setThumbnail(findBuddy.levels[0].displayIcon)
 				send(message, emb)
-		} else send(message, "Buddy not found!\nUsage: `v!buddy <buddyName>`\nExample: `v!buddy Spectrum`\nTo get a list of buddies, use `v!buddy list`")		
+		} else send(message, "Buddy not found!\nUsage: `/buddy <buddyName>`\nExample: `/buddy Spectrum`\nTo get a list of buddies, use `/buddy list`")		
 	}

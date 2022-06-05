@@ -33,7 +33,7 @@ module.exports.execute = async (client, message, args, send) => {
 	if (client.accounts.has(nametag.toLowerCase())) region = client.accounts.get(nametag.toLowerCase())
 		else return client.newUser(nametag, this.info.name, message)
 
-			if (!nametag.includes("#") || !region) return message.reply("User not found. Usage: `v!matches <name#tag> [match-type-optional]`\nExample: `v!matches 100T Asuna#1111 unrated`")
+			if (!nametag.includes("#") || !region) return message.reply("User not found. Usage: `/matches <name#tag> [match-type-optional]`\nExample: `/matches 100T Asuna#1111 unrated`")
 				client.weaponData.forEach(w => weapons[w.uuid] = w.displayName)
 			let mm;
 			let wait = new Discord.EmbedBuilder()
@@ -71,7 +71,7 @@ module.exports.execute = async (client, message, args, send) => {
 							emoji = await client.guilds.cache.get("501396018395480065").emojis.cache.find(e => e.name === player.character.toLowerCase())
 							if (!emoji) emoji = ''
 								else emoji = emoji.toString()
-									matchesEmbed.addFields([{name: String(num+1) + ") " + match.metadata.map + ` (${match.metadata.mode})`, value: emoji + `K/D/A: ${kda}\n${(match.teams[searchedPlayerTeam2]?.has_won ? "**Won " : "**Lost ") + match.teams[searchedPlayerTeam2]?.rounds_won + " - " + match.teams[opponentTeam2]?.rounds_won}**\n`+ match.metadata.game_start_patched, inline: true}])
+									matchesEmbed.addFields([{name: String(num+1) + ") " + match.metadata.map + ` (${match.metadata.mode})`, value: emoji + `K/D/A: ${kda}\n${(match.teams[searchedPlayerTeam2]?.has_won ? "**Won " : "**Lost ") + (match.teams[searchedPlayerTeam2]?.rounds_won || '-') + " - " + (match.teams[opponentTeam2]?.rounds_won || '-')}**\n`+ match.metadata.game_start_patched, inline: true}])
 							})
 						mm.edit({embeds: [matchesEmbed], components: [row]})
 						.then(msg => {
@@ -93,7 +93,7 @@ module.exports.execute = async (client, message, args, send) => {
 
 									i.update({embeds: [matchEmbed], components: [row2]})
 									.then(ms => {
-										function setRound(r) {
+										function setRound(r, int) {
 											let round = match.rounds[r]
 											let findPlayer;
 											let playerEmoji;
@@ -111,7 +111,7 @@ module.exports.execute = async (client, message, args, send) => {
 															if (p.player_puuid === kill.victim_puuid) {p.kills--;
 																return ""}
 																let victim = match.players.all_players.filter(pl => pl.puuid === kill.victim_puuid)[0]
-																return client.guilds.cache.get("501396018395480065").emojis.cache.find(e => e.name === victim.character.toLowerCase()).toString()
+																return client.guilds.cache.get("501396018395480065").emojis.cache.find(e => e.name === victim.character.toLowerCase())?.toString() || ''
 															}).join("")
 
 													if (p.kill_events.length >0) {
@@ -137,9 +137,9 @@ module.exports.execute = async (client, message, args, send) => {
 												{name: "Round outcome", value: round.end_type, inline: true}])
 											if (round.bomb_planted) newEmb.addFields([{name: "Bomb planted", value: "By "+round.plant_events.planted_by["display_name"], inline: true}])
 												if (round.bomb_defused) newEmb.addFields([{name: "Bomb defused", value: "By "+round.defuse_events.defused_by["display_name"], inline: true}])
-													msg.edit({embeds: [newEmb], components: [row2]})
+													send(int, {edit: true, embeds: [newEmb], components: [row2]})
 											}
-											setRound(0)
+											setRound(0, message)
 											const filter2 = (interaction) => message.author.id === interaction.user.id
 											const collector2 = ms.createMessageComponentCollector({filter2, idle: 35000, time: 90000 })
 											collector2.on('collect', async i => {
@@ -148,7 +148,7 @@ module.exports.execute = async (client, message, args, send) => {
 												} else if (i.customId === 'right') {
 													currentRound++;
 												} else if (i.customId === 'back') {
-													mm.edit({embeds: [matchesEmbed], components: [row]})
+													i.update({embeds: [matchesEmbed], components: [row]})
 													collector2.stop()
 													currentRound = 0;
 													return;
@@ -157,7 +157,7 @@ module.exports.execute = async (client, message, args, send) => {
 													else row2.components[0].disabled = false
 														if ((match.teams.blue.rounds_lost + match.teams.blue.rounds_won) <= (currentRound + 1)) row2.components[1].disabled = true
 															else row2.components[1].disabled = false
-																setRound(currentRound)
+																setRound(currentRound, i)
 														})
 											collector.on('end', collected => {})
 										})

@@ -47,5 +47,5 @@ if (findAgent && findAgent[0]?.displayName) {
 			send(i, {edit: true, embeds: [emb]})
 		}
 	})
-} else return send(message, "Agent not found. Usage: `v!agent <agent>`\nExample: `v!agent Phoenix`")
+} else return send(message, "Agent not found. Usage: `/agent <agent>`\nExample: `/agent Phoenix`")
 }

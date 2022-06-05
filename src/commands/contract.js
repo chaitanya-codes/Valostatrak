@@ -10,7 +10,7 @@ const Discord = require('discord.js')
 
 module.exports.execute = async (client, message, args, send) => {
 
-	if (!args[0]) return send(message, "Command Usage: `v!contract <agent>`\nExample: `v!contract sova`")
+	if (!args[0]) return send(message, "Command Usage: `/contract <agent>`\nExample: `/contract sova`")
 		let contractName = args.join(' ')
 	const contracts = client.contractData
 	let findContract = contracts.filter(b => b.displayName.toLowerCase().replace(" contract", "") === contractName.toLowerCase() && b.content.relationType === 'Agent')[0]

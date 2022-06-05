@@ -8,7 +8,7 @@ module.exports.info = {
 const Discord = require('discord.js')
 module.exports.execute = async (client, message, args, send) => {
 
-	if (!args[0]) return send(message, "Command usage: `v!title <player title name>`\nTo list all titles, use `v!title list`")
+	if (!args[0]) return send(message, "Command usage: `/title <player title name>`\nTo list all titles, use `/title list`")
 
 		let data = client.playertitleData
 	let findTitle = data.filter(title => title.displayName.toLowerCase() === (args.join(" ").toLowerCase() + " title") || title.displayName.toLowerCase() === (args.join(" ").toLowerCase()))
@@ -30,5 +30,5 @@ module.exports.execute = async (client, message, args, send) => {
 		.setColor(388422)
 		.setDescription("title text: `" + findTitle.titleText + "`")
 		send(message, {embeds: [emb]})
-	} else return send(message, "Title not found. Command usage: `v!title <title name>`\nIf you want to see the current titles I know, type `v!title list`")
+	} else return send(message, "Title not found. Command usage: `/title <title name>`\nIf you want to see the current titles I know, type `/title list`")
 }

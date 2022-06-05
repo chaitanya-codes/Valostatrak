@@ -13,7 +13,7 @@ module.exports.execute = async (client, message, args, send) => {
 	if (message.author.id === '833792409539444746') {
 		send(message, args.join(' '))
 	} else {
-		if (!args[0]) return message.reply("Usage: `v!say <text>`")
+		if (!args[0]) return message.reply("Usage: `/say <text>`")
 			send(message, client.embed({color: message.member?.roles.highest.color, author: {name: message.author.tag, iconURL: message.author.displayAvatarURL()}, description: args.join(" ")}))
 		}
 	}

@@ -9,7 +9,7 @@ module.exports.info = {
 module.exports.execute = async (client, message, args, send) => {
 	const Discord = require('discord.js')
 	let weaponName;
-	if (!args[0]) return send(message, "Command usage: v!weapon <weapon-name>")
+	if (!args[0]) return send(message, "Command usage: /weapon <weapon-name>")
 		else weaponName = args.join(' ')
 
 			let weaponData = client.weaponData
@@ -38,5 +38,5 @@ module.exports.execute = async (client, message, args, send) => {
 						`)
 				}
 				send(message, {embeds: [emb]})
-			} else send(message, "Weapon not found!\nUsage: `v!weapon <name>`")
+			} else send(message, "Weapon not found!\nUsage: `/weapon <name>`")
 		}

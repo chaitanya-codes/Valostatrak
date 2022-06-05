@@ -13,7 +13,7 @@ module.exports.execute = async (client, message, args, send) => {
 
 	let skinName;
 
-	if (!args[0]) return send(message, "Command usage: `v!skin <collectionName> <weaponName>`\nExample: `v!skin Reaver Vandal`")
+	if (!args[0]) return send(message, "Command usage: `/skin <collectionName> <weaponName>`\nExample: `/skin Reaver Vandal`")
 		else skinName = args.join(' ')
 			
 			let weaponName = args.pop()
@@ -26,7 +26,7 @@ module.exports.execute = async (client, message, args, send) => {
 
 					findSkin = findSkin[0]
 					findWeapon = findWeapon[0]
-					if (!findSkin) return send(message, "Could not find skin! Command usage: `v!skin <collectionName> <weaponName>`\nExample: `v!skin Reaver Vandal`")
+					if (!findSkin) return send(message, "Could not find skin! Command usage: `/skin <collectionName> <weaponName>`\nExample: `/skin Reaver Vandal`")
 						if (['Luxe Knife', 'Prime Guardian', 'Sovereign Guardian', 'Sovereign Marshal', "Hush Ghost", "Soul Silencer Ghost", "Game Over Sheriff"].includes(findSkin.displayName)) findSkin.displayIcon = findSkin.levels[0].displayIcon
 							
 							let emb = new Discord.EmbedBuilder()
@@ -92,5 +92,5 @@ module.exports.execute = async (client, message, args, send) => {
 								}
 							})
 						}
-					} else send(message, "Skin not found!\nUsage: `v!skin <CollectionName> <weaponName>`\nExample: `v!skin Reaver Vandal`")
+					} else send(message, "Skin not found!\nUsage: `/skin <CollectionName> <weaponName>`\nExample: `/skin Reaver Vandal`")
 				}

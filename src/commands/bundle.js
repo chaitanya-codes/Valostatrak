@@ -8,7 +8,7 @@ module.exports.info = {
 
 module.exports.execute = async (client, message, args, send) => {
 	const Discord = require('discord.js')
-	if (!args[0]) return send(message, "Command Usage: `v!bundle <bundleName>`\nExample: `v!bundle RGX 11z Pro`")
+	if (!args[0]) return send(message, "Command Usage: `/bundle <bundleName>`\nExample: `/bundle RGX 11z Pro`")
 		let bundleName = args.join(' ')
 	if (!client.bundleData) return send(message, "The bot just started, please wait until valorant-api.com is initialized.")
 
@@ -25,5 +25,5 @@ module.exports.execute = async (client, message, args, send) => {
 				.setImage((findBundle.displayIcon ? findBundle.displayIcon : findBundle.displayIcon2))
 				.setThumbnail(findBundle.verticalPromoImage)
 				send(message, emb)
-			} else send(message, "Bundle not found! You can get a list of bundles by using `v!bundle list`\nUsage: `v!bundle <bundleName>`\nExample: `v!bundle RGX 11z Pro`")		
+			} else send(message, "Bundle not found! You can get a list of bundles by using `/bundle list`\nUsage: `/bundle <bundleName>`\nExample: `/bundle RGX 11z Pro`")		
 		}
