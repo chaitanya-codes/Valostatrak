@@ -8,7 +8,7 @@ module.exports.info = {
 const Discord = require('discord.js')
 module.exports.execute = async (client, message, args, send) => {
 
-	if (!args[0]) return send(message, "Command usage: `v!card <player card name>`\nTo list all cards, use `v!card list`")
+	if (!args[0]) return send(message, "Command usage: `/card <player card name>`\nTo list all cards, use `/card list`")
 
 		let data = client.playercardData
 	let findCard = data.filter(card => card.displayName.toLowerCase() === (args.join(" ").toLowerCase() + " card") || card.displayName.toLowerCase() === (args.join(" ").toLowerCase()))
@@ -31,5 +31,5 @@ module.exports.execute = async (client, message, args, send) => {
 		.setImage(findCard.largeArt)
 		.setThumbnail(findCard.displayIcon)
 		send(message, {embeds: [emb]})
-	} else return send(message, "Card not found. Command usage: `v!card <card name>`\nIf you want to see the current cards I know, type `v!card list`")
+	} else return send(message, "Card not found. Command usage: `/card <card name>`\nIf you want to see the current cards I know, type `/card list`")
 }

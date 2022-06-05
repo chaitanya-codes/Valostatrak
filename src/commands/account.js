@@ -22,7 +22,7 @@ module.exports.execute = async (client, message, args, send) => {
 		else return client.newUser(args.join(" "), this.info.name, message, subcommand)
 
   if (subcommand === 'find') {
-			if (!args.join(" ").includes("#")) return message.reply("Account not found. Usage: `v!account <name#tagg>`\nExample: `v!account 100T Asuna#1111`")
+			if (!args.join(" ").includes("#")) return message.reply("Account not found. Usage: `/account <name#tagg>`\nExample: `/account 100T Asuna#1111`")
 
 				if (tag.split(" ")[1]) return message.reply("You don't have to include the region for this command")
 					let mm;
@@ -42,7 +42,7 @@ module.exports.execute = async (client, message, args, send) => {
 					.setColor(342852)
 					.setTitle("Account  - " + name + "#" + tag)
 					.setDescription("**Account Level**: " + data.account_level + "\n**Region**: " + data.region)
-					.setFooter({text: "To view match history, use v!matches command"})
+					.setFooter({text: "To view match history, use /matches command"})
 					.setImage(data.card?.large)
 					send(mm, {edit: true, embeds: [statEmbed]})
 				})

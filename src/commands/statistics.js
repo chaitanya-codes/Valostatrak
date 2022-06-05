@@ -15,7 +15,7 @@ const Canvas = require('canvas')
 module.exports.execute = async (client, message, args, send) => {
 	let query = args
 
-	if (!args.join(" ").includes("#")) return send(message, "Usage: `v!stats <name#tag>` \nExample: `v!stats 100T Asuna#1111`")
+	if (!args.join(" ").includes("#")) return send(message, "Usage: `/stats <name#tag>` \nExample: `/stats 100T Asuna#1111`")
 
 		let name = query.join(" ").split("#").shift()
 	let tag = query.join(" ").split("#").pop()
@@ -60,7 +60,7 @@ module.exports.execute = async (client, message, args, send) => {
 				.setFields([{name: "Rank", value: (currentData.currenttierpatched ? currentData.currenttierpatched + `\n${currentData.ranking_in_tier}/100 ${rr || ""}` : "Unranked")},
 					{name: "Recent MMR change", value: String((currentData.mmr_change_to_last_game < 0 ? client.downEmoji.toString() + " " + currentData.mmr_change_to_last_game : client.upEmoji.toString() + " +" + currentData.mmr_change_to_last_game)), inline: true},
 					{name: "ELO", value: String(currentData.elo), inline: true}])
-				.setFooter({text: "To view match history, use v!matches command"})
+				.setFooter({text: "To view match history, use /matches command"})
 				.setThumbnail(`https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_${currentData.currenttier}.png`)
 				send(mm, {edit: true, embeds: [statEmbed], components: [row]})
 				.then(msg => {

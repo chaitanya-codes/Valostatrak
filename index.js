@@ -88,7 +88,7 @@ client.send = async (response, object = {}) => {
                   sendObject["fetchReply"] = true
                   await response.reply(sendObject)
                   .then(m => sendBack = m)
-                  .catch(e => response.followUp(sendObject).then(m => sendBack = m).catch(e => console.log(e)))
+                  .catch(e => console.log(e) && response.followUp(sendObject).then(m => sendBack = m).catch(e => console.log(e)))
                 }
               } else {
                 if (object.edit) {

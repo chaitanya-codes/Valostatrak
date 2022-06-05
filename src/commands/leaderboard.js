@@ -12,7 +12,7 @@ const Discord = require('discord.js')
 
 module.exports.execute = async (client, message, args, send) => {
 
-	if (!args[0] || !['eu', 'ap', 'na', 'kr', 'asia'].includes(args[0].toLowerCase())) return send(message, "Usage: `v!leaderboard <region>`\nRegions are: \`eu\`, \`ap\`, \`na\`, \`kr\`")
+	if (!args[0] || !['eu', 'ap', 'na', 'kr', 'asia'].includes(args[0].toLowerCase())) return send(message, "Usage: `/leaderboard <region>`\nRegions are: \`eu\`, \`ap\`, \`na\`, \`kr\`")
 		if (args[0].toLowerCase() === 'asia') args[0] = 'ap'
 			let m = await send(message, "Fetching......")
 
