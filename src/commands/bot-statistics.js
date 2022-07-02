@@ -3,6 +3,7 @@ module.exports.info = {
 	description: 'View the bot\'s current statistics',
 	aliases: ['about', 'bot-stats', 'info'],
 	cooldown: 12,
+	module: "Other"
 }
 
 module.exports.execute = async (client, message, args, send) => {

@@ -61,7 +61,7 @@ module.exports.execute = async (client, message, args, send) => {
 					{name: "Recent MMR change", value: String((currentData.mmr_change_to_last_game < 0 ? client.downEmoji.toString() + " " + currentData.mmr_change_to_last_game : client.upEmoji.toString() + " +" + currentData.mmr_change_to_last_game)), inline: true},
 					{name: "ELO", value: String(currentData.elo), inline: true}])
 				.setFooter({text: "To view match history, use /matches command"})
-				.setThumbnail(`https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_${currentData.currenttier}.png`)
+				.setThumbnail(client.rankImg(currentData.currenttierpatched))
 				send(mm, {edit: true, embeds: [statEmbed], components: [row]})
 				.then(msg => {
 					const filter = (interaction) => message.author.id === interaction.user.id
@@ -70,12 +70,12 @@ module.exports.execute = async (client, message, args, send) => {
 						let id = i.values[0]
 						if (seasons.includes(id)) {
 							let bySeason = data['by_season'][id]
-							if (!bySeason.number_of_games) return send(message, {ephemeral: true, content: "This player has not played in that act"})
+							if (!bySeason.number_of_games) return send(i, {ephemeral: true, content: "This player has not played in that act"})
 								let newEmb = new Discord.EmbedBuilder()
 							.setColor(349842)
 							.setTitle("Statistics - " + args.join(" "))
 							.setDescription(id.replace("e", "Episode ").replace("a", " Act "))
-							.setThumbnail(`https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_${bySeason.final_rank}.png`)
+							.setThumbnail(client.rankImg(bySeason.final_rank_patched))
 							.setFields([{name: "Wins", value: String(bySeason.wins)},
 								{name: "Number of games played", value: String(bySeason.number_of_games)},
 								{name: "Rank in this act", value: bySeason.final_rank_patched}])
@@ -84,7 +84,7 @@ module.exports.execute = async (client, message, args, send) => {
 					})
 					collector.on('end', collected => {})
 				})
-
+/*
 				const canvas = new Canvas.createCanvas(550, 300)
 				let ctx = canvas.getContext('2d')
 				let downImg = await Canvas.loadImage(client.downEmoji.url)
@@ -111,6 +111,6 @@ module.exports.execute = async (client, message, args, send) => {
 					ctx.fillText(args.join(" "), canvas.width / 3.3, 75)
 
 					let image = new Discord.Attachment(canvas.toBuffer(), 'test.png')
-	//				send(message, image)
+	//				send(message, image)*/
 				})
 }

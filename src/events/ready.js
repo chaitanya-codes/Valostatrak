@@ -1,11 +1,13 @@
 const Discord = require('discord.js')
 const request = require('request')
+const { ActivityType } = require('discord.js')
 
 let baseURL = 'https://valorant-api.com/v1/'
+
 module.exports.Ready = async (client) => {
 	console.log("Logged in as " + client.user.tag)
 	client.wait = (time) => require('util').promisify(setTimeout)(time)
-	client.user.setActivity(`your stats | /help`, { type: 'WATCHING' })
+	client.user.setActivity(`your stats | /help`, { type: ActivityType.Watching })
 
 	let array = ['weapons', 'maps', 'agents', 'sprays', 'weapons/skinlevels', 'bundles', 'buddies', 'playertitles', 'playercards', 'contracts']
 	await array.forEach(async (api, index) => {
@@ -29,4 +31,5 @@ module.exports.Ready = async (client) => {
 
 	client.upEmoji = client.emojis.cache.get("977208845774495744")
 	client.downEmoji = client.emojis.cache.get("977208908970065940")
+	client.rankImg = (rank) => client.guilds.cache.get('501396018395480065').cache.find(e=>e.name===rank.split(' ')[0].toLowerCase()).url || 'https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_0.png'
 }

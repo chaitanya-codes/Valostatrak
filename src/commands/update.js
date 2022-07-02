@@ -11,7 +11,7 @@ module.exports.execute = (client, message, args, send) => {
 
 	updatesChannel.messages.fetch({ limit: 10 })
 	.then(messages => {
-		let latestUpdate = messages.map(m => m.content).slice(0,5).reverse().join("\n")
+		let latestUpdate = messages.map(m => m.content).slice(0,5).reverse().join("\n\n")
 		const Discord = require('discord.js')
 		const updatesEm = new Discord.EmbedBuilder()
 		.setColor(message.member.roles.highest.color)
