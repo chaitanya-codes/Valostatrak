@@ -34,7 +34,6 @@ module.exports.execute = async (client, message, args, send) => {
 			let data = JSON.parse(body)
 		data = data.data
 		if (!data) return send(message, client.notFound(JSON.parse(body).message))
-
 			let statEmbed = new Discord.EmbedBuilder()
 		.setColor(342852)
 		.setTitle("Career - " + args.join(" "))
