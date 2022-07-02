@@ -33,7 +33,7 @@ const webhook = new Topgg.Webhook('valorant')
 const express = require("express")
 const app = express()
 app.get("/", (req, res) => {
-  res.send("Running")
+  res.send("Bot is online\n\nCurrently in " + client.guilds.cache.size + " servers!")
 })
 app.listen(8081)
 

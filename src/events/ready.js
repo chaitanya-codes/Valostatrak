@@ -31,5 +31,5 @@ module.exports.Ready = async (client) => {
 
 	client.upEmoji = client.emojis.cache.get("977208845774495744")
 	client.downEmoji = client.emojis.cache.get("977208908970065940")
-	client.rankImg = (rank) => client.guilds.cache.get('501396018395480065').cache.find(e=>e.name===rank.split(' ')[0].toLowerCase()).url || 'https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_0.png'
+	client.rankImg = (rank) => client.guilds.cache.get('501396018395480065').emojis.cache.find(e=>e.name===rank.split(' ')[0].toLowerCase()).url || 'https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_0.png'
 }
