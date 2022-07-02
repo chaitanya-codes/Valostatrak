@@ -18,8 +18,10 @@ const sortCmds = client.commands.forEach(c => {
 let helpEmb = new Discord.EmbedBuilder()
 .setColor(753221)
 .setTitle("Commands")
+.setDescription("For more info on an command, use /help [command]")
 .setFooter({text:"Most commands powered by https://valorant-api.com"})
-Object.keys(sortedCmds).forEach((key, n) => helpEmb.addFields([{name: key, value: (key === "Other" ? sortedCmds[key].join(", ") : sortedCmds[key].join("\n")), inline: true}]))
+Object.keys(sortedCmds).forEach((key, n) => {if (!["Other", "Owner"].includes(key)) {helpEmb.addFields([{name: key, value: sortedCmds[key].join("\n"), inline: true}]) }else helpEmb.addFields([{name: key, value: sortedCmds[key].join(", ")}])})
+
 if (!args[0]) send(message, {embeds: [helpEmb]})
 else {
   const { commands } = client

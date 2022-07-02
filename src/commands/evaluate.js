@@ -41,7 +41,7 @@ module.exports.execute = async (client, message, args, send) => {
   message.awaitModalSubmit({filt, time: 90000})
   .then(async j => {
     j.deferReply()
-    let code = j.fields.fields.get('code').data.value
+    let code = j.fields.fields.get('code').value
     args = code.split(" ")
     if (!code) return message.followUp("What to eval :/")
       if (args[0] === '--delete') {
@@ -110,5 +110,5 @@ module.exports.execute = async (client, message, args, send) => {
  }
 }
 })
-  .catch(e => {})
+  .catch(e => console.log(e))
 }
