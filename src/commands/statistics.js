@@ -61,7 +61,7 @@ module.exports.execute = async (client, message, args, send) => {
 					{name: "Recent MMR change", value: String((currentData.mmr_change_to_last_game < 0 ? client.downEmoji.toString() + " " + currentData.mmr_change_to_last_game : client.upEmoji.toString() + " +" + currentData.mmr_change_to_last_game)), inline: true},
 					{name: "ELO", value: String(currentData.elo), inline: true}])
 				.setFooter({text: "To view match history, use /matches command"})
-				.setThumbnail(client.rankImg(currentData.currenttierpatched))
+				.setThumbnail(client.rankImg(currentData.currenttierpatched, currentData.currenttier))
 				send(mm, {edit: true, embeds: [statEmbed], components: [row]})
 				.then(msg => {
 					const filter = (interaction) => message.author.id === interaction.user.id

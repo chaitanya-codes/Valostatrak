@@ -29,7 +29,16 @@ module.exports.Ready = async (client) => {
 			setTimeout(() => client.ratelimits.set(id, false), time)
 	}
 
-	client.upEmoji = client.emojis.cache.get("977208845774495744")
-	client.downEmoji = client.emojis.cache.get("977208908970065940")
-	client.rankImg = (rank) => client.guilds.cache.get('501396018395480065').emojis.cache.find(e=>e.name===rank.split(' ')[0].toLowerCase()).url || 'https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_0.png'
+	client.upEmoji = client.emojis.cache.get("992868519190482954")
+	client.downEmoji = client.emojis.cache.get("992868470213587034")
+	client.rankImg = (rank, tier) => {
+		if (tier === 23) return "https://static.wikia.nocookie.net/valorant/images/5/53/Ascendant_3_Rank.png/revision/latest/scale-to-width-down/250?cb=20220616175519"
+			else if (tier === 22) return "https://static.wikia.nocookie.net/valorant/images/1/1e/Ascendant_2_Rank.png/revision/latest/scale-to-width-down/250?cb=20220616175514"
+				else if (tier === 21) return "https://static.wikia.nocookie.net/valorant/images/e/e5/Ascendant_1_Rank.png/revision/latest/scale-to-width-down/250?cb=20220616175506"
+	if (tier === 24) tier=21
+		else if (tier === 25) tier = 22
+			else if (tier===26) tier= 23
+				else if (tier===27) tier = 24
+	return `https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_${tier}.png`//client.guilds.cache.get('501396018395480065').emojis.cache.find(e=>e.name===rank.split(' ')[0].toLowerCase()).url || 'https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_0.png'
+}
 }
