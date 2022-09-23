@@ -9,7 +9,7 @@ module.exports.info = {
 const fs = require('fs')
 
 module.exports.execute = async (client, message, args, send) => {
-  if (message.author.id !== "833792409539444746") return send(message, 'This command can only be used by the bot owner to reload commands (This command is not for reloading a gun lol).')
+  if (message.author.id !== "485885170080022556") return send(message, 'This command can only be used by the bot owner to reload commands (This command is not for reloading a gun lol).')
     let loading = client.emojis.cache.get("588824651132567677").toString()
   let checkMark = client.emojis.cache.get('529719527999537162').toString()
   message.deferReply()

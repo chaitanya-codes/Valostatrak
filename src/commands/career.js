@@ -42,7 +42,7 @@ module.exports.execute = async (client, message, args, send) => {
 			return `**${change.currenttierpatched}**: ${change.ranking_in_tier}/100 RR (${(change.mmr_change_to_last_game < 0 ? client.downEmoji.toString() + " " + change.mmr_change_to_last_game : client.upEmoji.toString() + " +" + change.mmr_change_to_last_game)} RR)  ELO: ${change.elo}`
 		}).join("\n"))
 		.setFooter({text: "To view match history, use /matches command"})
-		.setThumbnail(client.rankImg(data[0].currenttierpatched))
+		.setThumbnail(client.rankImg(data[0].currenttierpatched, data[0].currenttier))
 		send(mm, {edit: true, embeds: [statEmbed]})
 
 	})

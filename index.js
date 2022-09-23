@@ -51,8 +51,10 @@ client.send = async (response, object = {}) => {
   let sendObject = {}
   let sendback;
   let channel;
+  let isInteraction = false
   if (response instanceof Discord.Message) channel = response.channel
-    else if (response instanceof Discord.Interaction) {
+  else isInteraction = response.isButton() || response.isChatInputCommand() || response.isContextMenuCommand() || response.isMessageContextMenuCommand() || response.isSelectMenu() || response instanceof Discord.ModalSubmitInteraction
+  if (isInteraction) {
       object.interaction = response
       channel = response.channel
     } else channel = response
@@ -74,7 +76,7 @@ client.send = async (response, object = {}) => {
                   })
               }
 
-              if (response instanceof Discord.Interaction) {
+              if (isInteraction) {
                 delete sendObject["interaction"]
                 if (object.defer) {
                   response.deferReply()
@@ -98,7 +100,7 @@ client.send = async (response, object = {}) => {
                   if (object.reply) {
                     delete sendObject["reply"]
                     await response.reply(sendObject).then(m => sendBack = m).catch(e => console.log(e))
-                  } else await channel.send(sendObject).then(m => sendBack = m).catch(e => console.log(e))
+                  } else await response.channel.send(sendObject).then(m => sendBack = m).catch(e => console.log(e))
                 }
               }
               if (!sendBack) return console.log("FAILED TO SEND: \n" + sendObject)

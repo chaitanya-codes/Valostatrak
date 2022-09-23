@@ -25,7 +25,7 @@ const request = require('request');
 
 module.exports.execute = async (client, message, args, send) => {
 
-  if (message.author.id !== '833792409539444746') return message.reply('This command can only be used by the bot owner.')
+  if (message.author.id !== '485885170080022556') return message.reply('This command can only be used by the bot owner.')
     const Discord = require('discord.js')
   const modal = new Discord.ModalBuilder()
   .setCustomId('modal')
