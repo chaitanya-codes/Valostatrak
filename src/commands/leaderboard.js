@@ -33,7 +33,7 @@ module.exports.execute = async (client, message, args, send) => {
 						return await body.players.slice(p * 10).map(player => {
 						i++;
 						if (i > 10) return;
-						return `${client.emojis.cache.get((player.competitiveTier === 24 ? "975725504273457213" : "980887753061453844")).toString()} ${String(player.leaderboardRank)}) **${player.IsAnonymized ? "HIDDEN NAME" : player.gameName}#${player.tagLine}** : ${player.rankedRating} RR | ${player.numberOfWins} wins`
+						return `${client.emojis.cache.get((player.competitiveTier === 27 ? "975725504273457213" : "980887753061453844")).toString()} ${String(player.leaderboardRank)}) **${player.IsAnonymized ? "HIDDEN NAME" : player.gameName}#${player.tagLine}** : ${player.rankedRating} RR | ${player.numberOfWins} wins`
 					}).filter(Boolean)
 					}
 					const setPage = async (i) => {
