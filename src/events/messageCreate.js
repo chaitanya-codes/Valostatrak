@@ -12,6 +12,7 @@ module.exports.Message = async (client, message) => {
 
   const args = message.content.slice(prefix.length).split(/ +/g);
   const commandName = args.shift().toLowerCase()
+  
   let command = client.commands.get(commandName) || client.commands.find(cmd => cmd.info.aliases && cmd.info.aliases.includes(commandName))
   if (!command) return;
   if (client.ratelimits.has(message.author.id)) {
