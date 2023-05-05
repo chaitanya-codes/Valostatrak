@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const { request } = require('undici')
+const request = require('request')
 const { ActivityType } = require('discord.js')
 
 let baseURL = 'https://valorant-api.com/v1/'

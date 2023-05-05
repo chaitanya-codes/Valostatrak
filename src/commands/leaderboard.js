@@ -7,7 +7,7 @@ module.exports.info = {
 	module: "Statistics"
 }
 
-const { request } = require('undici');
+const request = require('request');
 const Discord = require('discord.js')
 
 module.exports.execute = async (client, message, args, send) => {

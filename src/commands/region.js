@@ -7,7 +7,7 @@ module.exports.info = {
 	cooldown: 50
 }
 
-const { request } = require('undici')
+const request = require('request')
 
 module.exports.execute = async (client, message, args, send) => {
 
