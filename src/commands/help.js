@@ -10,8 +10,9 @@ const Discord = require('discord.js')
 module.exports.execute = async (client, message, args, send) => {
 
 const sortedCmds = {}
+if (!client.application.commands.cache[0]) await client.application.commands.fetch()
 const sortCmds = client.commands.forEach(c => {
-  let text = '[`/' + c.info.name + '`](https://valorant-api.com)'
+  let text = '</' + c.info.name + ':' + client.application.commands.cache.find(e => e.name === c.info.name).id + '>'
   if (sortedCmds[c.info.module]) sortedCmds[c.info.module].push(text)
     else sortedCmds[c.info.module] = [text]
 })

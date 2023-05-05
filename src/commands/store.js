@@ -65,7 +65,7 @@ module.exports.execute = async (client, message, args, send) => {
 					send(j, {content: "Store for " + username + "\n\n`Account details are NOT stored by the bot, if you see them in the popup again they are cached by discord.\nBy using this command you are responsible for your account as store is checked using a third party API`", embeds: embeds})
 
 				}).catch(e => send(j, "Could not retrieve store!"))
-			}).catch(e => send(j, "Invalid username/password"))
+			}).catch(e => console.log(e) && send(j, "Invalid username/password or account has 2fa."))
 	})
 
 

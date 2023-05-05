@@ -18,7 +18,7 @@ let Discord = require('discord.js')
 if (findAgent && findAgent[0]?.displayName) {
 	findAgent = findAgent[0]
 	let row = new Discord.ActionRowBuilder()
-	.addComponents([new Discord.SelectMenuBuilder().addOptions(data.map(m => {return {label: m.displayName.toLowerCase(), value: m.displayName.toLowerCase()}})).setCustomId("agents").setPlaceholder("Select agent")])
+	.addComponents([new Discord.StringSelectMenuBuilder().addOptions(data.map(m => {return {label: m.displayName.toLowerCase(), value: m.displayName.toLowerCase()}})).setCustomId("agents").setPlaceholder("Select agent")])
 
 	let emb = new Discord.EmbedBuilder()
 	.setTitle("Agent - " + findAgent.displayName)
@@ -44,7 +44,7 @@ if (findAgent && findAgent[0]?.displayName) {
 			findAgent.abilities.forEach(ability => emb.addFields([{name: ability.displayName, value: (ability.slot === "Passive" ? "(**Passive**) " : "") + ability.description}]))
 			emb.setThumbnail(findAgent.role.displayIcon)
 			emb.setFooter({text: (findAgent.characterTags ? findAgent.characterTags.join(", ") : "No character tags")})
-			send(i, {edit: true, embeds: [emb]})
+			send(msg, {edit: true, embeds: [emb]})
 		}
 	})
 } else return send(message, "Agent not found. Usage: `/agent <agent>`\nExample: `/agent Phoenix`")

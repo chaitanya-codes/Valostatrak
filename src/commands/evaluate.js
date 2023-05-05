@@ -100,7 +100,7 @@ module.exports.execute = async (client, message, args, send) => {
       await require('fs').writeFile('src/eval.txt', `${clean(evaled)}`, (err, out) => {
         if (err) console.log(err)
       })
-      send(msg, {files: ['src/eval.txt']})
+      send(message, {files: ['src/eval.txt']})
     }
 
   }
