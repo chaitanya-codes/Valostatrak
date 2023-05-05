@@ -40,6 +40,7 @@ module.exports.execute = async (client, message, args, send) => {
   let filt = (i) => i.user.id === message.author.id
   message.awaitModalSubmit({filt, time: 90000})
   .then(async j => {
+    j.deferReply()
     let code = j.fields.fields.get('code').value
     args = code.split(" ")
     if (!code) return message.followUp("What to eval :/")
@@ -99,7 +100,7 @@ module.exports.execute = async (client, message, args, send) => {
       await require('fs').writeFile('src/eval.txt', `${clean(evaled)}`, (err, out) => {
         if (err) console.log(err)
       })
-      send(msg, {files: ['src/eval.txt']})
+      send(message, {files: ['src/eval.txt']})
     }
 
   }
