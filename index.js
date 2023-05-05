@@ -35,6 +35,18 @@ const app = express()
 app.get("/", (req, res) => {
   res.send("Bot is online\n\nCurrently in " + client.guilds.cache.size + " servers!")
 })
+app.get("/verify", (req, res) => {
+  res.send("Verification system is still WIP!")
+})
+app.get("/terms-of-service", (req, res) => {
+  res.send(`You agree to these rules when you use our bots.
+Failure to follow the rules would result in a warn or blacklist from the bot depending on the severeness
+⌂ Don't spam the Discord API's ratelimits using the bot [Blacklist + Report]
+⌂ Don't represent yourself as owning/developing the bot if you don't own/develop it [Blacklist]
+⌂ Don't spread false info about the bot [Warn]
+⌂ Don't use commands like \`say\` to break a server's rule [Warn]
+⌂ Don't send troll reports [Warn]`)
+})
 app.listen(8081)
 
 app.post("/dblwebhook", webhook.listener(vote => {

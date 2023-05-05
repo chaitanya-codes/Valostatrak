@@ -29,27 +29,28 @@ module.exports.execute = async (client, message, args, send) => {
                     else if (arg === 'match-type') return "Sort by gamemode"
                       else if (['agent', 'buddy', 'bundle', 'command', 'region', 'skin', 'map', 'player-card', 'player-title', 'spray', 'weapon'].includes(arg)) return arg.charAt(0).toUpperCase() + arg.slice(1) + " name"
                         else if (arg === 'text') return "What should I say?"
-                          else return arg
+                          else if (arg === 'level') return "Account level"
+                            else return arg
                         }
 
-                      const data = async (guild) => {
-                        return await client.commands.map(cmd => {
-                          return {
-                            name: (guild ? cmd.info.name + '-t' : cmd.info.name),
-                            description: cmd.info.description || "None",
-                            options: (cmd.info.usage ? cmd.info.usage.map(arg => {return {name: arg.toLowerCase(), description: desc(arg.toLowerCase()), autocomplete: (['command', 'username', 'skin', 'buddy', 'bundle', 'player-card', 'player-title', 'spray'].includes(arg) ? true : false), choices: checkChoices(arg), type: ApplicationCommandOptionType.String, required: (cmd.info.optional && (arg.toLowerCase() !== "username") ? false : true)}}) : null)
-                          }
-                        })
-                      }
+                        const data = async (guild) => {
+                          return await client.commands.map(cmd => {
+                            return {
+                              name: (guild ? cmd.info.name + '-t' : cmd.info.name),
+                              description: cmd.info.description || "None",
+                              options: (cmd.info.usage ? cmd.info.usage.map(arg => {return {name: arg.toLowerCase(), description: desc(arg.toLowerCase()), autocomplete: (['command', 'username', 'skin', 'buddy', 'bundle', 'player-card', 'player-title', 'spray', 'input'].includes(arg) ? true : false), choices: checkChoices(arg), type: ApplicationCommandOptionType.String, required: (cmd.info.optional && (arg.toLowerCase() !== "username") ? false : true)}}) : null)
+                            }
+                          })
+                        }
 
-                      if (args[0] && args[0] === '--global') {
-                        client.application.commands.set(await data(false))
-                        send(message, "Deployed slash commands globally!")
-                      } else if (args[0] && args[0] === '--delete') {
-                        message.guild.commands.set([])
-                        send(message, "Deleted slash commands from this server")
-                      } else {
-                        message.guild.commands.set(await data(true))
-                        send(message, "Deployed slash commands in this server")
+                        if (args[0] && args[0] === '--global') {
+                          client.application.commands.set(await data(false))
+                          send(message, "Deployed slash commands globally!")
+                        } else if (args[0] && args[0] === '--delete') {
+                          message.guild.commands.set([])
+                          send(message, "Deleted slash commands from this server")
+                        } else {
+                          message.guild.commands.set(await data(true))
+                          send(message, "Deployed slash commands in this server")
+                        }
                       }
-                    }
