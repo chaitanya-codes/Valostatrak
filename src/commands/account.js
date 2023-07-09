@@ -31,7 +31,7 @@ module.exports.execute = async (client, message, args, send) => {
 			.setTitle("Searching...")
 			await send(message, {reply: true, embeds: [wait]})
 			.then(m => mm = m)
-			require('request')(`http://api.henrikdev.xyz/valorant/v1/account/${name}/${tag}`, async (err, res, body) => {
+			require('request')({url: `http://api.henrikdev.xyz/valorant/v1/account/${name}/${tag}`, headers: {"Authorization": process.env.HD_KEY}}, async (err, res, body) => {
 
 				if (err || JSON.parse(body).status !== 200) return send(message, client.notFound(JSON.parse(body).message))
 					let data = JSON.parse(body)
