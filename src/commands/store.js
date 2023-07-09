@@ -1,72 +1,70 @@
 module.exports.info = {
 	name: "store",
-	description: "Check your store skin rotation",
-	aliases: ["skins-rotation", "shop"],
-	args: ['region'],
+	description: "See the current store collection",
+	aliases: ["store-skins", "store-collection"],
 	ratelimit: true,
 	module: "Game Assets"
 }
-
 const Discord = require('discord.js')
-const Valorant = require('@liamcottle/valorant.js')
-let valorantApi = new Valorant.API(Valorant.Regions.AsiaPacific)
-const { Languages, ContentAPI } = require('@liamcottle/valorant.js')
-const content = new ContentAPI(Languages.English)
-
 module.exports.execute = async (client, message, args, send) => {
+  message.deferReply()
+	require('request')(`https://api.henrikdev.xyz/valorant/v2/store-featured`, async (err, res, body) => {
+    if (String(body).startsWith('<')) return message.reply("API is slow right now, try again later.")
+		if (err || JSON.parse(body).status !== 200) return send(message, "There was an error while fetching the store!")
+			let data = JSON.parse(body)
+		data = data.data
+		const bundle = data[0]
+		if (!bundle) return send(message, "Something went wrong!")
+    const bundleData = client.bundleData.filter(b => b.uuid === bundle.bundle_uuid)[0]
+		const embed = new Discord.EmbedBuilder()
+		.setColor("Random")
+		.setTitle(bundleData.displayName)
+		.setDescription("Store Featured Bundle\n" + "Bundle price: " + String(bundle.bundle_price) + "VP")
+		.setImage(bundleData.displayIcon)
+		.setThumbnail(bundleData.verticalPromoImage)
+		let links = []
+		bundle.items.map(i => {
+			embed.addFields([{name: i.name + (i.amount > 1 ? ` - ${i.amount}` : ''), value: `[${i.base_price}](${i.streamedVideo || "https://playvalorant.com"}) VP\n${(i.type !== 'skin_level'?i.type:'')}`, inline: true}])
+			links.push({name: i.name, preview: i.image || "Could not fetch", type: i.type})
+		})
+		
+		let row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setCustomId("preview").setLabel("Preview skins").setStyle("Secondary")])
+		embed.setFooter({text: "Bundle Remaining Duration: " + new Date(bundle.seconds_remaining * 1000).toISOString().substr(11, 8), iconURL: client.user.displayAvatarURL()})
+		if (bundle.description && bundle.extraDescription) embed.addFields([{name: bundle.description, value: bundle.extraDescription}])
+			let m = await send(message, {reply: true, embeds: [embed], components: [row]})
+		
+		let page = 0;
+		const filter = i => i.user.id === message.author.id
+		let col = m.createMessageComponentCollector({filter, time: 50000, idle: 40000})
+    row = new Discord.ActionRowBuilder()
+			.addComponents([new Discord.ButtonBuilder().setEmoji("⬅️").setCustomId("left").setDisabled(true).setStyle("Secondary"), new Discord.ButtonBuilder().setLabel("Preview").setCustomId("preview2").setStyle("Secondary"), new Discord.ButtonBuilder().setEmoji("➡️").setCustomId("right").setStyle("Secondary")])
+		col.on("collect", i => {
+      if (links[page].type !== 'skin_level') row.components[1].setDisabled(true)
+      else row.components[1].setDisabled(false)
+			if (i.customId === 'preview') {
+				send(i, {edit: true, embeds: [], content: (links[0]?.name || 'No skin to preview') + '\n' + links[0].preview || '', components: [row]})
+			} else if (i.customId === 'left') {
+				page--;
+				if ((page + 1) <= links.length) row.components[2].setDisabled(false)
+					if (page <= 0) row.components[0].setDisabled(true)
+         if (links[page].type !== 'skin_level') row.components[1].setDisabled(true)
+      else row.components[1].setDisabled(false)
+						send(i, {edit: true, content: (links[page].name || 'No skin to preview') + '\n'+links[page].preview, components: [row]})
+				} else if (i.customId === 'right') {
+					page++;
+					if ((page + 1) >= links.length) row.components[2].setDisabled(true)
+						row.components[0].setDisabled(false)
+           if (links[page].type !== 'skin_level') row.components[1].setDisabled(true)
+      else row.components[1].setDisabled(false)
+					send(i, {edit: true, content: (links[page].name || 'No skin to preview') + '\n'+links[page].preview, components: [row]})
+				} else if (i.customId === 'preview2') {
+          client.commands.get("skin").execute(client, message, links[page].name.split(" "), send)
+          i.deferUpdate()
+        }
 
-  let region = args[0]
-	if (region !== 'ap') {
-		valorantApi = new Valorant.API(region)
-	}
-
-	const modal = new Discord.ModalBuilder()
-	.setTitle("Login to your valorant account")
-	.setCustomId("login")
-
-	const actionrow = [new Discord.TextInputBuilder()
-	.setCustomId("username")
-	.setLabel("Enter the username you use to login")
-	.setStyle(Discord.TextInputStyle.Short), new Discord.TextInputBuilder()
-	.setCustomId("password")
-	.setLabel("Enter the password you use to login")
-	.setStyle(Discord.TextInputStyle.Short), new Discord.TextInputBuilder()
-	.setCustomId("confirmation")
-	.setLabel("Confirm (details are not stored) yes/no")
-	.setPlaceholder("You are responsible for sharing details with third party API. (yes/no)")
-	.setStyle(Discord.TextInputStyle.Short)
-	].map(input => new Discord.ActionRowBuilder().addComponents(input))
-	modal.addComponents(actionrow)
-	let filt = (i) => i.user.id === message.author.id
-	message.showModal(modal)
-	message.awaitModalSubmit({filt, time: 30000})
-	.then(j => {
-		let fields = j.fields.fields
-		let username = fields.get('username').value
-		let password = fields.get('password').value
-		let confirm = fields.get('confirmation').value
-		if (confirm.toLowerCase() !== 'yes') return message.reply("Cancelled store check because of confirmation denial.")
-			valorantApi.authorize(username, password).then(() => {
-				valorantApi.getPlayerStoreFront(valorantApi.user_id).then(async response => {
-					const item1 = await content.getWeaponSkinLevelByUuid(
-						response.data.SkinsPanelLayout.SingleItemOffers[0]
-						)
-					const item2 = await content.getWeaponSkinLevelByUuid(
-						response.data.SkinsPanelLayout.SingleItemOffers[1]
-						)
-					const item3 = await content.getWeaponSkinLevelByUuid(
-						response.data.SkinsPanelLayout.SingleItemOffers[2]
-						)
-					const item4 = await content.getWeaponSkinLevelByUuid(
-						response.data.SkinsPanelLayout.SingleItemOffers[3]
-						)
-
-					const embeds = [item1,item2,item3,item4].map(i => new Discord.EmbedBuilder().setTitle(i.displayName).setThumbnail(i.displayIcon))
-					send(j, {content: "Store for " + username + "\n\n`Account details are NOT stored by the bot, if you see them in the popup again they are cached by discord.\nBy using this command you are responsible for your account as store is checked using a third party API`", embeds: embeds})
-
-				}).catch(e => send(j, "Could not retrieve store!"))
-			}).catch(e => console.log(e) && send(j, "Invalid username/password or account has 2fa."))
+			})
+		col.on("end", () => {
+			send(m, {edit: true, components: []})
+		})
 	})
-
-
 }

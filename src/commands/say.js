@@ -16,7 +16,7 @@ module.exports.execute = async (client, message, args, send) => {
   if (!args[0] || args[0] === " ") return message.reply("Usage: `/say <text>`")
   let em = new Discord.EmbedBuilder()
   .setColor(message.member?.roles.highest.color)
-  .setAuthor({name: message.author.tag, iconURL: message.author.displayAvatarURL(),})
+  .setAuthor({name: message.author.username, iconURL: message.author.displayAvatarURL(),})
   .setDescription(args.join(" "))
   send(message, em)
 };
