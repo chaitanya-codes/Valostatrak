@@ -26,8 +26,7 @@ module.exports.execute = async (client, message, args, send) => {
   console.log(link)
   let wait = new Discord.EmbedBuilder().setColor(428985).setTitle("Loading...");
   let m = await send(message, {content: "** **", embeds: [wait] })
-  require("request")(
-    `https://api.henrikdev.xyz/valorant/v1/esports/schedule` + (link ? link : ""),
+  require("request")({url:`https://api.henrikdev.xyz/valorant/v1/esports/schedule` + (link ? link : ""), headers: {"Authorization": process.env.HD_KEY}},
     async (err, res, body) => {
       if (err || JSON.parse(body).status !== 200)
         return send(message, "No events found!");

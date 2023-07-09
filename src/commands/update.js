@@ -11,7 +11,7 @@ const Discord = require('discord.js')
 
 module.exports.execute = async (client, message, args, send) => {
 
-	require('request')(`https://api.henrikdev.xyz/valorant/v1/website/en-us`, async (err, res, body) => {
+	require('request')({url:`https://api.henrikdev.xyz/valorant/v1/website/en-us`, headers: {"Authorization": process.env.HD_KEY}}, async (err, res, body) => {
 
 		if (err || JSON.parse(body).status !== 200) return send(message, client.notFound(JSON.parse(body).message))
 			let data = JSON.parse(body)
