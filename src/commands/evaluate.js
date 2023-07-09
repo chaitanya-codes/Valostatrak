@@ -75,7 +75,7 @@ module.exports.execute = async (client, message, args, send) => {
       let type = await getType(evaled)
       if (typeof evaled !== "string") evaled = require("util").inspect(evaled);
       if (evaled == process.env.BOT_TOKEN) {
-        await require('node-fetch')('https://some-random-api.ml/bottoken')
+        await require('node-fetch')('https://some-random-api.com/bottoken')
         .then(async r => await r.json())
         .then(async r => evaled = r.token)
       }
