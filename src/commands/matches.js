@@ -42,7 +42,7 @@ module.exports.execute = async (client, message, args, send) => {
 			.setFooter({text:"This can take up to 30 seconds. If it still does not work, valorant API might be down."})
 			await send(message, {embeds: [wait]})
 			.then(m => mm = m)
-			await require('request')(`https://api.henrikdev.xyz/valorant/v3/matches/${region}/${name}/${tag}` + (matchType ? `?filter=${matchType}` : ''), async (err, res, body) => {
+			await require('request')({url:`https://api.henrikdev.xyz/valorant/v3/matches/${region}/${name}/${tag}` + (matchType ? `?filter=${matchType}` : ''), headers: {"Authorization": process.env.HD_KEY}}, async (err, res, body) => {
 				if (!body || !JSON.parse(body)) return send(message, client.notFound(JSON.parse(body).message))
 					if (JSON.parse(body)?.message && JSON.parse(body)?.message === 'The User has to many incoming Friend Invites, can not get puuid') return message.reply("This user has too many pending friend requests, cannot fetch data.")
 						if (err || JSON.parse(body).status !== 200) return send(message, client.notFound(JSON.parse(body).message))
@@ -123,9 +123,9 @@ module.exports.execute = async (client, message, args, send) => {
 																else gun = ''
 															}
 														if (p.player_team === searchedPlayer.team) {
-															killsTeam.push(playerEmoji + p.player_display_name + ": " + p.kills + " " + (gun ||'') + (killed || ''))
+															killsTeam.push(playerEmoji + p.player_display_name + ": " + p.kills + " " + (gun ||'') + (killed || '') + "(" + p.score + "Combat Score)")
 														} else {
-															killsEnemy.push(playerEmoji + p.player_display_name + ": " + p.kills + " " + (gun ||'') + (killed || ''))
+															killsEnemy.push(playerEmoji + p.player_display_name + ": " + p.kills + " " + (gun ||'') + (killed || '') + "(" + p.score + "Combat Score)")
 														}
 													})
 											let newEmb = new Discord.EmbedBuilder()
