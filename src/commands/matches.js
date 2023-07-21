@@ -123,9 +123,9 @@ module.exports.execute = async (client, message, args, send) => {
 																else gun = ''
 															}
 														if (p.player_team === searchedPlayer.team) {
-															killsTeam.push(playerEmoji + p.player_display_name + ": " + p.kills + " " + (gun ||'') + (killed || '') + "(" + p.score + "Combat Score)")
+															killsTeam.push(playerEmoji + p.player_display_name + ": " + p.kills + " " + (gun ||'') + (killed || '') + " | :boom:" + p.score)
 														} else {
-															killsEnemy.push(playerEmoji + p.player_display_name + ": " + p.kills + " " + (gun ||'') + (killed || '') + "(" + p.score + "Combat Score)")
+															killsEnemy.push(playerEmoji + p.player_display_name + ": " + p.kills + " " + (gun ||'') + (killed || '') + " | :boom:" + p.score)
 														}
 													})
 											let newEmb = new Discord.EmbedBuilder()
