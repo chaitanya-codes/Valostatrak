@@ -23,7 +23,7 @@ module.exports.execute = async (client, message, args, send) => {
     else if (data['region-esports']) link += `?region=${data["region-esports"]}`;
     else link += `?league=${data["league"]}`;
   }
-  console.log(link)
+  
   let wait = new Discord.EmbedBuilder().setColor(428985).setTitle("Loading...");
   let m = await send(message, {content: "** **", embeds: [wait] })
   require("request")({url:`https://api.henrikdev.xyz/valorant/v1/esports/schedule` + (link ? link : ""), headers: {"Authorization": process.env.HD_KEY}},
@@ -32,6 +32,7 @@ module.exports.execute = async (client, message, args, send) => {
         return send(message, "No events found!");
       let data = JSON.parse(body);
       data = data.data;
+    console.log(data)
       if (!data || !data[0])
         return send(message, "No events found!");
       let row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setStyle("Success").setCustomId("back").setEmoji("◀️").setDisabled(true), new Discord.ButtonBuilder().setStyle("Success").setCustomId("next").setEmoji("▶️")])
