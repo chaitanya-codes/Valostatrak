@@ -24,7 +24,7 @@ module.exports.execute = async (client, message, args, send) => {
 	if (subcommand === 'find') {
 		if (!args.join(" ").includes("#")) return message.reply("Account not found. Usage: `/account <name#tagg>`\nExample: `/account 100T Asuna#1111`")
 			if (tag.split(" ")[1]) return message.reply("You don't have to include the region for this command")
-				
+				if (!client.linked.has(tag.toLowerCase())) return message.reply("This account is not linked! If this is your account use /account Link an Account")
 				let mm;
 			let wait = new Discord.EmbedBuilder()
 			.setColor(428985)
