@@ -21,6 +21,7 @@ module.exports.execute = async (client, message, args, send) => {
 	let tag = query.join(" ").split("#").pop()
 	let nametag = `${name}#${tag}`
 	let region;
+  if (!client.linked.has(nametag.toLowerCase())) return send(message, {embeds: [client.embed({color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link your Account`"})]})
 	if (client.accounts.has(nametag.toLowerCase())) region = client.accounts.get(nametag.toLowerCase())
 		else return client.newUser(nametag, this.info.name, message)
 			
