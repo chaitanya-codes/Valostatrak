@@ -30,9 +30,12 @@ module.exports.execute = async (client, message, args, send) => {
 	if (matchType) tag = tag.replace(" " + matchType, "")
 		let nametag = `${name}#${tag}`
 	let region;
+  if (!client.linked.has(nametag.toLowerCase())) return send(message, {embeds: [client.embed({color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link your Account`"})]})
 	if (client.accounts.has(nametag.toLowerCase())) region = client.accounts.get(nametag.toLowerCase())
 		else return client.newUser(nametag, this.info.name, message)
-
+	let linked = client.linked.get(args.join(" ").toLowerCase())
+      if (linked.private) return send(message, "Account is set to private by owner")
+    
 			if (!nametag.includes("#") || !region) return message.reply("User not found. Usage: `/matches <name#tag> [match-type-optional]`\nExample: `/matches 100T Asuna#1111 unrated`")
 				client.weaponData.forEach(w => weapons[w.uuid] = w.displayName)
 			let mm;
