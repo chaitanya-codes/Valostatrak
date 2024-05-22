@@ -16,16 +16,17 @@ module.exports.execute = async (client, message, args, send) => {
 
 	let name = args.join(" ").split("#").shift()
 	let tag = args.join(" ").split("#").pop()
+  if (!args.join(" ").includes("#")) return message.reply("Account not found. Use the format name#tag")
 	let region;
 
 	if (client.accounts.has(args.join(" ").toLowerCase())) region = client.accounts.get(name.toLowerCase())
 		else return client.newUser(args.join(" "), this.info.name, message, subcommand)
 
 	if (subcommand === 'find') {
-		if (!args.join(" ").includes("#")) return message.reply("Account not found. Usage: `/account <name#tagg>`\nExample: `/account 100T Asuna#1111`")
-			if (tag.split(" ")[1]) return message.reply("You don't have to include the region for this command")
-	    if (!client.linked.has(args.join(" ").toLowerCase())) return send(message, {embeds: [client.embed({color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link your Account`"})]})
-				let mm;
+	    if (!client.linked.has(args.join(" ").toLowerCase())) return send(message, {embeds: [client.embed({color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link account`"})]})
+			let linked = client.linked.get(args.join(" ").toLowerCase())
+      if (linked.private) return send(message, "Account is set to private by owner")
+      let mm;
 			let wait = new Discord.EmbedBuilder()
 			.setColor(428985)
 			.setTitle("Searching...")

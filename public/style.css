@@ -1,0 +1,136 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: linear-gradient(90deg, rgb(48, 2, 112), rgb(131, 45, 230));;
+    /* background: linear-gradient(60deg, blue, green) */
+    overflow-x: hidden;
+}
+
+.navbar {
+    display: block;
+    background: linear-gradient(60deg, rgb(38, 2, 80), rgb(51, 3, 132));
+    position: fixed;
+    width: 100vw;
+    height: 70px;
+}
+
+.list {
+    display: flex;
+    /* justify-content: right; */
+    position: absolute;
+    margin: 0;
+    right: 70px;
+    top: 2px;
+}
+
+.list li {
+    list-style-type: none;
+    top: 20px;
+    padding: 30px;
+    padding-top: 20px;
+    padding-bottom: 23px;
+    border: 1px solid rgb(16, 125, 234);
+    box-shadow: 4px 2px rgb(16, 229, 45);
+    text-decoration: none;
+}
+
+.list a li {
+    text-decoration: none;
+    color: lightgreen;
+    
+}
+
+.list a li:hover {
+    background: linear-gradient(10deg, blue, rgb(6, 144, 144, 0.3));
+    cursor:pointer;
+    animation: navHover 0.2s;
+}
+
+@keyframes navHover {
+    0% {
+        background: rgb(30, 15, 131);
+    }
+    25% {
+        background: linear-gradient(4deg, blue, rgb(6, 144, 144, 0.3));
+    }
+    50% {
+        background: linear-gradient(7deg, blue, rgb(6, 144, 144, 0.3));
+    }
+    75% {
+        background: linear-gradient(12deg, blue, rgb(6, 144, 144, 0.7));
+    }
+    100% {
+        background: linear-gradient(13deg, blue, rgb(6, 144, 144, 0.1));
+    }
+}
+
+.list a li:active {
+    a {
+        font-weight: 300;
+        color:blue;
+    }
+    box-shadow: 2px 1px rgb(16, 229, 45);
+    transform: translate(3px,1px);
+}
+
+#home {
+    background-color: unset;
+    cursor: pointer;
+    font-size: 50px;
+    text-align:right;
+    font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    border: unset;
+}
+
+#home span {
+    position: absolute;
+    margin-top: 5px;
+    margin-left: 20px;
+}
+
+#home:active {
+    background-color: unset;
+    border: 0.3px solid lightblue;
+}
+
+.slogan {
+    /* display: absolute; */
+    position: relative;
+    top: 20vh;
+    text-align: center;
+    font-size: 72px;
+    padding: 50px;
+    background: linear-gradient(rgb(24, 54, 223), rgb(54, 134, 219));
+    text-decoration: transparent;
+    -webkit-background-clip: text;
+	  -webkit-text-fill-color: transparent;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 90px;
+    transform: scale(1.1, 1.1);
+    animation: 1.5s spread;
+    animation-iteration-count: 1;
+}
+
+@keyframes spread {
+    from {
+        padding: 20px;
+        transform: scale(1, 1);
+    } to {
+        padding: 50px;
+        transform: scale(1.1, 1.1);
+    }
+}
+
+#servercount {
+    position: fixed;
+    top: 85vh;
+    left: 15vw;
+    font-size: xx-large;
+    padding: 5px;
+    border: 2px solid royalblue;
+    border-radius: 20px;
+    box-shadow: 5px 5px blue;
+}

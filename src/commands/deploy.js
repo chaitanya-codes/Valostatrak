@@ -23,7 +23,7 @@ module.exports.execute = async (client, message, args, send) => {
             else if (arg === 'weapon') return client.weaponData.map(a => {return{name: a.displayName, value: a.displayName}})
               else if (arg === 'match-type') return ['unrated', 'competitive', 'spikerush', 'deathmatch', 'teamdeathmatch', 'replication', 'escalation', 'snowballfight', 'swiftplay', 'premier', 'custom'].map(a => {return{name: a, value: a}})
                 else if (arg === 'map') return client.mapData.map(a => {return{name: a.displayName, value: a.displayName}})
-                  else if (arg === 'query') return [{name: 'Find an account', value: "find"}, {name: "Link your account", value: 'link'}, {name: 'Change settings for your linked account', value: 'settings'}]
+                  else if (arg === 'query') return [{name: 'Find account', value: "find"}, {name: "Link account", value: 'link'}, {name: 'Change account settings', value: 'settings'}]
                     else if (arg === 'region-esports') return ['international', 'north america', 'emea', 'brazil', 'japan', 'korea', 'latin_america', 'latin_america_south', 'latin_america_north', 'southeast_asia', 'vietnam', 'oceania'].map(r => {return{name: r.replace("_", " "), value: r.replace(" ", "_")}})                      
                       else return null;
                 }
