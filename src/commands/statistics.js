@@ -15,7 +15,7 @@ const Canvas = require('canvas')
 module.exports.execute = async (client, message, args, send) => {
 	let query = args
 
-	if (!args.join(" ").includes("#")) return send(message, "Usage: `/stats <name#tag>` \nExample: `/stats 100T Asuna#1111`")
+	if (!args.join(" ").includes("#")) return send(message, "Usage: `/statistics <name#tag>` \nExample: `/statistics 100T Asuna#1111`")
 
 		let name = query.join(" ").split("#").shift()
 	let tag = query.join(" ").split("#").pop()
@@ -24,7 +24,9 @@ module.exports.execute = async (client, message, args, send) => {
   if (!client.linked.has(nametag.toLowerCase())) return send(message, {embeds: [client.embed({color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link your Account`"})]})
 	if (client.accounts.has(nametag.toLowerCase())) region = client.accounts.get(nametag.toLowerCase())
 		else return client.newUser(nametag, this.info.name, message)
-			
+				let linked = client.linked.get(args.join(" ").toLowerCase())
+      if (linked.private) return send(message, "Account is set to private by owner")
+    
 			let mm;
 		let wait = new Discord.EmbedBuilder()
 		.setColor(428985)

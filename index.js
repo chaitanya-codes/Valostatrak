@@ -30,21 +30,27 @@ client.linked = new Enmap({
 const Topgg = require("@top-gg/sdk")
 const webhook = new Topgg.Webhook('valorant')
 
+const path = require('path');
 const express = require("express")
 const app = express()
+app.use(express.static("public"))
 app.get("/", (req, res) => {
-  res.send("Bot is online\n\nCurrently in " + client.guilds.cache.size + " servers!")
+  res.sendFile(path.join(__dirname, '/public/index.html'));
+})
+app.get("/commands", (req, res) => {
+  let commandList = client.commands.map(c => `<b>/${c.info.name} - ${c.info.description}</b>`)
+  res.send("<body bgcolor='blue'" + commandList.join("<br>") + "</body>")
 })
 app.get("/verify", (req, res) => {
-  res.send("Verification system is still WIP!")
+  res.send("Verification system is still WIP!\nCurrently in " + client.guilds.cache.size + " servers!")
 })
 app.get("/terms-of-service", (req, res) => {
-  res.send(`You agree to these rules when you use our bots.\n
-Failure to follow the rules would result in a warn or blacklist from the bot depending on the severeness\n
-⌂ Don't spam the Discord API's ratelimits using the bot [Blacklist + Report]\n
-⌂ Don't represent yourself as owning/developing the bot if you don't own/develop it [Blacklist]\n
-⌂ Don't spread false info about the bot [Warn]\n
-⌂ Don't use commands like \`say\` to break a server's rule [Warn]\n
+  res.send(`You agree to these rules when you use our bots.<br>
+Failure to follow the rules would result in a warn or blacklist from the bot depending on the severeness<br>
+⌂ Don't spam the Discord API's ratelimits using the bot [Blacklist + Report]<br>
+⌂ Don't represent yourself as owning/developing the bot if you don't own/develop it [Blacklist]<br>
+⌂ Don't spread false info about the bot [Warn]<br>
+⌂ Don't use commands like \`say\` to break a server's rule [Warn]<br>
 ⌂ Don't send troll reports [Warn]`)
 })
 app.listen(8081)
