@@ -38,7 +38,9 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, '/public/index.html'));
 })
 app.get("/commands", (req, res) => {
-  let commandList = client.commands.map(c => `/${c.info.name} - ${c.info.description}`)
+  
+  let commandList = client.commands.map(c => `<b>/${c.info.name} - ${c.info.description}</b>`)
+
   res.send("<body bgcolor='blue'" + commandList.join("<br>") + "</body>")
 })
 app.get("/verify", (req, res) => {

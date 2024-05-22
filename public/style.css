@@ -106,7 +106,7 @@ body {
     background: linear-gradient(rgb(24, 54, 223), rgb(54, 134, 219));
     text-decoration: transparent;
     -webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
+	  -webkit-text-fill-color: transparent;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 90px;
     transform: scale(1.1, 1.1);
@@ -124,3 +124,13 @@ body {
     }
 }
 
+#servercount {
+    position: fixed;
+    top: 85vh;
+    left: 15vw;
+    font-size: xx-large;
+    padding: 5px;
+    border: 2px solid royalblue;
+    border-radius: 20px;
+    box-shadow: 5px 5px blue;
+}
