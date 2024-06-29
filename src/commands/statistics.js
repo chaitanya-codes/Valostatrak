@@ -52,7 +52,7 @@ module.exports.execute = async (client, message, args, send) => {
 			let i = 0;
 
 			let row = new Discord.ActionRowBuilder()
-			.addComponents([new Discord.SelectMenuBuilder().setCustomId("acts").addOptions([{label: "Current statistics", value: "current"}, seasons.map(value => {return {label: value.replace("e", "Episode ").replace("a", ": Act "), value: value}})].flat(1))])
+			.addComponents([new Discord.StringSelectMenuBuilder().setCustomId("acts").addOptions([{label: "Current statistics", value: "current"}, seasons.map(value => {return {label: value.replace("e", "Episode ").replace("a", ": Act "), value: value}}).reverse().slice(0,24)].flat(1))])
 			let currentData = data['current_data']
 			let rr
 			if (currentData.ranking_in_tier) rr = progressBar.filledBar(100, currentData.ranking_in_tier, 20)[0]

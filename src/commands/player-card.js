@@ -13,7 +13,8 @@ module.exports.execute = async (client, message, args, send) => {
 		let data = client.playercardData
 	let findCard = data.filter(card => card.displayName.toLowerCase() === (args.join(" ").toLowerCase() + " card") || card.displayName.toLowerCase() === (args.join(" ").toLowerCase()))
 	if (args[0].toLowerCase() === 'list') {
-		let l = data.map(s => s.displayName.replace(" Card", "")).join("`, `")
+    console.log("HEY")
+		let l = data.map(s => s.displayName?.replace(" Card", "")).join("`, `")
 		let embeds = []
 		let i = 0;
 		while (i < l.length) {
