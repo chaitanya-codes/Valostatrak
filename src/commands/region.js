@@ -14,7 +14,7 @@ module.exports.execute = async (client, message, args, send) => {
 	let region = args[0]
 	if (!region || !['eu', 'na', 'kr', 'ap'].includes(region.toLowerCase())) return send(message, "You need to type the region codename to see its status. Usage: `/region <region>` (Region can be eu, na, kr, ap)")
 		await request({url: `http://api.henrikdev.xyz/valorant/v1/version/${region.toLowerCase()}`, headers: {"Authorization": process.env.HD_KEY}}, async (err, res, body) => {
-			await request({url: `https://api.henrikdev.xyz/valorant/v1/status/${region.toLowerCase()}`,  headers: {"Authorization": process.env.HD_KEY}}, async (err2, res2, body2) => {
+			await request({url: `https://api.henrikdev.xyz/valorant/v1/status/${region.toLowerCase()}`, headers: {"Authorization": process.env.HD_KEY}}, async (err2, res2, body2) => {
 
 				if (err || err2 || JSON.parse(body).status !== 200) return send(message, "There was an error fetching version for that region! Try checking /status of that region")
 					let version = JSON.parse(body).data
