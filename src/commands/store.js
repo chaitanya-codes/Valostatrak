@@ -8,9 +8,9 @@ module.exports.info = {
 const Discord = require('discord.js')
 module.exports.execute = async (client, message, args, send) => {
   message.deferReply()
-	require('request')(`https://api.henrikdev.xyz/valorant/v2/store-featured`, async (err, res, body) => {
+	require('request')({url:`https://api.henrikdev.xyz/valorant/v2/store-featured`, headers: {"Authorization": process.env.HD_KEY}}, async (err, res, body) => {
     if (String(body).startsWith('<')) return message.reply("API is slow right now, try again later.")
-		if (err || JSON.parse(body).status !== 200) return send(message, "There was an error while fetching the store!")
+		if (err || JSON.parse(body).status !== 200) return send(message, "There was an error while fetching the store! " + JSON.parse(body).errors[0].message)
 			let data = JSON.parse(body)
 		data = data.data
 		const bundle = data[0]

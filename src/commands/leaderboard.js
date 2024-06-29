@@ -16,7 +16,7 @@ module.exports.execute = async (client, message, args, send) => {
 		if (args[0].toLowerCase() === 'asia') args[0] = 'ap'
 			let m = await send(message, "Fetching......")
 
-			await request("https://api.henrikdev.xyz/valorant/v2/leaderboard/" + args[0].toLowerCase(), async (err, res, body) => {
+			await request({url: "https://api.henrikdev.xyz/valorant/v2/leaderboard/" + args[0].toLowerCase(), headers: {"Authorization": process.env.HD_KEY}}, async (err, res, body) => {
 				if (err) console.log(err)
 					let row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setStyle("Success").setCustomId("back").setEmoji("◀️").setDisabled(true), new Discord.ButtonBuilder().setStyle("Success").setCustomId("next").setEmoji("▶️"), new Discord.ButtonBuilder().setCustomId("imm").setStyle("Secondary").setLabel("Skip to immortal").setEmoji(client.emojis.cache.get("980887753061453844").toString())])
 				let page = 0
