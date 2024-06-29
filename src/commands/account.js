@@ -68,7 +68,7 @@ module.exports.execute = async (client, message, args, send) => {
 				let lvl = fields.get('lvl').value
 				if (isNaN(lvl)) return send(j, 'Level entered was not a number!')
 
-					require('request')(`http://api.henrikdev.xyz/valorant/v1/account/${name}/${tag}`, async (err, res, body) => {
+					require('request')({url: `http://api.henrikdev.xyz/valorant/v1/account/${name}/${tag}`, headers: {"Authorization": process.env.HD_KEY}}, async (err, res, body) => {
 
 						if (err || JSON.parse(body).status !== 200) return send(message, client.notFound(JSON.parse(body).message))
 							let data = JSON.parse(body)

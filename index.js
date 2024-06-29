@@ -37,10 +37,11 @@ app.use(express.static("public"))
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, '/public/index.html'));
 })
+app.get("/servercount", (req, res) => {
+  res.json({count: client.guilds.cache.size})
+})
 app.get("/commands", (req, res) => {
-  
   let commandList = client.commands.map(c => `<b>/${c.info.name} - ${c.info.description}</b>`)
-
   res.send("<body bgcolor='blue'" + commandList.join("<br>") + "</body>")
 })
 app.get("/verify", (req, res) => {
@@ -162,25 +163,26 @@ client.send = async (response, object = {}) => {
                             return m.delete()
                           })
                       }
-                      const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.js'))
+                      
+  const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.js'))
 
-                      for (const file of commandFiles) {
-                        const command = require(`./src/commands/${file}`)
-                        if (!command || !command.info || !command.info.name || !command.execute) console.log('[ValoStatrack] Error in file ' + file + '! File not loaded.')
-                          client.commands.set(command.info.name, command)
-                        console.log(`[ValoStatrack] Loaded Command ${command.info.name}`)
-                      }
+  for (const file of commandFiles) {
+    const command = require(`./src/commands/${file}`)
+    if (!command || !command.info || !command.info.name || !command.execute) console.log('[ValoStatrack] Error in file ' + file + '! File not loaded.')
+      client.commands.set(command.info.name, command)
+    console.log(`[ValoStatrack] Loaded Command ${command.info.name}`)
+  }
 
-                      client.on('ready', () => require('./src/events/ready.js').Ready(client))
-                      client.on('messageCreate', message => require('./src/events/messageCreate.js').Message(client, message))
-                      client.on('interactionCreate', interaction => require('./src/events/interactionCreate.js').Interaction(client, interaction))
-                      client.on('guildCreate', guild => require('./src/events/guildCreate.js').guildCreate(client, guild))
-                      client.on('guildDelete', guild => require('./src/events/guildDelete.js').guildDelete(client, guild))
+  client.on('ready', () => require('./src/events/ready.js').Ready(client))
+  client.on('messageCreate', message => require('./src/events/messageCreate.js').Message(client, message))
+  client.on('interactionCreate', interaction => require('./src/events/interactionCreate.js').Interaction(client, interaction))
+  client.on('guildCreate', guild => require('./src/events/guildCreate.js').guildCreate(client, guild))
+  client.on('guildDelete', guild => require('./src/events/guildDelete.js').guildDelete(client, guild))
 
-                      client.on('error', err => console.log(err.stack))
+  client.on('error', err => console.log(err.stack))
 
-                      process.on("uncaughtException", (err) => {
-                        console.error(`There was an uncaught error:\n${err.stack ?? err.toString()}`)
-                      })
+  process.on("uncaughtException", (err) => {
+    console.error(`There was an uncaught error:\n${err.stack ?? err.toString()}`)
+  })
 
-                      client.login(process.env.BOT_TOKEN)
+  client.login(process.env.BOT_TOKEN)

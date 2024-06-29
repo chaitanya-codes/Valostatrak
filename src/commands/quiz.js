@@ -135,7 +135,7 @@ module.exports.execute = async (client, message, args, send) => {
 								.setColor(382145)
 								.setTitle("Which " + random + " is this?")
 								.setImage(choices[correctChoice].displayIcon)
-								.setFooter({text: "You have 6 seconds to guess | " + message.author.tag})
+								.setFooter({text: "You have 6 seconds to guess | " + message.author.username})
 
 								let answered = []
 

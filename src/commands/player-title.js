@@ -13,7 +13,7 @@ module.exports.execute = async (client, message, args, send) => {
 		let data = client.playertitleData
 	let findTitle = data.filter(title => title.displayName?.toLowerCase() === (args.join(" ").toLowerCase() + " title") || title.displayName?.toLowerCase() === (args.join(" ").toLowerCase()))
 	if (args[0].toLowerCase() === 'list') {
-		let l = data.map(s => s.displayName.replace(" Title", "")).join("`, `")
+		let l = data.map(s => s.displayName?.replace(" Title", "")).join("`, `")
 		let embeds = []
 		let i = 0;
 		while (i < l.length) {
