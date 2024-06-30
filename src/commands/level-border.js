@@ -14,8 +14,7 @@ module.exports.execute = async (client, message, args, send) => {
 
 	const data = await client.getLevelborders()
 	let findLevel = data.find(level => level.startingLevel === Number(args.join(" ")))
-	if (findLevel && findLevel[0]?.startingLevel) {
-		findLevel = findLevel[0]
+	if (findLevel && findLevel?.startingLevel) {
 		let emb = new Discord.EmbedBuilder()
 			.setTitle("Level border [" + args.join(" ") + "]")
 			.setColor(388422)
