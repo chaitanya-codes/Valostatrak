@@ -7,38 +7,57 @@ module.exports.info = {
 	cooldown: 50
 }
 
+const Discord = require('discord.js')
 const request = require('request')
 
 module.exports.execute = async (client, message, args, send) => {
 
-	let region = args[0]
-	if (!region || !['eu', 'na', 'kr', 'ap'].includes(region.toLowerCase())) return send(message, "You need to type the region codename to see its status. Usage: `/region <region>` (Region can be eu, na, kr, ap)")
-	await request({ url: `http://api.henrikdev.xyz/valorant/v1/version/${region.toLowerCase()}`, headers: { "Authorization": process.env.HD_KEY } }, async (err, res, body) => {
-		await request({ url: `https://api.henrikdev.xyz/valorant/v1/status/${region.toLowerCase()}`, headers: { "Authorization": process.env.HD_KEY } }, async (err2, res2, body2) => {
+	const region = args[0].toLowerCase()
 
-			if (err || err2 || JSON.parse(body).status !== 200) return send(message, "There was an error fetching version for that region! Try checking /status of that region")
-			let version = JSON.parse(body).data
-			let status = JSON.parse(body2).data
+	if (!region || !['eu', 'na', 'kr', 'ap'].includes(region)) return send(message, "You need to type the region codename to see its status. Usage: `/region <region>`\nRegion can be `eu`, `na`, `kr`, `ap`")
 
-			let maintenances, incidents;
-			if (!status.maintenances.length) maintenances = ["No maintainances found."]
-			else maintenances = status.maintenances.map(m => {
-				return `Created at: \`${m.created_at}\` | Archived at \`${m.archive_at}\`\n\n**${m.titles.map(t => t.content)}**\n${m.updates.map(u => u.translations.map(t => t.content) + "\n(\`" + u.created_at + "\`)")}\n*Maintainence status: \`${m.maintenance_status.replace("_", " ")}\`*\n*Severity: \`${m.incident_severity}\`*`
+	try {
+		const headers = { "Authorization": process.env.HD_KEY }
+
+		const makeRequest = (url) => {
+			return new Promise((resolve, reject) => {
+				request({url: url, headers}, (err, res, body) => {
+					if (err) reject(err)
+					else resolve(body)
+				})
 			})
-			if (!status.incidents.length) incidents = ["No incidents reported recently."]
-			else incidents = status.incidents.map(i => {
-				return `Created at: \`${i.created_at}\` | Archived at \`${i.archive_at}\`\n\n**${i.titles.map(t => t.content)}**\n${i.updates.map(u => u.translations.map(t => t.content) + "\n(\`" + u.created_at + "\`)")}\n*Maintainence status: \`${i.maintenance_status.replace("_", " ")}\`*\n*Severity: \`${i.incident_severity}\`*`
-			})
-			send(message, client.embed({
-				title: `Region INFO - **${region}**`, footer: { text: "Author: Riot Games" }, fields: [{
-					name: "Version", value: `API version: \`${version.version}\`\nClient version: \`${version.build_ver}\`\nBranch: \`${version.branch}\``
-				}, {
-					name: 'Maintenances', value: maintenances.join("\n"), inline: true
-				}, {
-					name: 'Incidents', value: incidents.join("\n"), inline: true
-				}]
-			}))
+		}
 
-		})
-	})
+		const versionData = await makeRequest(`http://api.henrikdev.xyz/valorant/v1/version/${region.toLowerCase()}`)
+		const statusData = await makeRequest(`https://api.henrikdev.xyz/valorant/v1/status/${region.toLowerCase()}`)
+
+		if (!versionData || !statusData) return send(message, "There was an error fetching version for that region! Try checking /status of that region")
+
+		const version = JSON.parse(versionData).data
+		const status = JSON.parse(statusData).data
+
+		const format = (info, noInfoMessage) => {
+			if (!info.length) return [noInfoMessage]
+			return info.map(i => (
+				`Created at: \`${i.created_at}\` | Archived at \`${i.archive_at}\`\n\n**${i.titles.map(t => t.content)}**\n${i.updates.map(u => u.translations.map(t => t.content) + "\n(\`" + u.created_at + "\`)")}\n*Maintainence status: \`${i.maintenance_status.replace("_", " ")}\`*\n*Severity: \`${i.incident_severity}\`*`
+			))
+		}
+		const maintenances = format(status.maintenances, "No maintenances found.")
+		const incidents = format(status.incidents, "No incidents reported recently.")
+
+		const embed = new Discord.EmbedBuilder()
+			.setTitle(`Region INFO - **${region}**`)
+			.addFields({
+				name: "Version", value: `API version: \`${version.version}\`\nClient version: \`${version.build_ver}\`\nBranch: \`${version.branch}\``
+			}, {
+				name: 'Maintenances', value: maintenances.join("\n"), inline: true
+			}, {
+				name: 'Incidents', value: incidents.join("\n"), inline: true
+			})
+			.setFooter({ text: "Author: Riot Games" })
+		send(message, embed)
+	} catch (e) {
+		console.error("Error fetching region data: ", e)
+		send(message, "An error occured while fetching the region data!")
+	}
 }

@@ -8,5 +8,5 @@ module.exports.info = {
 module.exports.execute = async (client, message, args, send) => {
 	if (message.author.id !== "485885170080022556") return send(message, 'This command can only be used by the bot owner to restart the bot.')
 	await send(message, 'Restarting!')
-		.then(m => process.exit())
+		.then(() => process.exit())
 }

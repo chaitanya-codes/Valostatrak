@@ -13,10 +13,12 @@ module.exports.execute = async (client, message, args, send) => {
 		return message.channel.send(message.author.tag + " tried to ping everyone :/")
 
 	message.delete()
-	if (!args[0] || args[0] === " ") return message.reply("Usage: `/say <text>`")
-	let em = new Discord.EmbedBuilder()
-		.setColor(message.member?.roles.highest.color)
+
+	if (!args.length || !args.join(" ").trim()) return message.reply("Usage: `/say <text>`")
+
+	const sayEmbed = new Discord.EmbedBuilder()
+		.setColor(message.member?.roles.highest.color || 0x00AE22)
 		.setAuthor({ name: message.author.username, iconURL: message.author.displayAvatarURL(), })
 		.setDescription(args.join(" "))
-	send(message, em)
+	send(message, sayEmbed)
 };

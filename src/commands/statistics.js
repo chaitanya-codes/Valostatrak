@@ -16,47 +16,35 @@ module.exports.execute = async (client, message, args, send) => {
 
 	if (!args.join(" ").includes("#")) return send(message, "Usage: `/statistics <name#tag>` \nExample: `/statistics 100T Asuna#1111`")
 
-	let [name, tag] = args.join(" ").split("#")
-	let nametag = `${name}#${tag}`
+	const [name, tag] = args.join(" ").split("#")
+	const nametag = `${name}#${tag}`
 
 	if (!client.linked.has(nametag.toLowerCase())) return send(message, { embeds: [client.embed({ color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link your Account`" })] })
 	if (!client.accounts.has(nametag.toLowerCase())) return client.newUser(nametag, this.info.name, message)
 
-	let region = client.accounts.get(nametag.toLowerCase())
+	const region = client.accounts.get(nametag.toLowerCase())
+	const linked = client.linked.get(args.join(" ").toLowerCase())
 
-	let linked = client.linked.get(args.join(" ").toLowerCase())
 	if (linked.private) return send(message, "Account is set to private by owner")
 
-	let wait = new Discord.EmbedBuilder()
+	const waitEmbed = new Discord.EmbedBuilder()
 		.setColor(428985)
 		.setTitle("Searching...")
-	let msg = await send(message, { embeds: [wait] })
+	const msg = await send(message, { embeds: [waitEmbed] })
 
 	request({ url: `https://api.henrikdev.xyz/valorant/v2/mmr/${region}/${name}/${tag}`, headers: { "Authorization": process.env.HD_KEY } }, async (err, res, body) => {
 
-		if (err || JSON.parse(body).status !== 200) return send(message, client.notFound(JSON.parse(body).message))
-		let data = JSON.parse(body)
-		data = data.data
-		if (!data || !data['by_season']) return send(message, client.notFound(JSON.parse(body).message))
-		let seasons = Object.keys(data['by_season']).map(a => a)
-		const createButton = (value) => {
-			let button = new Discord.ButtonBuilder()
-				.setCustomId(value)
-				.setLabel()
-				.setStyle('Secondary')
-			return button
-		}
+		const data = JSON.parse(body).data
+
+		if (err || JSON.parse(body).status !== 200 || !data || !data['by_season']) return send(message, client.notFound(JSON.parse(body).message))
 
 		let menu = []
-		let i = 0;
 
-		let row = new Discord.ActionRowBuilder()
-			.addComponents([new Discord.StringSelectMenuBuilder().setCustomId("acts").addOptions([{ label: "Current statistics", value: "current" }, seasons.map(value => { return { label: value.replace("e", "Episode ").replace("a", ": Act "), value: value } }).reverse().slice(0, 24)].flat(1))])
-		let currentData = data['current_data']
-		let rr
-		if (currentData.ranking_in_tier) rr = progressBar.filledBar(100, currentData.ranking_in_tier, 20)[0]
-		else rr = ""
-		let statEmbed = new Discord.EmbedBuilder()
+		const seasons = Object.keys(data['by_season'])
+		const currentData = data['current_data']
+		const rr = progressBar.filledBar(100, currentData.ranking_in_tier, 20)[0] || ""
+
+		const statEmbed = new Discord.EmbedBuilder()
 			.setColor(342852)
 			.setTitle("Statistics - " + args.join(" "))
 			.setFields([{ name: "Rank", value: (currentData.currenttierpatched ? currentData.currenttierpatched + `\n${currentData.ranking_in_tier}/100 ${rr || ""}` : "Unranked") },
@@ -64,24 +52,33 @@ module.exports.execute = async (client, message, args, send) => {
 			{ name: "ELO", value: String(currentData.elo), inline: true }])
 			.setFooter({ text: "To view match history, use /matches command" })
 			.setThumbnail(client.rankImg(currentData.currenttierpatched, currentData.currenttier))
+
+		const row = new Discord.ActionRowBuilder()
+			.addComponents([new Discord.StringSelectMenuBuilder().setCustomId("acts").addOptions([{ label: "Current statistics", value: "current" }, seasons.map(value => { return { label: value.replace("e", "Episode ").replace("a", ": Act "), value: value } }).reverse().slice(0, 24)].flat(1))])
+
 		send(msg, { edit: true, embeds: [statEmbed], components: [row] })
 			.then(msg => {
 				const filter = (interaction) => message.author.id === interaction.user.id
 				const collector = msg.createMessageComponentCollector({ filter, time: 55000 })
+
 				collector.on('collect', async i => {
-					let id = i.values[0]
+					const id = i.values[0]
+
 					if (seasons.includes(id)) {
-						let bySeason = data['by_season'][id]
+						const bySeason = data['by_season'][id]
 						if (!bySeason.number_of_games) return send(i, { ephemeral: true, content: "This player has not played in that act" })
-						let newEmb = new Discord.EmbedBuilder()
+
+						const seasonEmbed = new Discord.EmbedBuilder()
 							.setColor(349842)
 							.setTitle("Statistics - " + args.join(" "))
 							.setDescription(id.replace("e", "Episode ").replace("a", " Act "))
 							.setThumbnail(client.rankImg(bySeason.final_rank_patched))
-							.setFields([{ name: "Wins", value: String(bySeason.wins) },
-							{ name: "Number of games played", value: String(bySeason.number_of_games) },
-							{ name: "Rank in this act", value: bySeason.final_rank_patched }])
-						send(i, { edit: true, embeds: [newEmb] })
+							.setFields([
+								{ name: "Wins", value: String(bySeason.wins) },
+								{ name: "Number of games played", value: String(bySeason.number_of_games) },
+								{ name: "Rank in this act", value: bySeason.final_rank_patched }
+							])
+						send(i, { edit: true, embeds: [seasonEmbed] })
 					} else if (id === 'current') send(i, { edit: true, embeds: [statEmbed] })
 				})
 				collector.on('end', collected => { })

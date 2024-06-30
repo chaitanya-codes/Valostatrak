@@ -23,7 +23,7 @@ const desc = (arg) => {
 const choicesMap = {
 	'region': [{ name: "Asia", value: "ap" }, { name: "North America / LATAM / BR", value: "na" }, { name: "Korea", value: "kr" }, { name: "Europe", value: "eu" }],
 	'agent': [],
-	'leaderboard': ['global', 'this-server'].map(e => ({ name: e, value: e })),
+	'leaderboard': [{ name: "global", value: "global" }, { name: "this-server ", value: "server"}],
 	'weapon': [],
 	'match-type': ['unrated', 'competitive', 'spikerush', 'deathmatch', 'teamdeathmatch', 'replication', 'escalation', 'snowballfight', 'swiftplay', 'premier', 'custom'].map(a => ({ name: a, value: a })),
 	'map': [],

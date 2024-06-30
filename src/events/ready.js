@@ -22,11 +22,10 @@ module.exports.Ready = async (client) => {
 			})
 		})
 	}
-
-	await endpoints.forEach(async api => {
+	for await (let api of endpoints) {
 		// await client.wait(2500 * index)
-		func = "get" + api[0].toUpperCase() + api.slice(1)
-		data = api.substring(0, api.length - 1) + "Data"
+		let func = "get" + api[0].toUpperCase() + api.slice(1)
+		let data = api.substring(0, api.length - 1) + "Data"
 
 		if (api === 'weapons/skinlevels') {
 			func = 'getSkinLevels'
@@ -54,7 +53,7 @@ module.exports.Ready = async (client) => {
 			await client.getWeapons()
 			client.skins = client.weaponData.map(w => { return w.skins.map(a => a.displayName) }).flat(Infinity)
 		}
-	})
+	}
 
 	client.ratelimit = (id) => {
 		client.ratelimits.set(id, true)

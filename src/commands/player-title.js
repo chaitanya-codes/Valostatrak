@@ -22,11 +22,10 @@ module.exports.execute = async (client, message, args, send) => {
 		}
 		return send(message, { embeds: embeds })
 	} else if (findTitle && findTitle?.displayName) {
-		const Discord = require('discord.js')
-		let emb = new Discord.EmbedBuilder()
+		const emb = new Discord.EmbedBuilder()
 			.setTitle(findTitle.displayName)
 			.setColor(388422)
-			.setDescription("title text: `" + findTitle.titleText + "`")
+			.setDescription("Title text: `" + findTitle.titleText + "`")
 		send(message, { embeds: [emb] })
 	} else return send(message, "Title not found. Command usage: `/title <title name>`\nIf you want to see the current titles I know, type `/title list`")
 }

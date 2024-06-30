@@ -22,36 +22,36 @@ module.exports.Interaction = async (client, interaction) => {
 
 			if (!currentValue || currentValue === '') return;
 
-			async function respondFiltered(dataArray, currentValue, header = false) {
+			async function respondFiltered(dataArray, currentValue, respondUsername = false) {
 				interaction.respond(dataArray
 					.filter(item => item.toLowerCase().startsWith(currentValue.toLowerCase()) || item.toLowerCase().includes(currentValue.toLowerCase()))
-					.slice(0, !header ? 25 : 24)
-					.map(item => !header ? ({ name: item, value: item}) : ({name: "👤" + item, value: item}))
+					.slice(0, !respondUsername ? 25 : 24)
+					.map(item => !respondUsername ? ({ name: item, value: item }) : ({ name: "👤" + item, value: item }))
+					.concat((!respondUsername ? [] : [{ name: "Search " + currentValue, value: currentValue }]))
 				)
 			}
 
 			switch (optionName) {
 				case 'skin':
 					return client.getSkins()
-					.then(skins => respondFiltered(skins.map(s => s.replace("//", " ")), currentValue))
+						.then(skins => respondFiltered(skins.map(s => s.displayName.replace("//", " ")), currentValue))
 				case 'buddy':
 					return client.getBuddies()
-					.then(buddies => respondFiltered(buddies.map(b => b.displayName), currentValue))
+						.then(buddies => respondFiltered(buddies.map(b => b.displayName), currentValue))
 				case 'bundle':
 					return client.getBundles()
-					.then(bundles => respondFiltered(bundles.map(b => b.displayName), currentValue))
+						.then(bundles => respondFiltered(bundles.map(b => b.displayName), currentValue))
 				case 'player-card':
 					return client.getPlayercards()
-					.then(playercards => respondFiltered(playercards.map(p => p.displayName), currentValue))
+						.then(playercards => respondFiltered(playercards.map(p => p.displayName), currentValue))
 				case 'player-title':
 					return client.getPlayertitles()
-					.then(playertitles => respondFiltered(playertitles.map(p => p.displayName), currentValue))
+						.then(playertitles => respondFiltered(playertitles.map(p => p.displayName), currentValue))
 				case 'spray':
 					return client.getSprays()
-					.then(sprays => respondFiltered(sprays.map(s => s.displayName), currentValue))
+						.then(sprays => respondFiltered(sprays.map(s => s.displayName), currentValue))
 				case 'username':
-					return respondFiltered(client.accounts.map((region, name) => name).concat([{ name: "Search " + currentValue, value: currentValue }]),
-											currentValue, true)
+					return respondFiltered(client.accounts.map((region, name) => name), currentValue, true)
 				case 'league':
 					return interaction.respond(leagues.filter(l => l.startsWith(currentValue.toLowerCase())).map(l => ({ name: l.split("_").join(" "), value: l })))
 				case 'command':
@@ -68,12 +68,12 @@ module.exports.Interaction = async (client, interaction) => {
 		let command = client.commands.get(commandName) || client.commands.find(cmd => cmd.info.aliases && cmd.info.aliases.includes(commandName))
 
 		if (!command || interaction.type === InteractionType.ApplicationCommandAutocomplete) return;
-		
+
 		if (client.ratelimits.has(interaction.user.id)) {
 			let row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setLabel("Vote on top.gg").setURL("https://top.gg/bot/855083775460769793/vote").setStyle("Link")])
 			if (client.ratelimits.get(interaction.user.id) === true) return interaction.reply({ ephemeral: true, embeds: [{ description: "There's a cooldown after using statistics related commands, you need to wait 10 seconds after the command.\n*You can bypass this for 12 hours if you vote using the button below, to reduce cooldown to 3 seconds.*" }], components: [row] })
 		} else if (command.info.ratelimit) client.ratelimit(interaction.user.id)
-		
+
 		try {
 			interaction.author = interaction.user
 			interaction.edit = (o) => interaction.editReply(o)
@@ -82,9 +82,9 @@ module.exports.Interaction = async (client, interaction) => {
 			//if (command.info.module === 'Statistics' && interaction.options.get("username") && client.linked.find((u, name) => u.private === true && (interaction.author.id !== name))) return interaction.reply("This profile is set to private by the linked account owner\nif this is your account, you can verify that to us in support server")
 			await command.execute(client, interaction, args, client.send, client.ratelimit)
 		} catch (error) {
-			client.channels.cache.get('546320905035579396').send({ embeds: [{ color: 472422, description: `**There was an error in the server \`${interaction.guild.name}\` caused by the user \`${interaction.user.tag}\`(${interaction.user.id}) with the command \`${commandName}\`**\n\n*The error was:*\n\`\`\`prolog\n${error}\`\`\`` }] })
+			client.channels.cache.get('546320905035579396').send({ embeds: [{ color: 472422, description: `**There was an error in the server \`${interaction.guild.name}\` caused by the user \`${interaction.user.username}\`(${interaction.user.id}) with the command \`${commandName}\`**\n\n*The error was:*\n\`\`\`prolog\n${error}\`\`\`` }] })
 			console.error(error)
-			await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true })
+			await interaction.reply({ content: "There was an error while executing this command!\nPlease try again later", ephemeral: true })
 		}
 	} else if (interaction.isSelectMenu()) {
 		if (interaction.values[0].startsWith("self-role|") && interaction.guild.id === '501396018395480065') {
