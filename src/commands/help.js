@@ -17,7 +17,7 @@ module.exports.execute = async (client, message, args, send) => {
 		let text = '</' + c.info.name + ':' + client.application.commands.cache.find(e => e.name === c.info.name).id + '>'
 		let module = c.info.module || "Other"
 		if (!sortedCmds[module]) sortedCmds[module] = [text]
-		sortedCmds[module].push(text)
+		else sortedCmds[module].push(text)
 	})
 	let helpEmb = new Discord.EmbedBuilder()
 		.setColor(753221)
