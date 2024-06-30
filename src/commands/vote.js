@@ -4,7 +4,9 @@ module.exports.info = {
 	aliases: ['vote-bot', 'votes'],
 	module: "Other"
 }
+
 const Discord = require('discord.js')
+
 module.exports.execute = async (client, message, args, send) => {
 	let voted = client.bypassed.has(message.author.id)
 	let row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setLabel("Top.gg").setURL("https://top.gg/bot/855083775460769793/vote").setStyle("Link")])

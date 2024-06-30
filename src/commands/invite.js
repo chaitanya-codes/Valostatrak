@@ -5,8 +5,9 @@ module.exports.info = {
 	module: "Other"
 }
 
+const Discord = require('discord.js')
+
 module.exports.execute = (client, message, args, send) => {
-	let Discord = require('discord.js')
 	let createButton = (obj) => {
 		let b = new Discord.ButtonBuilder()
 		.setStyle("Link")
