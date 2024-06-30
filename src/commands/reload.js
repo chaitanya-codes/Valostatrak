@@ -12,7 +12,7 @@ module.exports.execute = async (client, message, args, send) => {
 	const loading = client.emojis.cache.get("588824651132567677").toString()
 	const checkMark = client.emojis.cache.get('529719527999537162').toString()
 
-	message.deferReply()
+	// message.deferReply()
 	
 	let commandName = args[0].toLowerCase()
 	let search = client.commands.get(commandName) || client.commands.find(cmd => cmd.info.aliases && cmd.info.aliases.includes(commandName))
