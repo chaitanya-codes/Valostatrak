@@ -10,7 +10,7 @@ const Discord = require('discord.js')
 
 module.exports.execute = async (client, message, args, send) => {
 
-	if (!args[0]) return send(message, "Command usage: `/card <player card name>`\nTo list all cards, use `/card list`")
+	if (!args[0]) return send(message, "Command usage: `/player-card <player card name>`\nTo list all cards, use `/player-card list`")
 
 	const data = await client.getPlayercards()
 	let findCard = data.find(card => card.displayName.toLowerCase() === (args.join(" ").toLowerCase() + " card") || card.displayName.toLowerCase() === (args.join(" ").toLowerCase()))
@@ -23,12 +23,11 @@ module.exports.execute = async (client, message, args, send) => {
 		}
 		return send(message, { embeds: embeds })
 	} else if (findCard && findCard?.displayName) {
-		const Discord = require('discord.js')
-		let emb = new Discord.EmbedBuilder()
+		const emb = new Discord.EmbedBuilder()
 			.setTitle(findCard.displayName)
 			.setColor(388422)
 			.setImage(findCard.largeArt)
 			.setThumbnail(findCard.displayIcon)
 		send(message, { embeds: [emb] })
-	} else return send(message, "Card not found. Command usage: `/card <card name>`\nIf you want to see the current cards I know, type `/card list`")
+	} else return send(message, "Card not found. Command usage: `/player-card <card name>`\nIf you want to see the current cards I know, type `/player-card list`")
 }

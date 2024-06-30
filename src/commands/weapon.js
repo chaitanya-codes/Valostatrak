@@ -7,6 +7,7 @@ module.exports.info = {
 }
 
 const Discord = require('discord.js')
+const format = (dmg) => (dmg % 1 === 0 ? String(dmg) : dmg.toFixed(1)).padEnd(4)
 
 module.exports.execute = async (client, message, args, send) => {
 	if (!args[0]) return send(message, "Command usage: /weapon <weapon-name>")
@@ -34,10 +35,12 @@ module.exports.execute = async (client, message, args, send) => {
 							**Equip time**: ${String(findWeapon.weaponStats.equipTimeSeconds)} second(s)
 							**Reload time**: ${String(findWeapon.weaponStats.reloadTimeSeconds)} seconds
 							**Damage ranges**:
-							\\_\\_\\_\\_\\___ Head|Body|Leg__
-							${String(findWeapon.weaponStats.damageRanges.map(range => {
-				return range.rangeStartMeters + " - " + range.rangeEndMeters + ": " + range.headDamage + " | " + range.bodyDamage + "  | " + range.legDamage
-			}).join("\n"))}
+							\`\`\`
+Range     | Head | Body | Leg   
+--------- | ---- | ---- | ----
+${findWeapon.weaponStats.damageRanges.map(range => (
+				`${String(range.rangeStartMeters).padEnd(2)}m - ${range.rangeEndMeters}m | ${format(range.headDamage)} | ${format(range.bodyDamage)} | ${format(range.legDamage)}`
+			)).join("\n")}\`\`\`
 							**Wall Penetration**: ${String(findWeapon.weaponStats.wallPenetration.replace("EWallPenetrationDisplayType::", ""))}
 							`)
 		}

@@ -44,7 +44,7 @@ module.exports.execute = async (client, message, args, send) => {
 			return embed;
 		}
 
-		const emb = createEmbed(findAgent)
+		const emb = await createEmbed(findAgent)
 		const msg = await send(message, { reply: true, embeds: [emb], components: [row] })
 
 		const filter = (interaction) => interaction.user.id === message.author.id

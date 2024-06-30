@@ -6,8 +6,6 @@ module.exports.info = {
 	module: "Owner"
 }
 
-const fs = require('fs')
-
 module.exports.execute = async (client, message, args, send) => {
 	if (message.author.id !== "485885170080022556") return send(message, 'This command can only be used by the bot owner to reload commands (This command is not for reloading a gun lol).')
 

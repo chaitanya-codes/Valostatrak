@@ -23,20 +23,22 @@ module.exports.execute = async (client, message, args, send) => {
 		.setTitle("Map - " + findMap.displayName)
 		.setThumbnail(findMap.splash)
 		.setColor(382111)
+
 	if (findMap.displayIcon) mapEmb.setImage(findMap.displayIcon)
 	else {
 		mapEmb.setDescription("Only preview available ---->")
 		mapEmb.setImage(null)
 	}
 	let msg = await send(message, { embeds: [mapEmb], components: [row] })
+
 	const filter = (interaction) => interaction.user.id === message.author.id
 	const coll = msg.createMessageComponentCollector({ filter, time: 76000, errors: ['time'] })
 	coll.on("collect", i => {
 		if (i.customId === 'maps') {
-			findMap = maps.filter(m => m.displayName.toLowerCase() === i.values[0].toLowerCase())[0]
+			findMap = maps.find(m => m.displayName.toLowerCase() === i.values[0].toLowerCase())
 			mapEmb.setTitle("Map - " + findMap.displayName).setThumbnail(findMap.splash).setColor(382111)
-			if (findMap.displayIcon) { mapEmb.setImage(findMap.displayIcon); mapEmb.description = undefined }
-			else { mapEmb.setDescription("Only preview available ---->"); mapEmb.image = undefined }
+			if (findMap.displayIcon) { mapEmb.setImage(findMap.displayIcon); mapEmb.setDescription(undefined) }
+			else { mapEmb.setDescription("Only preview available ---->"); mapEmb.setImage(null) }
 			send(msg, { edit: true, embeds: [mapEmb] })
 		}
 	})

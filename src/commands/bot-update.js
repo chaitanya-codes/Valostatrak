@@ -16,7 +16,7 @@ module.exports.execute = (client, message, args, send) => {
 		const updatesEm = new Discord.EmbedBuilder()
 			.setColor(message.member.roles.highest.color)
 			.setTitle('Bot updates')
-			.setDescription('**Latest updates:**```yaml\n' + latestUpdate + '```')
+			.setDescription('**Latest updates:**\n' + latestUpdate + '```')
 		send(message, updatesEm)
 	})
 }

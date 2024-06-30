@@ -12,8 +12,8 @@ module.exports.execute = async (client, message, args, send) => {
 
 	if (!args[0] || isNaN(Number(args.join(" ")))) return send(message, "Command usage: `/level-border <account level>`\nShould be 1 or multiple of 20.")
 
-	let data = await client.getLevelborders()
-	let findLevel = data.filter(level => level.startingLevel === Number(args.join(" ")))
+	const data = await client.getLevelborders()
+	let findLevel = data.find(level => level.startingLevel === Number(args.join(" ")))
 	if (findLevel && findLevel[0]?.startingLevel) {
 		findLevel = findLevel[0]
 		let emb = new Discord.EmbedBuilder()

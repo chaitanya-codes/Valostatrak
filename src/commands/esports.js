@@ -13,51 +13,68 @@ const Discord = require("discord.js");
 
 module.exports.execute = async (client, message, args, send) => {
 	let [region, league] = args;
-	let link;
-	if (args[0]) {
-		link = "";
-		let data = {};
-		message.options.data.forEach((arg) => (data[arg.name] = arg.value));
-		if (data["region-esports"] && data["league"])
-			link += `?region=${data["region-esports"]}&league=${data["league"]}`;
-		else if (data['region-esports']) link += `?region=${data["region-esports"]}`;
-		else link += `?league=${data["league"]}`;
-	}
+	let link = "";
+	const data = {};
 
-	let wait = new Discord.EmbedBuilder().setColor(428985).setTitle("Loading...");
-	let m = await send(message, { content: "** **", embeds: [wait] })
-	require("request")({ url: `https://api.henrikdev.xyz/valorant/v1/esports/schedule` + (link ? link : ""), headers: { "Authorization": process.env.HD_KEY } },
+	message.options.data.forEach((arg) => (data[arg.name] = arg.value));
+	if (data["region-esports"] && data["league"])
+		link += `?region=${data["region-esports"]}&league=${data["league"]}`;
+	else if (data['region-esports']) link += `?region=${data["region-esports"]}`;
+	else link += `?league=${data["league"]}`;
+
+	const waitEmbed = new Discord.EmbedBuilder()
+		.setColor(428985)
+		.setTitle("Loading...");
+
+	const loadingMessage = await send(message, { content: "** **", embeds: [waitEmbed] })
+
+	request({ url: `https://api.henrikdev.xyz/valorant/v1/esports/schedule` + (link ? link : ""), headers: { "Authorization": process.env.HD_KEY } },
 		async (err, res, body) => {
-			if (err || JSON.parse(body).status !== 200)
-				return send(message, "No events found!");
-			let data = JSON.parse(body);
-			data = data.data;
-			console.log(data)
-			if (!data || !data[0])
-				return send(message, "No events found!");
-			let row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setStyle("Success").setCustomId("back").setEmoji("◀️").setDisabled(true), new Discord.ButtonBuilder().setStyle("Success").setCustomId("next").setEmoji("▶️")])
+			if (err || JSON.parse(body).status !== 200) return send(message, "No events found!");
 
-			let page = 0
-			const setPage = async (i) => {
-				if (!i) i = m;
-				let newemb = new Discord.EmbedBuilder()
+			let data = JSON.parse(body).data;
+
+			if (!data || !data[0]) return send(message, "No events found!");
+
+			const row = new Discord.ActionRowBuilder().addComponents([
+				new Discord.ButtonBuilder()
+					.setStyle("Success")
+					.setCustomId("back")
+					.setEmoji("◀️")
+					.setDisabled(true),
+				new Discord.ButtonBuilder()
+					.setStyle("Success")
+					.setCustomId("next")
+					.setEmoji("▶️")
+			])
+
+			let page = 0;
+			const setPage = async (interaction) => {
+				const newemb = new Discord.EmbedBuilder()
 					.addFields([{ name: "Date", value: data[page].date || null }])
 					.setTitle(data[page].league.name)
 					.setThumbnail(data[page].league.icon)
-				let team1 = new Discord.EmbedBuilder()
+				const team1 = new Discord.EmbedBuilder()
 					.setTitle(data[page].match.teams[0].name)
 					.setThumbnail(data[page].match.teams[0].icon)
 					.addFields([{ name: "Record", value: "Wins: " + data[page].match.teams[0].record.wins + "\nLosses: " + data[page].match.teams[0].record.losses }])
-				let team2 = new Discord.EmbedBuilder()
+				const team2 = new Discord.EmbedBuilder()
 					.setTitle(data[page].match.teams[1].name)
 					.setThumbnail(data[page].match.teams[1].icon)
 					.addFields([{ name: "Record", value: "Wins: " + data[page].match.teams[1].record.wins + "\nLosses: " + data[page].match.teams[1].record.losses }])
-				m = await send(i, { content: data[page].vod, edit: true, embeds: [newemb, team1, team2], components: [row] })
+				m = await send(interaction, {
+					content: data[page].vod,
+					edit: true,
+					embeds: [newemb, team1, team2],
+					components: [row]
+				})
 			};
-			await setPage();
-			const filter = (i) => i.user.id === message.author.id;
 
-			let col = await m.createMessageComponentCollector({ filter, idle: 35000 });
+			await setPage(loadingMessage);
+
+			const filter = (i) => i.user.id === message.author.id;
+			const col = await loadingMessage.createMessageComponentCollector({ filter, idle: 35000 });
+
 			col.on("collect", (i) => {
 				if (i.customId === "back") {
 					page--;
