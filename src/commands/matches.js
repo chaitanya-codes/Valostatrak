@@ -71,9 +71,9 @@ module.exports.execute = async (client, message, args, send) => {
 		for (const [num, match] of data.entries()) {
 			const searchedPlayer = match.players.all_players.find(pl => pl.name.toLowerCase() === name.toLowerCase())
 			const searchedPlayerTeam = searchedPlayer.team.toLowerCase()
+			const kda = `${searchedPlayer.stats.kills}/${searchedPlayer.stats.deaths}/${searchedPlayer.stats.assists}`
 			const opponentTeam = (searchedPlayerTeam === "blue" ? "red" : "blue")
-			const kda = `${player.stats.kills}/${player.stats.deaths}/${player.stats.assists}`
-			const emoji = client.guilds.cache.get("501396018395480065").emojis.cache.find(e => e.name === player.character.toLowerCase()) || ''
+			const emoji = client.guilds.cache.get("501396018395480065").emojis.cache.find(e => e.name === searchedPlayer.character.toLowerCase()) || ''
 
 			matchesEmbed.addFields([{
 				name: `${num + 1}) ${match.metadata.map} (${match.metadata.mode})`,
@@ -100,7 +100,7 @@ module.exports.execute = async (client, message, args, send) => {
 						.setTitle(match.metadata.map)
 						.setThumbnail(maps.filter(m => m.displayName.toLowerCase() === match.metadata.map.toLowerCase())[0].splash)
 
-					const currentRound = 0
+					let currentRound = 0
 
 					i.update({ embeds: [matchEmbed], components: [row2] }).then(ms => {
 						const setRound = (roundIndex, interaction) => {
@@ -166,7 +166,7 @@ module.exports.execute = async (client, message, args, send) => {
 							
 							row2.components[0].setDisabled(currentRound <= 0)
 							row2.components[1].setDisabled((match.teams.blue.rounds_lost + match.teams.blue.rounds_won) <= (currentRound + 1))
-							
+
 							setRound(currentRound, i)
 						})
 						collector.on('end', collected => { })

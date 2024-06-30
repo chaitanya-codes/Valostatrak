@@ -11,7 +11,7 @@ const request = require('request');
 const Discord = require('discord.js')
 
 module.exports.execute = async (client, message, args, send) => {
-	const query = args.joins(' ')
+	const query = args.join(' ')
 	if (!query.includes("#")) return send(message, "User not found. Usage: `/career <name#tag>`\nExample: `/career 100T Asuna#1111`")
 
 	const [name, tag] = query.split("#")

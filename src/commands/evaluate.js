@@ -43,7 +43,7 @@ module.exports.execute = async (client, message, args, send) => {
 	let filter = (i) => i.user.id === message.author.id
 	message.awaitModalSubmit({ filter, time: 90000 })
 		.then(async j => {
-			j.deferReply()
+			// j.deferReply()
 
 			const code = j.fields.getTextInputValue('code')
 			if (!code) return message.followUp("No code provided.")
@@ -57,7 +57,7 @@ module.exports.execute = async (client, message, args, send) => {
 				}
 			} else {
 				let onlyExec = false;
-				if (['--onlyexec', '--onlyeval', '--evalonly', '--execonly'].includes(args[0].toLowerCase())) {
+				if (['--onlyexec', '--onlyeval', '--evalonly', '--execonly'].includes(args[0]?.toLowerCase())) {
 					onlyExec = true;
 					code = code.replace(args[0], "")
 				}
@@ -84,7 +84,7 @@ module.exports.execute = async (client, message, args, send) => {
 					if (evaled == process.env.BOT_TOKEN) evaled = 't0ken'
 
 					evalEmbed.setDescription(':inbox_tray: INPUT:```js\n' + code + '```\n :outbox_tray: OUTPUT:\n' + truncate(`\`\`\`js\n${clean(evaled)}\n\`\`\``, (1500 - String(code).length)) + '\n:information_source: Output Type\n```css\n' + type + '\n```')
-					evalEmbed.setFooter(`Took ${afterEval - beforeEval}ms to evaluate`);
+					evalEmbed.setFooter({ text: `Took ${afterEval - beforeEval}ms to evaluate` });
 
 					if ((afterEval - beforeEval) > 200) {
 						evalEmbed.setDescription(client.emojis.cache.get('588824651132567677').toString())
@@ -103,6 +103,7 @@ module.exports.execute = async (client, message, args, send) => {
 					}
 				}
 				catch (err) {
+					console.log(err)
 					evalEmbed.setDescription(':inbox_tray: INPUT:```js\n' + code + '```\n :outbox_tray: ERROR: ```js\n' + clean(err) + '\n```')
 					send(j, { embeds: [evalEmbed] })
 				}

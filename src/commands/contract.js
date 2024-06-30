@@ -14,7 +14,8 @@ module.exports.execute = async (client, message, args, send) => {
 	let contractName = args.join(' ')
 	const contracts = await client.getContracts()
 	let findContract = contracts.find(b => b.displayName.toLowerCase().replace(" contract", "") === contractName.toLowerCase() && b.content.relationType === 'Agent')
-
+	console.log(contractName, findContract)
+	
 	if (findContract) {
 		const emojis = {
 			0: '0⃣', 1: '1⃣', 2: '2⃣', 3: '3⃣', 4: '4⃣', 5: '5⃣', 6: '6⃣', 7: '7⃣', 8: '8⃣', 9: '9⃣', 10: '🔟'
@@ -57,7 +58,7 @@ module.exports.execute = async (client, message, args, send) => {
 
 		let embed = await getLevel(level)
 		const msg = await send(message, { embeds: [embed], components: [row, row2] })
-		
+
 		const filter = i => i.user.id === message.author.id
 		const collector = msg.createMessageComponentCollector({ filter, idle: 45000 })
 		collector.on('collect', async i => {
