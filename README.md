@@ -44,8 +44,10 @@ Up to date with all in-game assets in valorant updates.
 
 [Support Server](https://discord.gg/9GCEQ6m)
 =====================
-<iframe src="https://discordapp.com/widget?id=501396018395480065&theme=dark" width="50" height="50" allowtransparency="true" frameborder="0"></iframe>
+
 
 <a href="https://top.gg/bot/855083775460769793">
   <img src="https://top.gg/api/widget/855083775460769793.svg">
 </a>
+<iframe src="https://discordapp.com/widget?id=501396018395480065&theme=dark" width="50" height="50" allowtransparency="true" frameborder="0"></iframe>
+
