@@ -29,9 +29,7 @@ body {
 .list li {
     list-style-type: none;
     top: 20px;
-    padding: 30px;
-    padding-top: 20px;
-    padding-bottom: 23px;
+    padding: 20px 30px 23px 30px;
     border: 1px solid rgb(16, 125, 234);
     box-shadow: 4px 2px rgb(16, 229, 45);
     text-decoration: none;
