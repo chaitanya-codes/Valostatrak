@@ -12,7 +12,7 @@ module.exports.execute = async (client, message, args, send) => {
 
 	const filter = m => m.user.id === message.author.id
 
-	if (args[0] && ['global', 'server', 'score', 'leaderboard'].includes(args[0]?.toLowerCase())) {
+	if (args[0] && ['global', 'this-server', 'score', 'leaderboard'].includes(args[0]?.toLowerCase())) {
 		message.deferReply()
 		if (!client.triviaStats.has(message.author.id)) client.triviaStats.set(message.author.id, 0)
 		if (!client.triviaStatsTemp.has(message.author.id)) client.triviaStatsTemp.set(message.author.id, 0)
@@ -35,14 +35,14 @@ module.exports.execute = async (client, message, args, send) => {
 
 				for (let i = 0; i < topPlayers.length; i++) {
 					const [userId, score] = topPlayers[i]
-					const username = client.users.cache.get(userId)?.username || (await client.users.fetch(userId)).username
+					const username = await client.users.cache.get(userId)?.username || (await client.users.fetch(userId)).username
 					leaderboard += `${i + 1}) ${username}: ${score}\n`
 				}
 				let m = await send(msg, {
 					edit: edit, components: [row1, row2], embeds: new Discord.EmbedBuilder()
 						.setTitle("Quiz Score Leaderboard")
 						.setColor("Random")
-						.setDescription(leaderboard)
+						.setDescription(leaderboard || "** **")
 						.setFooter({ text: "If you see unloaded data, then try switching global/server" })
 				}).catch(() => reject())
 				resolve(m)
@@ -54,12 +54,13 @@ module.exports.execute = async (client, message, args, send) => {
 			row.components[1].setStyle((opposite ? "Success" : "Secondary")).setDisabled((opposite ? true : false))
 		}
 
-		if (args[0].toLowerCase() === 'server') {
+		if (args[0].toLowerCase() === 'this-server') {
 			server = true; colorButton(row1, false) // Set global to false
 		}
 
 		let m = await updateLeaderboard(message)
-
+    if (!m) return message.reply("Error fetching leaderboard!")
+    
 		const col = m.createMessageComponentCollector({ filter, time: 60000, idle: 25000 })
 		col.on("collect", i => {
 			let id = i.customId
@@ -67,7 +68,7 @@ module.exports.execute = async (client, message, args, send) => {
 			else if (id === 'global') { server = false; colorButton(row1, true) }
 			else if (id === 'temp') { temp = true; colorButton(row2) }
 			else if (id === 'all') { temp = false; colorButton(row2, true) }
-			updateLeaderboard(true, i)
+			updateLeaderboard(i, true)
 		})
 		col.on("end", i => send(m, { edit: true, components: [] }))
 	} else {
