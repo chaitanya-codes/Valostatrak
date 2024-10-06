@@ -54,7 +54,7 @@ module.exports.execute = async (client, message, args, send) => {
 
 			const emb = new Discord.EmbedBuilder()
 				.setTitle(findContract.displayName)
-				.setDescription(client.guilds.cache.get("501396018395480065").emojis.cache.find(e => e.name === findContract.displayName.toLowerCase().replace(" gear", ""))?.toString() || client.emojis.cache.find(e => e.name === findContract.displayName.toLowerCase().replace(" gear", ""))?.toString() || '')
+				.setDescription(client.guilds.cache.get("501396018395480065").emojis.cache.find(e => e.name === findContract.displayName.toLowerCase().replace(" gear", ""))?.toString() || client.emojis.cache.find(e => e.name === findContract.displayName.toLowerCase().replace(" gear", ""))?.toString() || "** **")
 				.setColor('Random')
 				.setImage(entity?.displayIcon || entity?.displayIcon2 || null)
 				.addFields([{ name: "CHAPTER " + (chapter + 1) + " LEVEL " + (level + 1), value: "** **" },

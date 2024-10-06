@@ -78,8 +78,8 @@ module.exports.execute = async (client, message, args, send) => {
 								{ name: "Number of games played", value: String(bySeason.number_of_games) },
 								{ name: "Rank in this act", value: bySeason.final_rank_patched }
 							])
-						send(i, { edit: true, embeds: [seasonEmbed] })
-					} else if (id === 'current') send(i, { edit: true, embeds: [statEmbed] })
+						send(msg, { edit: true, embeds: [seasonEmbed] })
+					} else if (id === 'current') send(msg, { edit: true, embeds: [statEmbed] })
 				})
 				collector.on('end', collected => { })
 			})
