@@ -15,7 +15,7 @@
                     <a href="https://discord.com/oauth2/authorize?client_id=855083775460769793&permissions=139855192128&scope=bot%20applications.commands"><li>Invite Bot</li></a>
                     <a href="/commands"><li>Commands</li></a>
                     <a href="/about"><li>About</li></a>
-                    <a id="login" href="https://discord.com/oauth2/authorize?client_id=855083775460769793&response_type=token&redirect_uri=https%3A%2F%2Fvalostatrak-bot.glitch.me&scope=identify"><li>Login</li></a>
+<!--                     <a id="login" href="https://discord.com/oauth2/authorize?client_id=855083775460769793&response_type=token&redirect_uri=https%3A%2F%2Fvalostatrak-bot.glitch.me&scope=identify"><li>Login</li></a> -->
                 </ul>
             </div>
         </nav>
@@ -31,28 +31,6 @@
         
     </footer>
     <script src="index.js" type="module"></script>
-    <script>
-      window.onload = () => {
-        const fragment = new URLSearchParams(window.location.hash.slice(1));
-        const [accessToken, tokenType] = [fragment.get('access_token'), fragment.get('token_type')];
 
-        if (!accessToken) {
-          return (document.getElementById('login').style.display = 'block');
-        }
-        
-        fetch('https://discord.com/api/users/@me', {
-          headers: {
-            authorization: `${tokenType} ${accessToken}`,
-          }
-        })
-        .then(result =>console.log(result))
-          // .then(result => result.json())
-          .then(response => {
-            const { username, discriminator } = response;
-            document.getElementById('info').innerText += ` ${username}#${discriminator}`;
-          })
-          .catch(console.error);
-      };
-    </script>
 </body>
 </html>
