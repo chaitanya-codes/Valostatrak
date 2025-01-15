@@ -26,9 +26,11 @@ module.exports.execute = async (client, message, args, send) => {
 	setTimeout(() => client.ratelimits.set(message.author.id, false), 10000)
 
 	const matchTypes = ['unrated', 'competitive', 'spikerush', 'deathmatch', 'replication', 'escalation', 'snowball', 'custom']
+  
+  if (!args.join(" ").includes("#")) return send(message, "Usage: `/matches <name#tag> [gamemode]`")
 
 	let [name, tag] = args.join(" ").split("#")
-	let matchType = tag.split(" ")[1]
+	let matchType = tag?.length && tag?.split(" ")[1]
 	if (matchType) tag = tag.replace(" " + matchType, "")
 
 	const nametag = `${name}#${tag}`
