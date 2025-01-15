@@ -32,6 +32,9 @@ module.exports.Interaction = async (client, interaction) => {
 			}
 
 			switch (optionName) {
+        case 'agent':
+          return client.getAgents()
+            .then(agents => respondFiltered(agents.map(a => a.displayName), currentValue))
 				case 'skin':
 					return client.getSkins()
 						.then(skins => respondFiltered(skins.map(s => s.displayName.replace("//", " ")), currentValue))

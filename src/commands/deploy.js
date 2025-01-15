@@ -40,7 +40,7 @@ const data = async (client, guild) => {
 		options: (cmd.info.usage ? cmd.info.usage.map(arg => ({
 			name: arg.toLowerCase(),
 			description: desc(arg.toLowerCase()),
-			autocomplete: (['command', 'username', 'skin', 'buddy', 'bundle', 'player-card', 'player-title', 'spray', 'input', 'league'].includes(arg) ? true : false),
+			autocomplete: (['agent', 'command', 'username', 'skin', 'buddy', 'bundle', 'player-card', 'player-title', 'spray', 'input', 'league'].includes(arg) ? true : false),
 			choices: checkChoices(arg),
 			type: (commonArgs[arg] ? ApplicationCommandOptionType[commonArgs[arg]] : ApplicationCommandOptionType.String),
 			required: (cmd.info.optional && (arg.toLowerCase() !== "username") ? false : true)
@@ -52,9 +52,6 @@ module.exports.execute = async (client, message, args, send) => {
 	if (message.author.id !== '485885170080022556') return message.reply('This command can only be used by the bot owner.')
 		
 	try {
-		await client.getAgents().then(agents => {
-			choicesMap['agent'] = agents.map(a => ({ name: a.displayName, value: a.displayName }))
-		})
 		await client.getWeapons().then(weapons => {
 			choicesMap['weapon'] = weapons.map(w => ({ name: w.displayName, value: w.displayName }))
 		})
