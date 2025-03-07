@@ -15,10 +15,10 @@ const serverCount = document.querySelector("#servercount");
       if (count < clientServerCount) {
           setTimeout(() => {
               changeCount()
-          }, (100-clientServerCount)+timer)
+          }, (20-clientServerCount)+timer)
       }
       timer++;
   }
 
-  // changeCount() // Paused
+  changeCount() // Paused
 })()
