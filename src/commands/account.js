@@ -12,14 +12,14 @@ const Discord = require('discord.js')
 module.exports.execute = async (client, message, args, send) => {
 	let subcommand = args[0].toLowerCase()
 	args.shift()
-	
+
 	let [name, tag] = args.join(" ").toLowerCase().split("#")
 	if (!args.join(" ").includes("#") || !name || !tag) return message.reply("Account not found. Use the format name#tag")
-		
+
 	let region = client.accounts.get(args.join(" ").toLowerCase())
-	
+
 	if (!region && subcommand !== 'link') return client.newUser(args.join(" "), this.info.name, message, subcommand)
-		
+
 	if (subcommand === 'find') {
 		await findAccount(client, name, tag, message, send)
 	} else if (subcommand === 'link') {
@@ -31,21 +31,21 @@ module.exports.execute = async (client, message, args, send) => {
 
 async function findAccount(client, name, tag, message, send) {
 	if (!client.linked.has(name+"#"+tag)) return send(message, { embeds: [client.embed({ color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link account`" })] })
-		
+
 	const linked = client.linked.get(name+"#"+tag)
 	if (linked.private) return send(message, "Account is set to private by owner")
-		
+
 	let wait = new Discord.EmbedBuilder()
 	.setColor(428985)
 	.setTitle("Searching...")
 	let msg = await send(message, { reply: true, embeds: [wait] })
-	
+
 	const response = await fetchAccountData(name, tag)
-	
+
 	if (!response || response.status !== 200) return send(message, client.notFound(response?.message || "Account not found."))
 		const data = response.data
 	if (!data) return send(message, client.notFound(response?.message || "No data found for account."))
-		
+
 	const levelborders = await client.getLevelborders()
 	const statEmbed = new Discord.EmbedBuilder()
 	.setColor(342852)
@@ -55,7 +55,6 @@ async function findAccount(client, name, tag, message, send) {
 	.setImage(data.card?.large)
 	.setThumbnail(levelborders.find(border => border.startingLevel == (Math.floor(data.account_level / 20) * 20))?.levelNumberAppearance || levelborders.find(border => border.startingLevel == 1)?.levelNumberAppearance)
 	send(msg, { edit: true, embeds: [statEmbed] })
-	
 }
 
 async function linkAccount(client, name, tag, message, send) {
@@ -63,29 +62,29 @@ async function linkAccount(client, name, tag, message, send) {
 	const modal = new Discord.ModalBuilder()
 	.setCustomId('modal')
 	.setTitle('Verification')
-	
+
 	const actionrow = new Discord.ActionRowBuilder().addComponents([new Discord.TextInputBuilder()
 		.setCustomId("lvl")
 		.setLabel("What is your account level? (verification)")
 		.setStyle(Discord.TextInputStyle.Short)
 	])
 	modal.addComponents([actionrow])
-	
+
 	const response = await fetchAccountData(name, tag)
-	
+
 	if (!response || response.status !== 200) return send(message, client.notFound(response?.message || "Account not found."))
-		
+
 	const data = response.data
 	if (!data) return send(message, client.notFound(response?.message || "No data found for the account."))
-		
+
 	message.showModal(modal)
-	
+
 	const filter = i => i.user.id === message.author.id
 	message.awaitModalSubmit({ filter, time: 30000 })
 	.then(interaction => {
 		let lvl = interaction.fields.getTextInputValue('lvl')
 		if (isNaN(lvl)) return send(interaction, 'Level entered was not a number!')
-			
+
 		if (data.account_level === Number(lvl)) {
 			client.linked.set(name + "#" + tag, { id: message.author.id, private: false })
 			send(interaction, { embeds: [new Discord.EmbedBuilder().setTitle("Linked account").setColor("Green").setDescription(`Your discord account has been linked to the valorant account \`${name}#${tag}\``)] })
@@ -96,9 +95,9 @@ async function linkAccount(client, name, tag, message, send) {
 async function accountSettings(client, name, tag, message, send) {
 	const nametag = `${name}#${tag}`
 	const linked = client.linked.get(nametag)
-	
+
 	if (!linked || linked.id !== message.author.id) return send(message, "You have not linked your valorant account with the bot!")
-		
+
 	const row = new Discord.ActionRowBuilder().addComponents([
 		new Discord.ButtonBuilder().setCustomId("private").setLabel(linked.private ? "Statistics are private" : "Statistics are public").setStyle(linked.private ? "Danger" : "Primary"),
 		new Discord.ButtonBuilder().setCustomId("remove").setLabel("Remove account from bot").setStyle("Secondary")
@@ -129,7 +128,7 @@ async function accountSettings(client, name, tag, message, send) {
 
 async function fetchAccountData(name, tag) {
 	return new Promise((resolve, reject) => {
-		require('request')({ url: `http://api.henrikdev.xyz/valorant/v1/account/${name}/${tag}`, headers: { "Authorization": process.env.HD_KEY } }, async (err, res, body) => {
+		require('request')({ url: `http://api.henrikdev.xyz/valorant/v1/account/${encodeURIComponent(name)}/${tag}`, headers: { "Authorization": process.env.HD_KEY } }, async (err, res, body) => {
 			if (err) {
 				console.error(err)
 				return reject(err)
