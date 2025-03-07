@@ -29,7 +29,7 @@ module.exports.execute = async (client, message, args, send) => {
 			.setThumbnail(bundleData.verticalPromoImage)
 		let links = []
 		bundle.items.map(i => {
-			embed.addFields([{ name: i.name + (i.amount > 1 ? ` - ${i.amount}` : ''), value: `[${i.base_price}](${i.image || "https://playvalorant.com"}) VP\n${(i.type !== 'skin level' ? i.type : '')}`, inline: true }])
+			embed.addFields([{ name: i.name + (i.amount > 1 ? ` - ${i.amount}` : ''), value: `[${i.base_price}](${i.image || "https://playvalorant.com"}) VP\n${(i.type !== 'skin_level' ? i.type.split("_").join(" ") : '')}`, inline: true }])
 			links.push({ name: i.name, preview: i.image || "Could not fetch", type: i.type.split("_").join(" ") })
 		})
 
