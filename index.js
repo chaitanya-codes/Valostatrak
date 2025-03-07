@@ -42,9 +42,9 @@ app.get("/", (req, res) => {
 app.get("/servercount", (req, res) => {
 	res.json({count: client.guilds.cache.size})
 })
-app.get("/commands", (req, res) => {
-	let commandList = client.commands.map(c => `<b>/${c.info.name} - ${c.info.description}</b>`)
-	res.send("<body bgcolor='blue'" + commandList.join("<br>") + "</body>")
+app.use("/commands", require("./routes/commands.js")(client))
+app.get("/about", (req, res) => {
+  res.send("This page still WIP :)")
 })
 app.get("/verify", (req, res) => {
 	res.send("Verification system is still WIP!\nCurrently in " + client.guilds.cache.size + " servers!")
