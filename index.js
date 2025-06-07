@@ -58,12 +58,14 @@ Failure to follow the rules would result in a warn or blacklist from the bot dep
 ⌂ Don't use commands like \`say\` to break a server's rule [Warn]<br>
 ⌂ Don't send troll reports [Warn]`)
 })	
-app.listen(8081)
+app.listen(8080, () => {
+  console.log("App listening on port 8081")
+})
 
 app.post("/dblwebhook", webhook.listener(vote => {
 	client.guilds.cache.get('501396018395480065').channels.cache.get('522420279352492049').send("<@" + vote.user + "> voted for me on top.gg!")
 	client.bypassed.set(vote.user, true)
-}))
+}))y
 
 const { AutoPoster } = require('topgg-autoposter')
 const ap = AutoPoster(process.env.DBL_TOKEN, client)
