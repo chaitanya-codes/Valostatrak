@@ -65,7 +65,7 @@ app.listen(8080, () => {
 app.post("/dblwebhook", webhook.listener(vote => {
 	client.guilds.cache.get('501396018395480065').channels.cache.get('522420279352492049').send("<@" + vote.user + "> voted for me on top.gg!")
 	client.bypassed.set(vote.user, true)
-}))y
+}))
 
 const { AutoPoster } = require('topgg-autoposter')
 const ap = AutoPoster(process.env.DBL_TOKEN, client)
