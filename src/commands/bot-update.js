@@ -11,7 +11,8 @@ module.exports.execute = (client, message, args, send) => {
 
 	updatesChannel.messages.fetch({ limit: 10 })
 	.then(messages => {
-		const latestUpdate = messages.map(m => m.content).slice(0,5).reverse().join("\n\n")
+		const latestUpdate = messages.map(m => m.author.id === client.user.id).slice(0,5).reverse().join("\n\n")
+    if (!latestUpdate.length) return send(message, "Could not fetch latest update. You can check on support server")
 		const Discord = require('discord.js')
 		const updatesEm = new Discord.EmbedBuilder()
 			.setColor(message.member.roles.highest.color)
