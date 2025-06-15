@@ -132,8 +132,9 @@ client.send = async (response, object = {}) => {
 	if (!sendBack) return console.log("FAILED TO SEND: \n" + sendObject)
 		return sendBack;
 }
+
 client.embed = (object = {}) => {
-	if (object.descriptionLink) object.description = `[${embedData.description}](${object.descriptionLink})`
+	if (object.descriptionLink) object.description = `[${object.description}](${object.descriptionLink})`
 	if (object.footer && typeof object.footer !== "object") object.footer = {"text": object.footer}
 	if (object.author && object.author.tag) object.author = {"name": (object.author.tag ? object.author.tag : object.author.toString()), "iconURL": (object.author.displayAvatarURL ? object.author.displayAvatarURL() : null)}
 	if (object.fields && object.fields[0][0]) object.fields = object.fields.map(f => {return{name: f[0], value: String(f[1]), inline: object.inlineFields || false}})
