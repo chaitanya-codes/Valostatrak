@@ -1,3 +1,6 @@
+const Discord = require('discord.js')
+const request = require('request')
+
 module.exports.info = {
 	name: "store",
 	description: "See the current store collection",
@@ -6,69 +9,143 @@ module.exports.info = {
 	module: "Game Assets"
 }
 
-const Discord = require('discord.js')
-
 module.exports.execute = async (client, message, args, send) => {
 	message.deferReply()
-	require('request')({ url: `https://api.henrikdev.xyz/valorant/v2/store-featured`, headers: { "Authorization": process.env.HD_KEY } }, async (err, res, body) => {
+
+	const url = `https://api.henrikdev.xyz/valorant/v2/store-featured`
+	const headers = { "Authorization": process.env.HD_KEY }
+
+	request({ url, headers }, async (err, res, body) => {
 		if (String(body).startsWith('<')) return message.reply("API is slow right now, try again later.")
-		if (err || JSON.parse(body).status !== 200) return send(message, "There was an error while fetching the store! " + JSON.parse(body).errors[0].message)
-		const data = JSON.parse(body).data
 
-		const bundle = data[0]
-		if (!bundle) return send(message, "Something went wrong!")
-		
+		let json
+		try {
+			json = JSON.parse(body)
+		} catch (e) {
+			return send(message, "Invalid response from API.")
+		}
+
+		if (err || json.status !== 200) {
+			return send(message, "There was an error while fetching the store! " + (json.errors?.[0]?.message || 'Unknown error'))
+		}
+
+		const stores = json.data
+		if (!stores?.length) return send(message, "Something went wrong!")
+    let storePage = 0
+    
 		const bundles = await client.getBundles()
-		const bundleData = bundles.filter(b => b.uuid === bundle.bundle_uuid)[0]
+    let bundle = stores[storePage]
+  
+    const bundleEmbed = () => {
+	    const bundleData = bundles.find(b => b.uuid === bundle.bundle_uuid)
+		  if (!bundleData) return send(message, "Bundle data not found!")
+      
+      const embed = new Discord.EmbedBuilder()
+        .setColor("Random")
+        .setTitle(bundleData.displayName)
+        .setDescription(`Store Featured Bundle\nWhole sale only: ${bundle.whole_sale_only ? "Yes" : "No"}\nBundle price: **${bundle.bundle_price}** VP`)
+        .setImage(bundleData.displayIcon)
+        .setThumbnail(bundleData.verticalPromoImage)
+        .setFooter({
+          text: "Bundle expires on: " + new Date(bundle.expires_at).toLocaleDateString('en-GB'),
+          iconURL: client.user.displayAvatarURL()
+        })
 
-		const embed = new Discord.EmbedBuilder()
-			.setColor("Random")
-			.setTitle(bundleData.displayName)
-			.setDescription("Store Featured Bundle\n" + "Bundle price: " + String(bundle.bundle_price) + "VP")
-			.setImage(bundleData.displayIcon)
-			.setThumbnail(bundleData.verticalPromoImage)
-		let links = []
-		bundle.items.map(i => {
-			embed.addFields([{ name: i.name + (i.amount > 1 ? ` - ${i.amount}` : ''), value: `[${i.base_price}](${i.image || "https://playvalorant.com"}) VP\n${(i.type !== 'skin_level' ? i.type.split("_").join(" ") : '')}`, inline: true }])
-			links.push({ name: i.name, preview: i.image || "Could not fetch", type: i.type.split("_").join(" ") })
-		})
+      bundle.items.map(item => {
+        embed.addFields([{
+          name: item.name,
+          value: `[${item.base_price}](${item.image || "https://playvalorant.com"}) VP\n${(item.type !== 'skin_level' ? item.type.split("_").join(" ") : '') + (item.amount > 1 ? ` (x${item.amount})` : '')}`,
+          inline: true
+        }])
+      })
 
-		let row = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setCustomId("preview").setLabel("Preview skins").setStyle("Secondary")])
-		embed.setFooter({ text: "Bundle expires at: " + new Date(bundle.expires_at).toLocaleDateString('en-GB'), iconURL: client.user.displayAvatarURL() })
-		if (bundle.description && bundle.extraDescription) embed.addFields([{ name: bundle.description, value: bundle.extraDescription }])
-		let m = await send(message, { reply: true, embeds: [embed], components: [row] })
+      if (bundle.description && bundle.extraDescription) {
+        embed.addFields([{ name: bundle.description, value: bundle.extraDescription }])
+      }
+      return embed
+    }
 
-		let page = 0;
+		let page = 0
+    const storeRow = () => {
+			return new Discord.ActionRowBuilder().addComponents(
+				new Discord.ButtonBuilder().setLabel("⬅ Previous Store").setCustomId("prev-store").setStyle("Primary").setDisabled(storePage === 0),
+				new Discord.ButtonBuilder().setLabel("Preview Skins").setCustomId("preview").setStyle("Success"),
+				new Discord.ButtonBuilder().setLabel("Next Store ➡").setCustomId("next-store").setStyle("Primary").setDisabled(storePage >= stores.length - 1)
+			)
+		}
+    
+		const row = () => {
+			const disableLeft = page <= 0
+			const disableRight = page >= bundle.items.length - 1
+			const disablePreview = bundle.items[page].type !== 'skin_level'
+
+			return new Discord.ActionRowBuilder().addComponents(
+				new Discord.ButtonBuilder().setEmoji("⬅️").setCustomId("left").setDisabled(disableLeft).setStyle("Secondary"),
+				new Discord.ButtonBuilder().setLabel("Preview").setCustomId("preview-skin").setDisabled(disablePreview).setStyle("Secondary"),
+				new Discord.ButtonBuilder().setEmoji("➡️").setCustomId("right").setDisabled(disableRight).setStyle("Secondary")
+			)
+		}
+
+		const messageSent = await send(message, { reply: true, embeds: [bundleEmbed()], components: [storeRow()] })
+    
 		const filter = i => i.user.id === message.author.id
-		let col = m.createMessageComponentCollector({ filter, time: 50000, idle: 40000 })
-		row = new Discord.ActionRowBuilder()
-			.addComponents([new Discord.ButtonBuilder().setEmoji("⬅️").setCustomId("left").setDisabled(true).setStyle("Secondary"), new Discord.ButtonBuilder().setLabel("Preview").setCustomId("preview2").setStyle("Secondary"), new Discord.ButtonBuilder().setEmoji("➡️").setCustomId("right").setStyle("Secondary")])
-		col.on("collect", i => {
-			if (links[page].type !== 'skin_level') row.components[1].setDisabled(true)
-			else row.components[1].setDisabled(false)
-			if (i.customId === 'preview') {
-				send(i, { edit: true, embeds: [], content: (links[0]?.name || 'No skin to preview') + '\n' + links[0].preview || '', components: [row] })
-			} else if (i.customId === 'left') {
-				page--;
-				if ((page + 1) <= links.length) row.components[2].setDisabled(false)
-				if (page <= 0) row.components[0].setDisabled(true)
-				if (links[page].type !== 'skin_level') row.components[1].setDisabled(true)
-				else row.components[1].setDisabled(false)
-				send(i, { edit: true, content: (links[page].name || 'No skin to preview') + '\n' + links[page].preview, components: [row] })
-			} else if (i.customId === 'right') {
-				page++;
-				if ((page + 1) >= links.length) row.components[2].setDisabled(true)
-				row.components[0].setDisabled(false)
-				if (links[page].type !== 'skin_level') row.components[1].setDisabled(true)
-				else row.components[1].setDisabled(false)
-				send(i, { edit: true, content: (links[page].name || 'No skin to preview') + '\n' + links[page].preview, components: [row] })
-			} else if (i.customId === 'preview2') {
-				client.commands.get("skin").execute(client, message, links[page].name.split(" "), send)
-				i.deferUpdate()
+		const collector = messageSent.createMessageComponentCollector({ filter, time: 50000, idle: 40000 })
+  
+    const updateStore = async (i) => {
+			bundle = stores[storePage]
+			page = 0
+			await send(i, { edit: true, embeds: [bundleEmbed(bundle)], components: [storeRow()] })
+		}
+    
+		const updatePreview = (i) => {
+			const item = bundle.items[page]
+      let previewEmbed = new Discord.EmbedBuilder()
+			.setColor("Random")
+			.setTitle(item.name)
+      .setDescription(`Price: ${item.base_price ?? 0}VP ${item.discounted_price && item.discount_percent > 0 ? `| Discounted price: ${item.discounted_price}VP (${item.discount_percent}%)` : ""}`)
+      .setImage(item.image)
+      
+			send(i, {
+				edit: true,
+				embeds: [previewEmbed],
+				components: [row(), new Discord.ActionRowBuilder().addComponents(new Discord.ButtonBuilder().setLabel("Go back").setCustomId("back").setStyle("Secondary"))]
+			})
+		}
+
+		collector.on("collect", async i => {
+			switch (i.customId) {
+				case 'preview':
+					page = 0
+					updatePreview(i)
+					break
+				case 'left':
+					page--
+					updatePreview(i)
+					break
+				case 'right':
+					page++
+					updatePreview(i)
+					break
+				case 'preview-skin':
+					await client.commands.get("skin").execute(client, message, bundle.items[page].name.split(" "), send)
+					i.deferUpdate()
+					break
+        case 'prev-store':
+					storePage--
+					await updateStore(i)
+					break
+				case 'next-store':
+					storePage++
+					await updateStore(i)
+					break
+        case 'back':
+          await updateStore(i)
+          break
 			}
 		})
-		col.on("end", () => {
-			send(m, { edit: true, components: [] })
+
+		collector.on("end", () => {
+			send(messageSent, { edit: true, components: [] })
 		})
 	})
 }

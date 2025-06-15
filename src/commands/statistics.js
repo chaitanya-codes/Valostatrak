@@ -8,107 +8,181 @@ module.exports.info = {
 }
 
 const request = require('request');
-const Discord = require('discord.js')
-const progressBar = require("string-progressbar")
-// const Canvas = require('canvas')
+const Discord = require('discord.js');
+const progressBar = require("string-progressbar");
+const Canvas = require('canvas');
+const { AttachmentBuilder } = require('discord.js');
 
 module.exports.execute = async (client, message, args, send) => {
 
-	if (!args.join(" ").includes("#")) return send(message, "Usage: `/statistics <name#tag>` \nExample: `/statistics 100T Asuna#1111`")
+	if (!args.join(" ").includes("#"))
+		return send(message, "Usage: `/statistics <name#tag>` \nExample: `/statistics 100T Asuna#1111`");
 
-	const [name, tag] = args.join(" ").split("#")
-	const nametag = `${name}#${tag}`
+	const [name, tag] = args.join(" ").split("#");
+	const nametag = `${name}#${tag}`.toLowerCase();
 
-	if (!client.linked.has(nametag.toLowerCase())) return send(message, { embeds: [client.embed({ color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link your Account`" })] })
-	if (!client.accounts.has(nametag.toLowerCase())) return client.newUser(nametag, this.info.name, message)
+	if (!client.linked.has(nametag))
+		return send(message, {
+			embeds: [client.embed({
+				color: '417543',
+				title: "Account not linked",
+				description: "This account is not linked with the bot!\nIf this is your account use `/account Link your Account`"
+			})]
+		});
 
-	const region = client.accounts.get(nametag.toLowerCase())
-	const linked = client.linked.get(args.join(" ").toLowerCase())
+	if (!client.accounts.has(nametag))
+		return client.newUser(nametag, this.info.name, message);
 
-	if (linked.private) return send(message, "Account is set to private by owner")
+	const region = client.accounts.get(nametag);
+	const linked = client.linked.get(args.join(" ").toLowerCase());
 
-	const waitEmbed = new Discord.EmbedBuilder()
-		.setColor(428985)
-		.setTitle("Searching...")
-	const msg = await send(message, { embeds: [waitEmbed] })
+	if (linked.private)
+		return send(message, "Account is set to private by owner");
 
-	request({ url: `https://api.henrikdev.xyz/valorant/v2/mmr/${region}/${name}/${tag}`, headers: { "Authorization": process.env.HD_KEY } }, async (err, res, body) => {
+	const msg = await send(message, { content: "Fetching stats..." });
 
-		const data = JSON.parse(body).data
+	request({
+		url: `https://api.henrikdev.xyz/valorant/v2/mmr/${region}/${name}/${tag}`,
+		headers: { "Authorization": process.env.HD_KEY }
+	}, async (err, res, body) => {
+		const json = JSON.parse(body);
+		const data = json.data;
 
-		if (err || JSON.parse(body).status !== 200 || !data || !data['by_season']) return send(message, client.notFound(JSON.parse(body).message))
+		if (err || json.status !== 200 || !data || !data['by_season'])
+			return send(message, client.notFound(json.message));
 
-		const seasons = Object.keys(data['by_season'])
-		const currentData = data['current_data']
-		const rr = progressBar.filledBar(100, currentData.ranking_in_tier, 20)[0] || ""
+		const seasons = Object.keys(data['by_season']);
+		const currentData = data['current_data'];
 
-		const statEmbed = new Discord.EmbedBuilder()
-			.setColor(342852)
-			.setTitle("Statistics - " + args.join(" "))
-			.setFields([{ name: "Rank", value: (currentData.currenttierpatched ? currentData.currenttierpatched + `\n${currentData.ranking_in_tier}/100 ${rr || ""}` : "Unranked") },
-			{ name: "Recent MMR change", value: String((currentData.mmr_change_to_last_game < 0 ? client.downEmoji.toString() + " " + currentData.mmr_change_to_last_game : client.upEmoji.toString() + " +" + currentData.mmr_change_to_last_game)), inline: true },
-			{ name: "ELO", value: String(currentData.elo), inline: true }])
-			.setFooter({ text: "To view match history, use /matches command" })
-			.setThumbnail(currentData.images.large) // client.rankImg(currentData.currenttierpatched, currentData.currenttier)
+		const generateCanvas = async (title, details) => {
+			const canvas = Canvas.createCanvas(600, 280);
+			const ctx = canvas.getContext('2d');
+
+			const bgColor = '#0f1923';
+			const sectionColor = '#1e2a38';
+			const textColor = '#ffffff';
+
+			ctx.fillStyle = bgColor;
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+			ctx.fillStyle = sectionColor;
+			ctx.fillRect(0, 0, canvas.width, 50);
+			ctx.font = 'bold 24px Sans';
+			ctx.fillStyle = textColor;
+			ctx.fillText(title, 20, 32);
+
+			const [rankImg, upImg, downImg] = await Promise.all([
+				Canvas.loadImage(details.img),
+				Canvas.loadImage(client.upEmoji.url),
+				Canvas.loadImage(client.downEmoji.url)
+			]);
+
+			ctx.drawImage(rankImg, 440, 70, 130, 130);
+
+			let y = 90;
+			ctx.font = '18px Sans';
+      ctx.fillStyle = textColor;
+
+      for (const line of details.lines) {
+        if (line.startsWith("Climbed: ")) {
+          const climbed = line.slice(9).split(" → ");
+          let chunk = "Climbed: ";
+          for (let i = 0; i < climbed.length; i++) {
+            const part = climbed[i] + (i !== climbed.length - 1 ? " → " : "");
+            if ((chunk + part).length > 50) {
+              ctx.fillText(chunk, 20, y);
+              y += 25;
+              chunk = "";
+            }
+            chunk += part;
+          }
+          if (chunk.length > 0) {
+            ctx.fillText(chunk, 20, y);
+            y += 25;
+          }
+        } else {
+          ctx.fillText(line, 20, y);
+          y += 25;
+        }
+      }
+
+			if (details.progress !== undefined) {
+				ctx.fillStyle = '#3b82f6';
+				ctx.fillRect(20, y, details.progress * 2, 15);
+				ctx.strokeStyle = '#ccc';
+				ctx.strokeRect(20, y, 200, 15);
+				y += 30;
+			}
+
+			if (details.change !== undefined) {
+				const mmrChange = details.change;
+				ctx.drawImage(mmrChange >= 0 ? upImg : downImg, 20, y, 30, 30);
+				ctx.fillStyle = mmrChange >= 0 ? '#00ff88' : '#ff5555';
+				ctx.font = '18px Sans';
+				ctx.fillText(`${mmrChange >= 0 ? "+" : ""}${mmrChange} MMR`, 60, y + 22);
+			}
+
+			return new AttachmentBuilder(canvas.toBuffer(), { name: 'valorant_stats.png' });
+		};
+
+		const makeCanvasData = (actId = null) => {
+			if (!actId) {
+				const rrBar = currentData.ranking_in_tier || 0;
+				return {
+					img: currentData.images.large,
+					lines: [
+						`Rank: ${currentData.currenttierpatched || "Unranked"}`,
+						`RR: ${currentData.ranking_in_tier || 0}/100`,
+						`ELO: ${currentData.elo}`,
+					],
+					progress: rrBar,
+					change: currentData.mmr_change_to_last_game
+				};
+			} else {
+				const season = data['by_season'][actId];
+				return {
+					img: client.rankImg(season.final_rank_patched, season.final_rank),
+					lines: [
+						`Rank in act: ${season.final_rank_patched}`,
+						`Wins: ${season.wins}`,
+						`Games played: ${season.number_of_games}`,
+						`Climbed: ${[...new Set(season.act_rank_wins.map(w => w.patched_tier).reverse())].join(" → ")}`
+					]
+				};
+			}
+		};
+
+		const title = `Statistics - ${args.join(" ")}`;
+		const attachment = await generateCanvas(title, makeCanvasData());
 
 		const row = new Discord.ActionRowBuilder()
-			.addComponents([new Discord.StringSelectMenuBuilder().setCustomId("acts").addOptions([{ label: "Current statistics", value: "current" }, seasons.map(value => { return { label: value.replace("e", "Episode ").replace("a", ": Act "), value: value } }).reverse().slice(0, 24)].flat(1))])
+			.addComponents([new Discord.StringSelectMenuBuilder()
+                      .setCustomId("acts")
+                      .setPlaceholder("Choose act...")
+                      .addOptions([{ label: "Current statistics", value: "current" }, seasons.map(value => { return { label: value.replace("e", "Episode ").replace("a", ": Act "), value: value } }).reverse().slice(0, 24)].flat(1))])
 
-		const statMsg = await send(msg, { edit: true, embeds: [statEmbed], components: [row] })
 
-		const filter = (interaction) => message.author.id === interaction.user.id
-		const collector = msg.createMessageComponentCollector({ filter, time: 55000 })
+		const statMsg = await send(msg, { content: "", files: [attachment], components: [row] });
+
+		const collector = statMsg.createMessageComponentCollector({
+			filter: i => i.user.id === message.author.id,
+			time: 55000
+		});
 
 		collector.on('collect', async i => {
-			const id = i.isStringSelectMenu() ? i.values[0] : i.customId
+			const id = i.values[0];
 
-			if (seasons.includes(id)) {
-				const bySeason = data['by_season'][id]
-				if (!bySeason.number_of_games) return send(i, { ephemeral: true, content: "This player has not played in that act" })
+			const dataObj = id === "current" ? makeCanvasData() : makeCanvasData(id);
 
-				const seasonEmbed = new Discord.EmbedBuilder()
-					.setColor(349842)
-					.setTitle("Statistics - " + args.join(" "))
-					.setDescription(id.replace("e", "Episode ").replace("a", " Act "))
-					.setThumbnail(client.rankImg(bySeason.final_rank_patched, bySeason.final_rank))
-					.setFields([
-						{ name: "Wins", value: String(bySeason.wins) },
-						{ name: "Number of games played", value: String(bySeason.number_of_games) },
-						{ name: "Rank in this act", value: bySeason.final_rank_patched },
-						{ name: "Ranks climbed", value: "```\n" + [...new Set(bySeason.act_rank_wins.map(w => w.patched_tier).reverse())].join(" -> ") + "```"}
-					])
-				send(statMsg, { edit: true, embeds: [seasonEmbed] })
-			} else if (id === 'current') send(statMsg, { edit: true, embeds: [statEmbed] })
-		})
-		collector.on('end', collected => { })
+			if (id !== "current" && !data['by_season'][id]?.number_of_games)
+				return i.reply({ ephemeral: true, content: "This player has not played in that act." });
 
-		/*
-		const canvas = new Canvas.createCanvas(550, 300)
-		let ctx = canvas.getContext('2d')
-		let downImg = await Canvas.loadImage(client.downEmoji.url)
-		let upImg = await Canvas.loadImage(client.upEmoji.url)
-		let rankImg = await Canvas.loadImage(`https://raw.githubusercontent.com/RumbleMike/ValorantStreamOverlay/main/Resources/TX_CompetitiveTier_Large_${currentData.currenttier}.png`)
-		ctx.drawImage(rankImg, canvas.width / 1.1, 0, 50, 50)
-		ctx.fillStyle = '#baa096'
-		ctx.fillRect(0, 0, 159, canvas.height)
-		ctx.fillStyle = '#94a22e'
-		ctx.fillRect(0, 0, canvas.width, 50)
-		ctx.strokeStyle = 'rgba(0,0,0,0.5)'
-		ctx.beginPath()
-		ctx.lineTo(0, 50)
-		ctx.lineTo(canvas.width, 50)
-		ctx.stroke()
-		
-		ctx.font = `25px comic-sans`
-		ctx.fillStyle = '#ffffff'
-		ctx.fillText((currentData.currenttierpatched ? currentData.currenttierpatched + `\n${currentData.ranking_in_tier}/100 ${rr || ""}` : "Unranked"), canvas.width / 2.31, 36)
-		if (currentData.mmr_change_to_last_game < 0) ctx.drawImage(downImg, canvas.width / 2.4, 70)
-		else ctx.drawImage(upImg, canvas.width / 2.4, 40)
-		ctx.font = `bold 25px sans-serif`
-		ctx.fillStyle = '#3f04f4'
-		ctx.fillText(args.join(" "), canvas.width / 3.3, 75)
-		
-		let image = new Discord.Attachment(canvas.toBuffer(), 'test.png')
-		//				send(message, image)*/
-	})
-}
+			const attachment = await generateCanvas(title, dataObj);
+			await send(statMsg, { edit: true, files: [attachment], components: [row] });
+		});
+
+		collector.on('end', () => {
+			statMsg.edit({ components: [] }).catch(() => { });
+		});
+	});
+};
