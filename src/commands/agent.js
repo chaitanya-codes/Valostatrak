@@ -10,7 +10,6 @@ module.exports.info = {
 const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js')
 
 module.exports.execute = async (client, message, args, send) => {
-
 	const data = await client.getAgents()
 	data.sort((a, b) => a.displayName.localeCompare(b.displayName))
 	const agentName = args[0] ? args.join(" ") : data[0].displayName

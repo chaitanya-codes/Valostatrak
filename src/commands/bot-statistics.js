@@ -7,7 +7,6 @@ module.exports.info = {
 }
 
 module.exports.execute = async (client, message, args, send) => {
-	
 	let uptimeOfBot = client.uptime
 	if (uptimeOfBot < 60) uptimeOfBot = `00:00:${uptimeOfBot.toFixed(0)}`
 	else uptimeOfBot = new Date(client.uptime).toISOString().substr(11, 8)

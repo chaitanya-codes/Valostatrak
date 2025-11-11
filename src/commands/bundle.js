@@ -9,7 +9,6 @@ module.exports.info = {
 const Discord = require('discord.js')
 
 module.exports.execute = async (client, message, args, send) => {
-
 	if (!args[0]) return send(message, "Command Usage: `/bundle <bundleName>`\nExample: `/bundle RGX 11z Pro`")
 
 	let bundleName = args.join(' ')

@@ -1,4 +1,7 @@
 node_modules/
-
+data/
+.sqlite
+.sqlite-shm
+.sqlite-wal
 .env
 eval.txt
