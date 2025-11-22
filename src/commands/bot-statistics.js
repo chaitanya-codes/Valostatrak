@@ -32,7 +32,6 @@ module.exports.execute = async (client, message, args, send) => {
 				`📼 **Servers:** ${client.guilds.cache.size}\n` +
 				`🗄️ **Channels:** ${client.channels.cache.size}\n` +
 				`👥 **Users:** ${client.guilds.cache.reduce((a, g) => a + g.memberCount, 0)}\n`,
-				inline: true
 			},
 			{
 				name: "⚡ Performance",
@@ -41,7 +40,6 @@ module.exports.execute = async (client, message, args, send) => {
 				`⏰ **Uptime:** ${uptime}\n` +
 				`💾	 **Memory:** ${memory} MB\n` +
 				`📚 **Library:** discord.js@${Discord.version}\n`,
-				inline: true
 			},
 			{
 				name: "📈 Usage Analytics",
