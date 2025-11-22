@@ -18,6 +18,10 @@ client.triviaStats = new Enmap({
 	name: "stats",
 	autoFetch: true
 })
+client.statistics = new Enmap({
+	name: "statistics",
+	autoFetch: true
+})
 client.accounts = new Enmap({
 	name: "accounts",
 	autoFetch: true
@@ -39,9 +43,6 @@ app.use(express.static("public"))
 app.get("/", (req, res) => {
 	res.sendFile(path.join(__dirname, '/public/index.html'));
 })
-app.get("/servercount", (req, res) => {
-	res.json({count: client.guilds.cache.size})
-})
 app.use("/commands", require("./routes/commands.js")(client))
 app.get("/about", (req, res) => {
   res.send("This page still WIP :)")
@@ -49,6 +50,43 @@ app.get("/about", (req, res) => {
 app.get("/verify", (req, res) => {
 	res.send("Verification system is still WIP!\nCurrently in " + client.guilds.cache.size + " servers!")
 })
+app.get("/servercount", (req, res) => {
+	res.json({count: client.guilds.cache.size})
+})
+app.get("/stats/commands", (req, res) => {
+    const obj = client.statistics.get("commands") || {};
+    const arr = Object.keys(obj).map(k => ({
+        command: k,
+        count: obj[k] || 0
+    }));
+    arr.sort((a, b) => b.count - a.count);
+    res.json(arr);
+});
+
+app.get("/stats/total", (req, res) => {
+    res.json({ total: client.statistics.get("total_commands") || 0 });
+});
+
+app.get("/stats/daily", (req, res) => {
+    const days = parseInt(req.query.days) || 30;
+    const now = new Date();
+    const daily = client.statistics.get("daily") || {};
+
+    const output = [];
+
+    for (let i = days - 1; i >= 0; i--) {
+        const d = new Date(now);
+        d.setDate(now.getDate() - i);
+        const today = d.toISOString().slice(0, 10);
+
+        output.push({
+            day: today,
+            count: daily[today] || 0
+        });
+    }
+    res.json(output);
+});
+app.get("/health", (req, res) => res.json({ ok: true }));
 app.get("/terms-of-service", (req, res) => {
 	res.send(`You agree to these rules when you use our bots.<br>
 Failure to follow the rules would result in a warn or blacklist from the bot depending on the severeness<br>
@@ -57,7 +95,7 @@ Failure to follow the rules would result in a warn or blacklist from the bot dep
 ⌂ Don't spread false info about the bot [Warn]<br>
 ⌂ Don't use commands like \`say\` to break a server's rule [Warn]<br>
 ⌂ Don't send troll reports [Warn]`)
-})	
+})
 app.listen(8080, () => {
   console.log("App listening on port 8081")
 })
@@ -170,6 +208,10 @@ client.newUser = async (id, cmd, message, sub) => {
 	})
 }
 
+client.statistics.ensure("total_commands", 0);
+client.statistics.ensure("commands", {});
+client.statistics.ensure("daily", {});
+
 const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.js'))
 
 for (const file of commandFiles) {
@@ -177,6 +219,7 @@ for (const file of commandFiles) {
 	if (!command || !command.info || !command.info.name || !command.execute) console.log('[ValoStatrack] Error in file ' + file + '! File not loaded.')
 		client.commands.set(command.info.name, command)
 	console.log(`[ValoStatrack] Loaded Command ${command.info.name}`)
+	client.statistics.ensure("commands", 0, command.info.name);
 }
 
 client.on('ready', () => require('./src/events/ready.js').Ready(client))

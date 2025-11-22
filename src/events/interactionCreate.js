@@ -32,9 +32,9 @@ module.exports.Interaction = async (client, interaction) => {
 			}
 
 			switch (optionName) {
-        case 'agent':
-          return client.getAgents()
-            .then(agents => respondFiltered(agents.map(a => a.displayName), currentValue))
+				case 'agent':
+					return client.getAgents()
+						.then(agents => respondFiltered(agents.map(a => a.displayName), currentValue))
 				case 'skin':
 					return client.getSkins()
 						.then(skins => respondFiltered(skins.map(s => s.displayName.replace("//", " ")), currentValue))
@@ -84,6 +84,11 @@ module.exports.Interaction = async (client, interaction) => {
 			if (interaction.author.id !== "485885170080022556") client.channels.cache.get('958713047852122153').send(`${interaction.author.username} \`(${interaction.author.id})\` used the command \`/${commandName} ${args.join(" ")}\` in server \`${interaction.guild.name}\``)
 			//if (command.info.module === 'Statistics' && interaction.options.get("username") && client.linked.find((u, name) => u.private === true && (interaction.author.id !== name))) return interaction.reply("This profile is set to private by the linked account owner\nif this is your account, you can verify that to us in support server")
 			await command.execute(client, interaction, args, client.send, client.ratelimit)
+			client.statistics.inc("total_commands");
+			client.statistics.inc("commands", commandName);
+			const day = new Date().toISOString().slice(0, 10);
+			client.statistics.ensure("daily", 0, day);
+			client.statistics.inc("daily", day);
 		} catch (error) {
 			client.channels.cache.get('546320905035579396').send({ embeds: [{ color: 472422, description: `**There was an error in the server \`${interaction.guild.name}\` caused by the user \`${interaction.user.username}\`(${interaction.user.id}) with the command \`${commandName}\`**\n\n*The error was:*\n\`\`\`prolog\n${error}\`\`\`` }] })
 			console.error(error)

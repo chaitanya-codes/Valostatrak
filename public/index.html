@@ -21,10 +21,23 @@
         </nav>
     </header>
     <main>
-        <h1 class="slogan">Valorant Statistics</h1>
-        <h2 class="slogan">Simplifed.</h2>
+        <div class="sloganContainer">
+            <h1 class="slogan">Valorant Statistics</h1>
+            <h2 class="slogan">Simplifed.</h2>
+        </div>
         <p id="info"></p>
         <span id="servercount">Server count: 10</span>
+
+        <div class="row">
+            <div class="col card">
+              <h2>Top Commands (All Time)</h2>
+              <canvas id="topCommands"></canvas>
+            </div>
+            <div class="col card">
+              <h2>Daily Usage (Last 30 Days)</h2>
+              <canvas id="dailyUsage"></canvas>
+            </div>
+        </div>
     </main>
     <footer>
         

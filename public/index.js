@@ -3,7 +3,7 @@ const serverCount = document.querySelector("#servercount");
 // const clientServerCount = // host /servercount json;
 
 (async () => {
-  let clientServerCount = await fetch("/servercount")
+  let clientServerCount = await fetch("/api/servercount")
   clientServerCount = await clientServerCount.json()
   clientServerCount = clientServerCount.count
   let count = Number(serverCount.innerHTML[serverCount.innerHTML.length-1])
@@ -22,3 +22,48 @@ const serverCount = document.querySelector("#servercount");
 
   changeCount() // Paused
 })()
+
+
+
+async function drawTopCommands() {
+  const res = await fetch("/stats/commands");
+  let data = await res.json();
+  const labels = data.map(d => d.command);
+  const counts = data.map(d => d.count);
+
+  const ctx = document.getElementById("topCommands");
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{ data: counts }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+}
+
+async function drawDailyUsage() {
+  const res = await fetch("/stats/daily?days=30");
+  let data = await res.json();
+  const labels = data.map(d => d.day);
+  const counts = data.map(d => d.count);
+
+  const ctx = document.getElementById("dailyUsage");
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{ data: counts, fill:true, tension:0.3 }]
+    },
+    options: {
+      plugins: { legend: { display:false } },
+      scales: { y: { beginAtZero:true } }
+    }
+  });
+}
+
+drawTopCommands();
+drawDailyUsage();

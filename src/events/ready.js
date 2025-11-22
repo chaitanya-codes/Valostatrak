@@ -7,7 +7,7 @@ let baseURL = 'https://valorant-api.com/v1/'
 module.exports.Ready = async (client) => {
 	console.log("Logged in as " + client.user.tag)
 	client.wait = (time) => require('util').promisify(setTimeout)(time)
-	client.user.setActivity(`/help | `, { type: ActivityType.Playing })
+	client.user.setActivity(`/help`, { type: ActivityType.Playing })
 
 	const endpoints = ['weapons', 'maps', 'agents', 'sprays', 'weapons/skinlevels', 'bundles', 'buddies', 'playertitles', 'playercards', 'contracts', 'weapons/skins', 'levelborders']
 	const requestAPI = async (url, property) => {
