@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 const { InteractionType } = require('discord.js')
 const leagues = ["vct_americas", "challengers_na", "game_changers_na", "vct_emea", "vct_pacific", "challengers_br", "challengers_jpn", "challengers_kr", "challengers_latam", "challengers_latam_n", "challengers_latam_s", "challengers_apac", "challengers_sea_id", "challengers_sea_ph", "challengers_sea_sg_and_my", "challengers_sea_th", "challengers_sea_hk_and_tw", "challengers_sea_vn", "valorant_oceania_tour", "challengers_south_asia", "game_changers_sea", "game_changers_series_brazil", "game_changers_east_asia", "game_changers_emea", "game_changers_jpn", "game_changers_kr", "game_changers_latam", "game_changers_championship", "masters", "last_chance_qualifier_apac", "last_chance_qualifier_east_asia", "last_chance_qualifier_emea", "last_chance_qualifier_na", "last_chance_qualifier_br_and_latam", "vct_lock_in", "champions", "vrl_spain", "vrl_northern_europe", "vrl_dach", "vrl_france", "vrl_east", "vrl_turkey", "vrl_cis", "mena_resilence", "challengers_italy", "challengers_portugal"]
+const mapInc = require("../utils/mapInc.js");
 
 const embed = (object = {}) => {
 	if (object.descriptionLink) object.description = `[${object.description}](${object.descriptionLink})`
@@ -84,11 +85,10 @@ module.exports.Interaction = async (client, interaction) => {
 			if (interaction.author.id !== "485885170080022556") client.channels.cache.get('958713047852122153').send(`${interaction.author.username} \`(${interaction.author.id})\` used the command \`/${commandName} ${args.join(" ")}\` in server \`${interaction.guild.name}\``)
 			//if (command.info.module === 'Statistics' && interaction.options.get("username") && client.linked.find((u, name) => u.private === true && (interaction.author.id !== name))) return interaction.reply("This profile is set to private by the linked account owner\nif this is your account, you can verify that to us in support server")
 			await command.execute(client, interaction, args, client.send, client.ratelimit)
-			client.statistics.inc("total_commands");
-			client.statistics.inc("commands", commandName);
+			mapInc(client.statistics, "total_commands");
+			mapInc(client.statistics, "commands", commandName);
 			const day = new Date().toISOString().slice(0, 10);
-			client.statistics.ensure("daily", 0, day);
-			client.statistics.inc("daily", day);
+			mapInc(client.statistics, "daily", day);
 		} catch (error) {
 			client.channels.cache.get('546320905035579396').send({ embeds: [{ color: 472422, description: `**There was an error in the server \`${interaction.guild.name}\` caused by the user \`${interaction.user.username}\`(${interaction.user.id}) with the command \`${commandName}\`**\n\n*The error was:*\n\`\`\`prolog\n${error}\`\`\`` }] })
 			console.error(error)

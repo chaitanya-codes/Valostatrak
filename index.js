@@ -219,7 +219,9 @@ for (const file of commandFiles) {
 	if (!command || !command.info || !command.info.name || !command.execute) console.log('[ValoStatrack] Error in file ' + file + '! File not loaded.')
 		client.commands.set(command.info.name, command)
 	console.log(`[ValoStatrack] Loaded Command ${command.info.name}`)
-	client.statistics.ensure("commands", 0, command.info.name);
+	const cmds = client.statistics.get("commands") || {};
+	cmds[command.info.name] ??= 0;
+	client.statistics.set("commands", cmds);
 }
 
 client.on('ready', () => require('./src/events/ready.js').Ready(client))
