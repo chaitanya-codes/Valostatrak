@@ -220,7 +220,7 @@ for (const file of commandFiles) {
 		client.commands.set(command.info.name, command)
 	console.log(`[ValoStatrack] Loaded Command ${command.info.name}`)
 	const cmds = client.statistics.get("commands") || {};
-	cmds[command.info.name] ??= 0;
+	if (!cmds[command.info.name]) cmds[command.info.name] = 0;
 	client.statistics.set("commands", cmds);
 }
 
