@@ -19,8 +19,7 @@ client.triviaStats = new Enmap({
 	autoFetch: true
 })
 client.statistics = new Enmap({
-	name: "statistics",
-	autoFetch: true
+	name: "statistics"
 })
 client.accounts = new Enmap({
 	name: "accounts",

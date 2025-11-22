@@ -7,34 +7,53 @@ module.exports.info = {
 }
 
 module.exports.execute = async (client, message, args, send) => {
-	let uptimeOfBot = client.uptime
-	if (uptimeOfBot < 60) uptimeOfBot = `00:00:${uptimeOfBot.toFixed(0)}`
-	else uptimeOfBot = new Date(client.uptime).toISOString().substr(11, 8)
-	
-	const memory = (process.memoryUsage().rss / 1048576).toFixed()
+	const ms = client.uptime;
+	const uptime = new Date(ms).toISOString().substr(11, 8);
+
+	const memory = (process.memoryUsage().rss / 1024 / 1024).toFixed(1);
+
+	const totalCommands = client.statistics.get("total_commands") || 0;
+	const today = new Date().toISOString().slice(0, 10);
+	const daily = client.statistics.get("daily") || {};
+	const todayCommands = daily[today] || 0;
+
 	const Discord = require('discord.js')
 	const embed2 = new Discord.EmbedBuilder()
-	.setColor('36393E')
-	.setDescription('[Invite Bot](' + require("../info.json").bot.invite + ') • [Website](https://valostatrak.cf) • [Vote](https://top.gg/bot/855083775460769793/vote)')
-	
+		.setColor('36393E')
+		.setDescription('[Invite Bot](' + require("../info.json").bot.invite + ') • [Website](https://valostatrak.cf) • [Vote](https://top.gg/bot/855083775460769793/vote)')
+
 	const stats = new Discord.EmbedBuilder()
-	.setColor('828329')
-	.setTitle("Bot Statistics")
-	.setDescription(
-		"*Valostatrak is a bot that can be used to view player statistics for Valorant, and in-game assets*\n\n" +
-		":bust_in_silhouette:**Author**: @exceedflame\n" +
-		":vhs:**Servers**: " + client.guilds.cache.size + "\n" +
-		":file_cabinet:**Channels**: " + client.channels.cache.size + "\n" +
-		":busts_in_silhouette:**Users**: " + client.guilds.cache.reduce((a, guild) => a + guild.memberCount, 0) + " (Inaccurate)\n" +
-		":books:**Library:** discord.js@" + Discord.version + "\n" +
-		":beginner:**Commands:** " + client.commands.size + "\n" +
-		":alarm_clock:**Uptime**: " + uptimeOfBot + "\n" +
-		":heartbeat:**Heartbeat (ping)**: " + Math.round(client.ws.ping) + "ms\n" +
-		":floppy_disk:**Memory being used currently**: " + `${memory}MB`
-		/* (${((memory / 512) * 100).toFixed(1)}%)` */
-	)
-	.setImage(`https://discordbots.org/api/widget/${client.user.id}.png?usernamecolor=18b2d4&topcolor=000000&middlecolor=1a1d23&datacolor=18d498`)
-	.setFooter({text: 'Bot developed by @ExceedFlame'})
-	send(message, {embeds: [stats, embed2]})
-	
+		.setColor('828329')
+		.setTitle("Bot Statistics")
+		.addFields(
+			{
+				name: "💠 General",
+				value:
+				`📼 **Servers:** ${client.guilds.cache.size}\n` +
+				`🗄️ **Channels:** ${client.channels.cache.size}\n` +
+				`👥 **Users:** ${client.guilds.cache.reduce((a, g) => a + g.memberCount, 0)}\n`,
+				inline: true
+			},
+			{
+				name: "⚡ Performance",
+				value:
+				`🏓 **Ping:** ${Math.round(client.ws.ping)}ms\n` +
+				`⏰ **Uptime:** ${uptime}\n` +
+				`💾	 **Memory:** ${memory} MB\n` +
+				`📚 **Library:** discord.js@${Discord.version}\n`,
+				inline: true
+			},
+			{
+				name: "📈 Usage Analytics",
+				value:
+				`🔰 Commands: ${client.commands.size}\n` +
+				`🔢 **Commands used:** ${totalCommands.toLocaleString()} (${todayCommands} today)\n`
+			}
+		)
+		.setImage(`https://discordbots.org/api/widget/${client.user.id}.png?usernamecolor=18b2d4&topcolor=000000&middlecolor=1a1d23&datacolor=18d498`)
+		.setThumbnail(client.user.displayAvatarURL({ size: 256 }))
+		.setFooter({ text: 'Bot developed by @ExceedFlame' })
+		.setTimestamp();
+
+	send(message, { embeds: [stats, embed2] })
 }
