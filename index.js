@@ -208,9 +208,9 @@ client.newUser = async (id, cmd, message, sub) => {
 	})
 }
 
-client.statistics.ensure("total_commands", 0);
-client.statistics.ensure("commands", {});
-client.statistics.ensure("daily", {});
+if (!client.statistics.has("commands")) client.statistics.set("commands", {});
+if (!client.statistics.has("daily")) client.statistics.set("daily", {});
+if (!client.statistics.has("total_commands")) client.statistics.set("total_commands", 0);
 
 const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.js'))
 
