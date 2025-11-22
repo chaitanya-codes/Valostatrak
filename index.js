@@ -44,46 +44,46 @@ app.get("/", (req, res) => {
 })
 app.use("/commands", require("./routes/commands.js")(client))
 app.get("/about", (req, res) => {
-  res.send("This page still WIP :)")
+	res.send("This page still WIP :)")
 })
 app.get("/verify", (req, res) => {
 	res.send("Verification system is still WIP!\nCurrently in " + client.guilds.cache.size + " servers!")
 })
 app.get("/api/servercount", (req, res) => {
-	res.json({count: client.guilds.cache.size})
+	res.json({ count: client.guilds.cache.size })
 })
 app.get("/api/stats/commands", (req, res) => {
-    const obj = client.statistics.get("commands") || {};
-    const arr = Object.keys(obj).map(k => ({
-        command: k,
-        count: obj[k] || 0
-    }));
-    arr.sort((a, b) => b.count - a.count);
-    res.json(arr);
+	const obj = client.statistics.get("commands") || {};
+	const arr = Object.keys(obj).map(k => ({
+		command: k,
+		count: obj[k] || 0
+	}));
+	arr.sort((a, b) => b.count - a.count);
+	res.json(arr);
 });
 
 app.get("/api/stats/total", (req, res) => {
-    res.json({ total: client.statistics.get("total_commands") || 0 });
+	res.json({ total: client.statistics.get("total_commands") || 0 });
 });
 
 app.get("/api/stats/daily", (req, res) => {
-    const days = parseInt(req.query.days) || 30;
-    const now = new Date();
-    const daily = client.statistics.get("daily") || {};
+	const days = parseInt(req.query.days) || 30;
+	const now = new Date();
+	const daily = client.statistics.get("daily") || {};
 
-    const output = [];
+	const output = [];
 
-    for (let i = days - 1; i >= 0; i--) {
-        const d = new Date(now);
-        d.setDate(now.getDate() - i);
-        const today = d.toISOString().slice(0, 10);
+	for (let i = days - 1; i >= 0; i--) {
+		const d = new Date(now);
+		d.setDate(now.getDate() - i);
+		const today = d.toISOString().slice(0, 10);
 
-        output.push({
-            day: today,
-            count: daily[today] || 0
-        });
-    }
-    res.json(output);
+		output.push({
+			day: today,
+			count: daily[today] || 0
+		});
+	}
+	res.json(output);
 });
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 app.get("/terms-of-service", (req, res) => {
@@ -96,7 +96,7 @@ Failure to follow the rules would result in a warn or blacklist from the bot dep
 ⌂ Don't send troll reports [Warn]`)
 })
 app.listen(8080, () => {
-  console.log("App listening on port 8081")
+	console.log("App listening on port 8081")
 })
 
 app.post("/dblwebhook", webhook.listener(vote => {
@@ -123,22 +123,22 @@ client.send = async (response, object = {}) => {
 	} else channel = response
 	if (!response || !object) return console.error("No value was given to send/edit.")
 	if (!channel) return console.error("No channel provided to send in.")
-			
+
 	if (object.edit && object.timeout) {
 		await require('util').promisify(setTimeout)(object.timeout)
 		delete object["timeout"]
 	}
-	
+
 	if (typeof object === "string") sendObject["content"] = object
 	else if (object instanceof Discord.Embed || object instanceof Discord.EmbedBuilder) sendObject["embeds"] = [object].flat(Infinity)
-		else if (object instanceof Discord.Attachment) sendObject["files"] = [object].flat(Infinity)
-			else if (typeof object === 'object') {
+	else if (object instanceof Discord.Attachment) sendObject["files"] = [object].flat(Infinity)
+	else if (typeof object === 'object') {
 		Object.keys(object).map((key, n) => {
 			if (["embeds", "components"].includes(key.toLowerCase())) sendObject[key] = [object[key]].flat(Infinity)
-				else sendObject[key] = object[key]
+			else sendObject[key] = object[key]
 		})
 	}
-	
+
 	if (isInteraction) {
 		delete sendObject["interaction"]
 		if (object.defer) {
@@ -152,8 +152,8 @@ client.send = async (response, object = {}) => {
 		} else {
 			sendObject["fetchReply"] = true
 			await response.reply(sendObject)
-			.then(m => sendBack = m)
-			.catch(e => response.followUp(sendObject).then(m => sendBack = m).catch(e => console.log(e)))
+				.then(m => sendBack = m)
+				.catch(e => response.followUp(sendObject).then(m => sendBack = m).catch(e => console.log(e)))
 		}
 	} else {
 		if (object.edit) {
@@ -167,22 +167,22 @@ client.send = async (response, object = {}) => {
 		}
 	}
 	if (!sendBack) return console.log("FAILED TO SEND: \n" + sendObject)
-		return sendBack;
+	return sendBack;
 }
 
 client.embed = (object = {}) => {
 	if (object.descriptionLink) object.description = `[${object.description}](${object.descriptionLink})`
-	if (object.footer && typeof object.footer !== "object") object.footer = {"text": object.footer}
-	if (object.author && object.author.tag) object.author = {"name": (object.author.tag ? object.author.tag : object.author.toString()), "iconURL": (object.author.displayAvatarURL ? object.author.displayAvatarURL() : null)}
-	if (object.fields && object.fields[0][0]) object.fields = object.fields.map(f => {return{name: f[0], value: String(f[1]), inline: object.inlineFields || false}})
-		if (object.image && !object.image.url) object.image = {url: object.image} 
-	if (object.thumbnail && !object.thumbnail.url) object.thumbnail = {url: object.thumbnail}
+	if (object.footer && typeof object.footer !== "object") object.footer = { "text": object.footer }
+	if (object.author && object.author.tag) object.author = { "name": (object.author.tag ? object.author.tag : object.author.toString()), "iconURL": (object.author.displayAvatarURL ? object.author.displayAvatarURL() : null) }
+	if (object.fields && object.fields[0][0]) object.fields = object.fields.map(f => { return { name: f[0], value: String(f[1]), inline: object.inlineFields || false } })
+	if (object.image && !object.image.url) object.image = { url: object.image }
+	if (object.thumbnail && !object.thumbnail.url) object.thumbnail = { url: object.thumbnail }
 	const embedObject = new Discord.Embed(object)
 	return embedObject;
 }
 
 client.notFound = (error) => {
-	return client.embed({title: "User not found", description: (error ? `Error: ${error}` : "This could be because of API issues / ratelimit. Please recheck the username#tag and try again later")})
+	return client.embed({ title: "User not found", description: (error ? `Error: ${error}` : "This could be because of API issues / ratelimit. Please recheck the username#tag and try again later") })
 }
 
 client.newUser = async (id, cmd, message, sub) => {
@@ -190,18 +190,18 @@ client.newUser = async (id, cmd, message, sub) => {
 	let name = id.split("#").shift()
 	let tag = id.split("#").pop()
 	if (!name || !tag) return client.send(message, "Format for username is `name#tag`")
-		
-	let msg = await client.send(message, client.embed({color: "346264", title: "Searching for " + id + "... (first time search)", footer: "This is only for first-time search of a riot ID", description: "Fetching region " + client.emojis.cache.get('588824651132567677').toString()}))
-	
-	await require('request')({url: `http://api.henrikdev.xyz/valorant/v1/account/${name}/${tag}`, headers: {"Authorization": process.env.HD_KEY}}, async (err, res, body) => {
-		if (err || JSON.parse(body).status !== 200) return client.send(msg, {edit: true, content: "User not found. Make sure you typed the name and tag correctly in format `name#tag`", embeds: []})
+
+	let msg = await client.send(message, client.embed({ color: "346264", title: "Searching for " + id + "... (first time search)", footer: "This is only for first-time search of a riot ID", description: "Fetching region " + client.emojis.cache.get('588824651132567677').toString() }))
+
+	await require('request')({ url: `http://api.henrikdev.xyz/valorant/v1/account/${name}/${tag}`, headers: { "Authorization": process.env.HD_KEY } }, async (err, res, body) => {
+		if (err || JSON.parse(body).status !== 200) return client.send(msg, { edit: true, content: "User not found. Make sure you typed the name and tag correctly in format `name#tag`", embeds: [] })
 		const data = JSON.parse(body).data
-		
+
 		if (data && data.region) await client.accounts.set(id.toLowerCase(), data.region)
-			else return client.send(msg, {embeds: [], edit: true, content: "User not found. Make sure you typed the name and tag correctly in format `name#tag`"})
-		let m = await client.send(msg, {edit: true, embeds: client.embed({footer: "If it does not work automatically, please run the command again.", color: "565473", title: "Found " + id, description: ":white_check_mark: Added to list for faster search next time\nRe-executing the command..."})})
+		else return client.send(msg, { embeds: [], edit: true, content: "User not found. Make sure you typed the name and tag correctly in format `name#tag`" })
+		let m = await client.send(msg, { edit: true, embeds: client.embed({ footer: "If it does not work automatically, please run the command again.", color: "565473", title: "Found " + id, description: ":white_check_mark: Added to list for faster search next time\nRe-executing the command..." }) })
 		const arg = sub ? [sub, id] : [id]
-			await client.commands.get(cmd).execute(client, message, arg, client.send)
+		await client.commands.get(cmd).execute(client, message, arg, client.send)
 		await client.wait(2500)
 		return m.delete()
 	})
@@ -216,12 +216,15 @@ const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWi
 
 for (const file of commandFiles) {
 	const command = require(`./src/commands/${file}`)
-	if (!command || !command.info || !command.info.name || !command.execute) console.log('[ValoStatrack] Error in file ' + file + '! File not loaded.')
-		client.commands.set(command.info.name, command)
+	if (!command || !command.info || !command.info.name || !command.execute)
+		console.log('[ValoStatrack] Error in file ' + file + '! File not loaded.')
+	client.commands.set(command.info.name, command)
 	console.log(`[ValoStatrack] Loaded Command ${command.info.name}`)
-	const cmds = client.statistics.get("commands") || {};
-	if (!cmds[command.info.name]) cmds[command.info.name] = 0;
-	client.statistics.set("commands", cmds);
+	// const cmds = client.statistics.get("commands");
+    // if (cmds[command.info.name] === undefined) {
+    //     cmds[command.info.name] = 0;
+    //     client.statistics.set("commands", cmds);
+    // }
 }
 
 client.on('ready', () => require('./src/events/ready.js').Ready(client))
