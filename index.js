@@ -19,7 +19,8 @@ client.triviaStats = new Enmap({
 	autoFetch: true
 })
 client.statistics = new Enmap({
-	name: "statistics"
+	name: "statistics",
+	dataDir: "/opt/render/.cache/valostatrak"
 })
 client.accounts = new Enmap({
 	name: "accounts",
