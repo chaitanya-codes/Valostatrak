@@ -50,10 +50,10 @@ app.get("/about", (req, res) => {
 app.get("/verify", (req, res) => {
 	res.send("Verification system is still WIP!\nCurrently in " + client.guilds.cache.size + " servers!")
 })
-app.get("/servercount", (req, res) => {
+app.get("/api/servercount", (req, res) => {
 	res.json({count: client.guilds.cache.size})
 })
-app.get("/stats/commands", (req, res) => {
+app.get("/api/stats/commands", (req, res) => {
     const obj = client.statistics.get("commands") || {};
     const arr = Object.keys(obj).map(k => ({
         command: k,
@@ -63,11 +63,11 @@ app.get("/stats/commands", (req, res) => {
     res.json(arr);
 });
 
-app.get("/stats/total", (req, res) => {
+app.get("/api/stats/total", (req, res) => {
     res.json({ total: client.statistics.get("total_commands") || 0 });
 });
 
-app.get("/stats/daily", (req, res) => {
+app.get("/api/stats/daily", (req, res) => {
     const days = parseInt(req.query.days) || 30;
     const now = new Date();
     const daily = client.statistics.get("daily") || {};
@@ -86,7 +86,7 @@ app.get("/stats/daily", (req, res) => {
     }
     res.json(output);
 });
-app.get("/health", (req, res) => res.json({ ok: true }));
+app.get("/api/health", (req, res) => res.json({ ok: true }));
 app.get("/terms-of-service", (req, res) => {
 	res.send(`You agree to these rules when you use our bots.<br>
 Failure to follow the rules would result in a warn or blacklist from the bot depending on the severeness<br>

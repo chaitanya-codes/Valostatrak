@@ -26,7 +26,7 @@ const serverCount = document.querySelector("#servercount");
 
 
 async function drawTopCommands() {
-  const res = await fetch("/stats/commands");
+  const res = await fetch("/api/stats/commands");
   let data = await res.json();
   const labels = data.map(d => d.command);
   const counts = data.map(d => d.count);
@@ -46,7 +46,7 @@ async function drawTopCommands() {
 }
 
 async function drawDailyUsage() {
-  const res = await fetch("/stats/daily?days=30");
+  const res = await fetch("/api/stats/daily?days=30");
   let data = await res.json();
   const labels = data.map(d => d.day);
   const counts = data.map(d => d.count);
