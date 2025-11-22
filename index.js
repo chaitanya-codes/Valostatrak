@@ -10,6 +10,14 @@ const client = new Client({
 const fs = require('fs')
 const Enmap = require("enmap")
 
+const CACHE_DIR = "/opt/render/.cache/valostatrak";
+try {
+  fs.mkdirSync(CACHE_DIR, { recursive: true });
+  console.log("Ensured persistent directory:", CACHE_DIR);
+} catch (err) {
+  console.error("Failed to ensure directory:", err);
+}
+
 client.commands = new Collection()
 client.ratelimits = new Collection()
 client.bypassed = new Collection()
