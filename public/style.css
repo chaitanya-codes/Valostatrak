@@ -4,17 +4,22 @@
 }
 
 body {
+    color: #e4e9f2;
+    font-family: 'Segoe UI', sans-serif;
     background: linear-gradient(90deg, rgb(48, 2, 112), rgb(131, 45, 230));;
     /* background: linear-gradient(60deg, blue, green) */
     overflow-x: hidden;
 }
 
 .navbar {
+    position: fixed;
+    top: 0;
     display: block;
     background: linear-gradient(60deg, rgb(38, 2, 80), rgb(51, 3, 132));
-    position: fixed;
+    border-bottom: 1px solid darkblue;
     width: 100vw;
     height: 70px;
+    z-index: 10;
 }
 
 .list {
@@ -95,12 +100,11 @@ body {
 }
 
 .sloganContainer {
-    position: relative;
-    top: 10vh;
+    text-align: center;
+    margin-top: 10vh;
 }
 
 .slogan {
-    text-align: center;
     font-size: 72px;
     padding: 30px;
     background: linear-gradient(rgb(24, 54, 223), rgb(54, 134, 219));
@@ -111,6 +115,7 @@ body {
     transform: scale(1.1, 1.1);
     animation: 1.5s spread;
     animation-iteration-count: 1;
+    margin-bottom: 10px;
 }
 
 @keyframes spread {
@@ -124,31 +129,42 @@ body {
 }
 
 #servercount {
-    position: fixed;
-    top: 85vh;
-    left: 15vw;
+    position: relative;
+    bottom: 10vh;
+    display: inline-block;
     font-size: xx-large;
-    padding: 5px;
+    padding: 5px 10px;
+    margin: auto 20px;
     border: 2px solid royalblue;
     border-radius: 20px;
     box-shadow: 5px 5px blue;
 }
 
-.card {
-    background:#08101a;
-    padding:18px;
-    border-radius:12px;
-    margin-bottom:20px;
-}
 .row {
-    display:flex;
-    gap:20px;
-    flex-wrap:wrap;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    max-width: 1300px;
+    margin: 40px auto;
+    padding: 0 20px;
 }
 
-.col {
-    flex:1 1 450px;
+.card {
+    background: #111b2b;
+    padding: 25px;
+    border-radius: 12px;
+    flex: 1 1 450px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.03);
 }
 
-canvas { width:100% !important; height:340px !important; }
-h2 { margin-top:0 }
+.card h2 {
+    margin-bottom: 20px;
+    color: red;
+    font-size: 1.4rem;
+}
+
+canvas {
+    width: 100% !important;
+    height: 340px !important;
+}
