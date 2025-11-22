@@ -208,9 +208,9 @@ client.newUser = async (id, cmd, message, sub) => {
 }
 
 const initStats = require("./data/initStats.json");
-if (!client.statistics.has("commands")) client.statistics.set("commands", initStats.commands);
-if (!client.statistics.has("daily")) client.statistics.set("daily", initStats.daily);
-if (!client.statistics.has("total_commands")) client.statistics.set("total_commands", initStats.total_commands);
+client.statistics.ensure("commands", initStats.commands);
+client.statistics.ensure("daily", initStats.daily);
+client.statistics.ensure("total_commands", initStats.total_commands);
 
 const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.js'))
 
