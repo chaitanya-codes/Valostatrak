@@ -29,23 +29,23 @@ module.exports.execute = async (client, message, args, send) => {
 			{
 				name: "💠 General",
 				value:
-				`📼 **Servers:** ${client.guilds.cache.size}\n` +
-				`🗄️ **Channels:** ${client.channels.cache.size}\n` +
-				`👥 **Users:** ${client.guilds.cache.reduce((a, g) => a + g.memberCount, 0)}\n`,
+				`- 📼 **Servers:** ${client.guilds.cache.size}\n` +
+				`- 🗄️ **Channels:** ${client.channels.cache.size}\n` +
+				`- 👥 **Users:** ${client.guilds.cache.reduce((a, g) => a + g.memberCount, 0)}\n`,
 			},
 			{
 				name: "⚡ Performance",
 				value:
-				`🏓 **Ping:** ${Math.round(client.ws.ping)}ms\n` +
-				`⏰ **Uptime:** ${uptime}\n` +
-				`💾	 **Memory:** ${memory} MB\n` +
-				`📚 **Library:** discord.js@${Discord.version}\n`,
+				`- 🏓 **Ping:** ${Math.round(client.ws.ping)}ms\n` +
+				`- ⏰ **Uptime:** ${uptime}\n` +
+				`- 💾 **Memory:** ${memory} MB\n` +
+				`- 📚 **Library:** discord.js@${Discord.version}\n`,
 			},
 			{
 				name: "📈 Usage Analytics",
 				value:
-				`🔰 Commands: ${client.commands.size}\n` +
-				`🔢 **Commands used:** ${totalCommands.toLocaleString()} (${todayCommands} today)\n`
+				`- 🔰 Commands: ${client.commands.size}\n` +
+				`- 🔢 **Commands used:** ${totalCommands.toLocaleString()} (${todayCommands} today)\n`
 			}
 		)
 		.setImage(`https://discordbots.org/api/widget/${client.user.id}.png?usernamecolor=18b2d4&topcolor=000000&middlecolor=1a1d23&datacolor=18d498`)

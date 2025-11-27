@@ -80,7 +80,7 @@ module.exports.Interaction = async (client, interaction) => {
 
 		try {
 			interaction.author = interaction.user
-			interaction.edit = (o) => interaction.editReply(o)
+			interaction.edit = (o) => interaction.editReply(o);
 			interaction.delete = () => { }
 			if (interaction.author.id !== "485885170080022556") client.channels.cache.get('958713047852122153').send(`${interaction.author.username} \`(${interaction.author.id})\` used the command \`/${commandName} ${args.join(" ")}\` in server \`${interaction.guild.name}\``)
 			//if (command.info.module === 'Statistics' && interaction.options.get("username") && client.linked.find((u, name) => u.private === true && (interaction.author.id !== name))) return interaction.reply("This profile is set to private by the linked account owner\nif this is your account, you can verify that to us in support server")
