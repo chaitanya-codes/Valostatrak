@@ -40,7 +40,7 @@ const data = async (client, guild) => {
 		options: (cmd.info.usage ? cmd.info.usage.map(arg => ({
 			name: arg.toLowerCase(),
 			description: desc(arg.toLowerCase()),
-			autocomplete: (['agent', 'command', 'username', 'skin', 'buddy', 'bundle', 'player-card', 'player-title', 'spray', 'input', 'league'].includes(arg) ? true : false),
+			autocomplete: (['agent', 'command', 'username', 'skin', 'buddy', 'bundle', 'player-card', 'player-title', 'spray', 'input', 'league', 'flex'].includes(arg) ? true : false),
 			choices: checkChoices(arg),
 			type: (commonArgs[arg] ? ApplicationCommandOptionType[commonArgs[arg]] : ApplicationCommandOptionType.String),
 			required: (cmd.info.optional && (arg.toLowerCase() !== "username") ? false : true)

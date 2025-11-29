@@ -9,7 +9,7 @@ module.exports.Ready = async (client) => {
 	client.wait = (time) => require('util').promisify(setTimeout)(time)
 	client.user.setActivity(`/help`, { type: ActivityType.Playing })
 
-	const endpoints = ['weapons', 'maps', 'agents', 'sprays', 'weapons/skinlevels', 'bundles', 'buddies', 'playertitles', 'playercards', 'contracts', 'weapons/skins', 'levelborders']
+	const endpoints = ['weapons', 'maps', 'agents', 'sprays', 'weapons/skinlevels', 'bundles', 'buddies', 'playertitles', 'playercards', 'contracts', 'weapons/skins', 'levelborders', 'flex'];
 	const requestAPI = async (url, property) => {
 		return new Promise((resolve, reject) => {
 			request(baseURL + (url === 'agents' ? 'agents?isPlayableCharacter=true' : url), (err, res, body) => {
@@ -34,6 +34,7 @@ module.exports.Ready = async (client) => {
 			func = 'getSkins'
 			data = 'skinData'
 		} else if (api === 'buddies') data = 'buddiesData'
+		else if (api === 'flex') data = 'flexData'
 
 		client[func] = async () => {
 			return new Promise(async (resolve, reject) => {

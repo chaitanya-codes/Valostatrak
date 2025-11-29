@@ -33,7 +33,7 @@ module.exports.execute = async (client, message, args, send) => {
 			.setTitle(findBuddy.displayName)
 			.setColor(388422)
 			.setImage(findBuddy.displayIcon)
-			
+
 		if (findBuddy?.levels?.length) emb.setThumbnail(findBuddy.levels[0].displayIcon)
 		send(message, emb)
 	} else send(message, "Buddy not found!\nUsage: `/buddy <buddyName>`\nExample: `/buddy Spectrum`\nTo get a list of buddies, use `/buddy list`")

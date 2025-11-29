@@ -62,6 +62,8 @@ module.exports.Interaction = async (client, interaction) => {
 					const commands = client.commands.filter(c => c.info.name !== "help")
 					if (!["", " "].includes(currentValue)) return await respondFiltered(commands.map(c => c.info.name), currentValue)
 					else return await interaction.respond(commands.map(c => ({ name: c.info.name, value: c.info.name })).slice(0, 25))
+				case 'flex':
+					return client.getFlex().then(flex => respondFiltered(flex.map(f => f.displayName), currentValue))
 				default:
 					return;
 			}
