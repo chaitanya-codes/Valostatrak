@@ -12,7 +12,7 @@ module.exports.execute = async (client, message, args, send) => {
 
 	const filter = m => m.user.id === message.author.id
 
-	if (args[0] && ['global', 'this-server', 'score', 'leaderboard'].includes(args[0]?.toLowerCase())) {
+	if (args[0] && ['global', 'server', 'score', 'leaderboard'].includes(args[0]?.toLowerCase())) {
 		message.deferReply()
 		if (!(await client.triviaStats.has(message.author.id))) await client.triviaStats.set(message.author.id, 0)
 		if (!client.triviaStatsTemp.has(message.author.id)) client.triviaStatsTemp.set(message.author.id, 0)
@@ -55,7 +55,7 @@ module.exports.execute = async (client, message, args, send) => {
 			row.components[1].setStyle((opposite ? "Success" : "Secondary")).setDisabled((opposite ? true : false))
 		}
 
-		if (args[0].toLowerCase() === 'this-server') {
+		if (args[0].toLowerCase() === 'server') {
 			server = true; colorButton(row1, false) // Set global to false
 		}
 
