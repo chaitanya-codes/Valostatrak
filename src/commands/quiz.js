@@ -14,7 +14,7 @@ module.exports.execute = async (client, message, args, send) => {
 
 	if (args[0] && ['global', 'this-server', 'score', 'leaderboard'].includes(args[0]?.toLowerCase())) {
 		message.deferReply()
-		if (!client.triviaStats.has(message.author.id)) client.triviaStats.set(message.author.id, 0)
+		if (!(await client.triviaStats.has(message.author.id))) await client.triviaStats.set(message.author.id, 0)
 		if (!client.triviaStatsTemp.has(message.author.id)) client.triviaStatsTemp.set(message.author.id, 0)
 
 		const row1 = new Discord.ActionRowBuilder().addComponents([new Discord.ButtonBuilder().setLabel("This server").setCustomId("server").setStyle("Secondary"), new Discord.ButtonBuilder().setLabel("Global").setCustomId("global").setStyle("Success").setDisabled(true)])
@@ -26,9 +26,10 @@ module.exports.execute = async (client, message, args, send) => {
 			return new Promise(async (resolve, reject) => {
 
 				let stats = temp ? client.triviaStatsTemp : client.triviaStats
-				let sortedStats = Array.from(stats.entries()).sort((a, b) => b[1] - a[1]) // Comparing score, a[0] is id
+				let entries = temp ? Array.from(stats.entries()) : await stats.entries()
+				let sortedStats = entries.sort((a, b) => b[1] - a[1]) // Comparing score, a[0] is id
 
-				if (server) sortedStats = sortedStats.filter(id => message.guild.members.cache.has(id))
+				if (server) sortedStats = sortedStats.filter(([userId]) => message.guild.members.cache.has(userId))
 
 				const topPlayers = sortedStats.slice(0, 10)
 				let leaderboard = '';
@@ -148,19 +149,21 @@ module.exports.execute = async (client, message, args, send) => {
 		const optionMsg = await send(message, { embeds: [emb], components: [options1, options2] })
 		const collectAnswer = optionMsg.createMessageComponentCollector({ filter, time: 7000, errors: ['time'] })
 
-		collectAnswer.on('collect', i => {
+		collectAnswer.on('collect', async i => {
 			if (answered.includes(i.user.id)) return i.reply({ ephemeral: true, content: "You already answered!" })
 			else answered.push(i.user.id)
 			i.deferUpdate()
 
 			if (Number(i.customId) === correctChoice) {
-				if (client.triviaStats.has(i.user.id)) {
-					client.triviaStats.math(i.user.id, "+", 1)
-				} else client.triviaStats.set(i.user.id, 1)
+				if (await client.triviaStats.has(i.user.id)) {
+					await client.triviaStats.math(i.user.id, "+", 1)
+				} else await client.triviaStats.set(i.user.id, 1)
 
 				client.triviaStatsTemp.set(i.user.id, (client.triviaStatsTemp.get(i.user.id) || 0) + 1)
 
-				send(message, { content: i.user.toString(), components: [row], embeds: [new Discord.EmbedBuilder().setColor("Random").setTitle("You got it right!").setDescription(`Your score today: ${client.triviaStatsTemp.get(i.user.id)} \nAll time score: ${client.triviaStats.get(i.user.id)}`).setFooter({ text: "Use /quiz leaderboard to view leaderboard" })] }).then(m => createCollector(m))
+				const todayScore = client.triviaStatsTemp.get(i.user.id)
+				const allTimeScore = await client.triviaStats.get(i.user.id)
+				send(message, { content: i.user.toString(), components: [row], embeds: [new Discord.EmbedBuilder().setColor("Random").setTitle("You got it right!").setDescription(`Your score today: ${todayScore} \nAll time score: ${allTimeScore}`).setFooter({ text: "Use /quiz leaderboard to view leaderboard" })] }).then(m => createCollector(m))
 			} else send(message, { ephemeral: true, components: [row], content: `Wrong! The ${random} was: \`${randomItem.displayName}\`` }).then(m => createCollector(m))
 		})
 		collectAnswer.on('end', () => {

@@ -35,11 +35,11 @@ module.exports.execute = async (client, message, args, send) => {
 
 	const nametag = `${name}#${tag}`
 
-	if (!client.linked.has(nametag.toLowerCase())) return send(message, { embeds: [client.embed({ color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link your Account`" })] })
-	if (!client.accounts.has(nametag.toLowerCase())) return client.newUser(nametag, this.info.name, message)
-	const region = client.accounts.get(nametag.toLowerCase())
+	if (!(await client.linked.has(nametag.toLowerCase()))) return send(message, { embeds: [client.embed({ color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link your Account`" })] })
+	if (!(await client.accounts.has(nametag.toLowerCase()))) return client.newUser(nametag, this.info.name, message)
+	const region = await client.accounts.get(nametag.toLowerCase())
 
-	const linked = client.linked.get(args.join(" ").toLowerCase())
+	const linked = await client.linked.get(args.join(" ").toLowerCase())
 	if (linked.private) return send(message, "Account is set to private by owner")
 	if (!nametag.includes("#") || !region) return message.reply("User not found. Usage: `/matches <name#tag> [match-type-optional]`\nExample: `/matches 100T Asuna#1111 unrated`")
 

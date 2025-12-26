@@ -5,8 +5,8 @@
     "canvas": "^2.11.1",
     "discord.js": "14.11.0",
     "dotenv": "^16.0.3",
-    "enmap": "^5.9.5",
     "express": "^4.18.2",
+    "mongoose": "^9.0.2",
     "request": "^2.88.2",
     "string-progressbar": "^1.0.4",
     "topgg-autoposter": "^2.0.1"

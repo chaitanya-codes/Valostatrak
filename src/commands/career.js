@@ -17,11 +17,11 @@ module.exports.execute = async (client, message, args, send) => {
 	const [name, tag] = query.split("#")
 	const nametag = `${name}#${tag}`
 
-	if (!client.linked.has(nametag.toLowerCase())) return send(message, { embeds: [client.embed({ color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link your Account`" })] })
+	if (!(await client.linked.has(nametag.toLowerCase()))) return send(message, { embeds: [client.embed({ color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link your Account`" })] })
 
-	if (!client.accounts.has(nametag.toLowerCase())) return client.newUser(nametag, this.info.name, message)
+	if (!(await client.accounts.has(nametag.toLowerCase()))) return client.newUser(nametag, this.info.name, message)
 
-	let region = client.accounts.get(nametag.toLowerCase())
+	let region = await client.accounts.get(nametag.toLowerCase())
 
 	let waitEmbed = new Discord.EmbedBuilder()
 		.setColor(428985)

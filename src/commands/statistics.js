@@ -21,7 +21,7 @@ module.exports.execute = async (client, message, args, send) => {
 	const [name, tag] = args.join(" ").split("#");
 	const nametag = `${name}#${tag}`.toLowerCase();
 
-	if (!client.linked.has(nametag))
+	if (!(await client.linked.has(nametag)))
 		return send(message, {
 			embeds: [client.embed({
 				color: '417543',
@@ -30,11 +30,11 @@ module.exports.execute = async (client, message, args, send) => {
 			})]
 		});
 
-	if (!client.accounts.has(nametag))
+	if (!(await client.accounts.has(nametag)))
 		return client.newUser(nametag, this.info.name, message);
 
-	const region = client.accounts.get(nametag);
-	const linked = client.linked.get(args.join(" ").toLowerCase());
+	const region = await client.accounts.get(nametag);
+	const linked = await client.linked.get(args.join(" ").toLowerCase());
 
 	if (linked.private)
 		return send(message, "Account is set to private by owner");

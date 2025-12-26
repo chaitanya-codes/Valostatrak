@@ -50,7 +50,7 @@ const data = async (client, guild) => {
 
 module.exports.execute = async (client, message, args, send) => {
 	if (message.author.id !== '485885170080022556') return message.reply('This command can only be used by the bot owner.')
-		
+
 	try {
 		await client.getWeapons().then(weapons => {
 			choicesMap['weapon'] = weapons.map(w => ({ name: w.displayName, value: w.displayName }))

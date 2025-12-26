@@ -55,7 +55,7 @@ module.exports.Interaction = async (client, interaction) => {
 					return client.getSprays()
 						.then(sprays => respondFiltered(sprays.map(s => s.displayName), currentValue))
 				case 'username':
-					return respondFiltered(client.accounts.map((region, name) => name), currentValue, true)
+					return client.accounts.map((region, name) => name).then(accounts => respondFiltered(accounts, currentValue, true))
 				case 'league':
 					return interaction.respond(leagues.filter(l => l.startsWith(currentValue.toLowerCase())).map(l => ({ name: l.split("_").join(" "), value: l })))
 				case 'command':
@@ -87,10 +87,10 @@ module.exports.Interaction = async (client, interaction) => {
 			if (interaction.author.id !== "485885170080022556") client.channels.cache.get('958713047852122153').send(`${interaction.author.username} \`(${interaction.author.id})\` used the command \`/${commandName} ${args.join(" ")}\` in server \`${interaction.guild.name}\``)
 			//if (command.info.module === 'Statistics' && interaction.options.get("username") && client.linked.find((u, name) => u.private === true && (interaction.author.id !== name))) return interaction.reply("This profile is set to private by the linked account owner\nif this is your account, you can verify that to us in support server")
 			await command.execute(client, interaction, args, client.send, client.ratelimit)
-			mapInc(client.statistics, "total_commands");
-			mapInc(client.statistics, "commands", commandName);
+			await mapInc(client.statistics, "total_commands");
+			await mapInc(client.statistics, "commands", commandName);
 			const day = new Date().toISOString().slice(0, 10);
-			mapInc(client.statistics, "daily", day);
+			await mapInc(client.statistics, "daily", day);
 		} catch (error) {
 			client.channels.cache.get('546320905035579396').send({ embeds: [{ color: 472422, description: `**There was an error in the server \`${interaction.guild.name}\` caused by the user \`${interaction.user.username}\`(${interaction.user.id}) with the command \`${commandName}\`**\n\n*The error was:*\n\`\`\`prolog\n${error}\`\`\`` }] })
 			console.error(error)

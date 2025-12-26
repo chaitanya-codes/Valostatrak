@@ -1,34 +1,35 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const Discord = require('discord.js')
-const { Client, Collection } = require("discord.js")
+const Discord = require('discord.js');
+const { Client, Collection } = require("discord.js");
 const client = new Client({
 	disableEveryone: true,
 	intents: ['Guilds', 'GuildMessages', 'GuildMessageReactions']
-})
-const fs = require('fs')
-const Enmap = require("enmap")
+});
+const fs = require('fs');
+const mongoose = require("mongoose");
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.error(err));
+
+const TriviaStats = require("./models/TriviaStats");
+const Statistics = require("./models/Statistics");
+const Accounts = require("./models/Accounts");
+const Linked = require("./models/Linked");
+
+// MongoDB Wrappers
+const { TriviaStatsMap, AccountsMap, LinkedMap, MongoDBMap } = require("./utils/mongoWrapper.js");
 
 client.commands = new Collection()
 client.ratelimits = new Collection()
 client.bypassed = new Collection()
 client.triviaStatsTemp = new Collection()
-client.triviaStats = new Enmap({
-	name: "stats",
-	autoFetch: true
-})
-client.statistics = new Enmap({
-	name: "statistics"
-})
-client.accounts = new Enmap({
-	name: "accounts",
-	autoFetch: true
-})
-client.linked = new Enmap({
-	name: "linked",
-	autoFetch: true
-})
+client.triviaStats = new TriviaStatsMap(TriviaStats);
+client.statistics = new MongoDBMap(Statistics, "key");
+client.accounts = new AccountsMap(Accounts);
+client.linked = new LinkedMap(Linked);
 
 const Topgg = require("@top-gg/sdk")
 const webhook = new Topgg.Webhook('valorant')
@@ -52,8 +53,8 @@ app.get("/verify", (req, res) => {
 app.get("/api/servercount", (req, res) => {
 	res.json({ count: client.guilds.cache.size })
 })
-app.get("/api/stats/commands", (req, res) => {
-	const obj = client.statistics.get("commands") || {};
+app.get("/api/stats/commands", async (req, res) => {
+	const obj = await client.statistics.get("commands") || {};
 	const arr = Object.keys(obj).map(k => ({
 		command: k,
 		count: obj[k] || 0
@@ -62,14 +63,15 @@ app.get("/api/stats/commands", (req, res) => {
 	res.json(arr);
 });
 
-app.get("/api/stats/total", (req, res) => {
-	res.json({ total: client.statistics.get("total_commands") || 0 });
+app.get("/api/stats/total", async (req, res) => {
+	const total = await client.statistics.get("total_commands") || 0;
+	res.json({ total });
 });
 
-app.get("/api/stats/daily", (req, res) => {
+app.get("/api/stats/daily", async (req, res) => {
 	const days = parseInt(req.query.days) || 30;
 	const now = new Date();
-	const daily = client.statistics.get("daily") || {};
+	const daily = await client.statistics.get("daily") || {};
 
 	const output = [];
 
@@ -186,7 +188,7 @@ client.notFound = (error) => {
 }
 
 client.newUser = async (id, cmd, message, sub) => {
-	if (client.accounts.has(id.toLowerCase())) return;
+	if (await client.accounts.has(id.toLowerCase())) return;
 	let name = id.split("#").shift()
 	let tag = id.split("#").pop()
 	if (!name || !tag) return client.send(message, "Format for username is `name#tag`")
@@ -208,9 +210,12 @@ client.newUser = async (id, cmd, message, sub) => {
 }
 
 const initStats = require("./data/initStats.json");
-client.statistics.ensure("commands", initStats.commands);
-client.statistics.ensure("daily", initStats.daily);
-client.statistics.ensure("total_commands", initStats.total_commands);
+// Initialize statistics in MongoDB
+(async () => {
+	await client.statistics.ensure("commands", initStats.commands);
+	await client.statistics.ensure("daily", initStats.daily);
+	await client.statistics.ensure("total_commands", initStats.total_commands);
+})();
 
 const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.js'))
 

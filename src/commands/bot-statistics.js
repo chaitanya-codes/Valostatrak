@@ -12,9 +12,9 @@ module.exports.execute = async (client, message, args, send) => {
 
 	const memory = (process.memoryUsage().rss / 1024 / 1024).toFixed(1);
 
-	const totalCommands = client.statistics.get("total_commands") || 0;
+	const totalCommands = await client.statistics.get("total_commands") || 0;
 	const today = new Date().toISOString().slice(0, 10);
-	const daily = client.statistics.get("daily") || {};
+	const daily = await client.statistics.get("daily") || {};
 	const todayCommands = daily[today] || 0;
 
 	const Discord = require('discord.js')

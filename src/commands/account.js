@@ -16,7 +16,7 @@ module.exports.execute = async (client, message, args, send) => {
 	let [name, tag] = args.join(" ").toLowerCase().split("#")
 	if (!args.join(" ").includes("#") || !name || !tag) return message.reply("Account not found. Use the format name#tag")
 
-	let region = client.accounts.get(args.join(" ").toLowerCase())
+	let region = await client.accounts.get(args.join(" ").toLowerCase())
 
 	if (!region && subcommand !== 'link') return client.newUser(args.join(" "), this.info.name, message, subcommand)
 
@@ -30,9 +30,9 @@ module.exports.execute = async (client, message, args, send) => {
 }
 
 async function findAccount(client, name, tag, message, send) {
-	if (!client.linked.has(name+"#"+tag)) return send(message, { embeds: [client.embed({ color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link account`" })] })
+	if (!(await client.linked.has(name+"#"+tag))) return send(message, { embeds: [client.embed({ color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link account`" })] })
 
-	const linked = client.linked.get(name+"#"+tag)
+	const linked = await client.linked.get(name+"#"+tag)
 	if (linked.private) return send(message, "Account is set to private by owner")
 
 	let wait = new Discord.EmbedBuilder()
@@ -81,12 +81,12 @@ async function linkAccount(client, name, tag, message, send) {
 
 	const filter = i => i.user.id === message.author.id
 	message.awaitModalSubmit({ filter, time: 30000 })
-	.then(interaction => {
+	.then(async interaction => {
 		let lvl = interaction.fields.getTextInputValue('lvl')
 		if (isNaN(lvl)) return send(interaction, 'Level entered was not a number!')
 
 		if (data.account_level === Number(lvl)) {
-			client.linked.set(name + "#" + tag, { id: message.author.id, private: false })
+			await client.linked.set(name + "#" + tag, { id: message.author.id, private: false })
 			send(interaction, { embeds: [new Discord.EmbedBuilder().setTitle("Linked account").setColor("Green").setDescription(`Your discord account has been linked to the valorant account \`${name}#${tag}\``)] })
 		} else return send(interaction, { embeds: [new Discord.EmbedBuilder().setTitle("Failed verification").setColor("Red").setDescription("Account level did not match")] })
 	})
@@ -94,7 +94,7 @@ async function linkAccount(client, name, tag, message, send) {
 
 async function accountSettings(client, name, tag, message, send) {
 	const nametag = `${name}#${tag}`
-	const linked = client.linked.get(nametag)
+	const linked = await client.linked.get(nametag)
 
 	if (!linked || linked.id !== message.author.id) return send(message, "You have not linked your valorant account with the bot!")
 
@@ -113,14 +113,14 @@ async function accountSettings(client, name, tag, message, send) {
 	const col = m.createMessageComponentCollector({ filter, time: 30000 })
 	col.on("collect", async i => {
 		if (i.customId === 'private') {
-			client.linked.set(nametag, !linked.private, 'private')
+			await client.linked.setPrivate(nametag, !linked.private)
 			row.components[0].setStyle(!linked.private ? "Danger" : "Primary")
 			row.components[0].setLabel(!linked.private ? "Statistics are private" : "Statistics are public")
 			row.components[0].setDisabled(true)
 			send(i, { edit: true, components: [row] })
 		} else if (i.customId === 'remove') {
-			client.accounts.delete(nametag)
-			client.linked.delete(nametag)
+			await client.accounts.delete(nametag)
+			await client.linked.delete(nametag)
 			send(i, 'Removed account from the bot database!')
 		}
 	})
