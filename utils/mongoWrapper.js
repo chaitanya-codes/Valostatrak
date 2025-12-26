@@ -71,7 +71,6 @@ class MongoDBMap {
 	}
 }
 
-// Special wrapper for TriviaStats (uses userId, stores score directly)
 class TriviaStatsMap extends MongoDBMap {
 	constructor(Model) {
 		super(Model, 'userId');
@@ -130,7 +129,6 @@ class TriviaStatsMap extends MongoDBMap {
 	}
 }
 
-// Special wrapper for Accounts (uses nametag, stores region directly)
 class AccountsMap extends MongoDBMap {
 	constructor(Model) {
 		super(Model, 'nametag');
@@ -178,7 +176,6 @@ class AccountsMap extends MongoDBMap {
 	}
 }
 
-// Special wrapper for Linked (uses nametag, stores object {id, private})
 class LinkedMap extends MongoDBMap {
 	constructor(Model) {
 		super(Model, 'nametag');

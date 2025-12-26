@@ -209,14 +209,6 @@ client.newUser = async (id, cmd, message, sub) => {
 	})
 }
 
-const initStats = require("./data/initStats.json");
-// Initialize statistics in MongoDB
-(async () => {
-	await client.statistics.ensure("commands", initStats.commands);
-	await client.statistics.ensure("daily", initStats.daily);
-	await client.statistics.ensure("total_commands", initStats.total_commands);
-})();
-
 const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.js'))
 
 for (const file of commandFiles) {
