@@ -50,6 +50,9 @@ app.get("/about", (req, res) => {
 app.get("/verify", (req, res) => {
 	res.send("Verification system is still WIP!\nCurrently in " + client.guilds.cache.size + " servers!")
 })
+app.get("/health", (req, res) => {
+	res.status(200).send("ok");
+});
 app.get("/api/servercount", (req, res) => {
 	res.json({ count: client.guilds.cache.size })
 })
