@@ -7,8 +7,8 @@ module.exports.info = {
 }
 
 const Discord = require('discord.js')
-module.exports.execute = async (client, message, args, send) => {
 
+module.exports.execute = async (client, message, args, send) => {
 	if (!args[0]) return send(message, "Command Usage: `/buddy <buddyName>`\nExample: `/buddy Spectrum`\nTo get a list of buddies, use `/buddy list`")
 
 	const data = await client.getBuddies()

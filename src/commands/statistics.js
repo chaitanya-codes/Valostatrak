@@ -45,6 +45,7 @@ module.exports.execute = async (client, message, args, send) => {
 		url: `https://api.henrikdev.xyz/valorant/v2/mmr/${region}/${name}/${tag}`,
 		headers: { "Authorization": process.env.HD_KEY }
 	}, async (err, res, body) => {
+		if (err) return send(message, client.notFound(err));
 		const json = JSON.parse(body);
 		const data = json.data;
 
