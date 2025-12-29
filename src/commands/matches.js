@@ -130,7 +130,7 @@ module.exports.execute = async (client, message, args, send) => {
 								if (p.player_team === searchedPlayer.team) {
 									killsTeam.push(`${playerEmoji}${p.player_display_name}: ${p.kills} ${gun} ${killed} | :boom:${p.score}`)
 								} else {
-									killsEnemy.push(`${playerEmoji}${p.player_display_name}: ${p.kills} ${gun}${killed} | :boom:${p.score}`);
+									killsEnemy.push(`${playerEmoji}${p.player_display_name}: ${p.kills} ${gun} ${killed} | :boom:${p.score}`);
 								}
 							})
 

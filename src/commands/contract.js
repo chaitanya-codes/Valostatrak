@@ -23,9 +23,8 @@ module.exports.execute = async (client, message, args, send) => {
 		let row2 = new Discord.ActionRowBuilder().addComponents([6, 7, 8, 9, 10].map(e => new Discord.ButtonBuilder().setStyle("Secondary").setCustomId(String(e)).setEmoji(emojis[e])))
 		row.components[0].setDisabled(true)
 		let data = findContract.content
-
-		let chapter = 0
-		let level = 0
+		let chapter = 0;
+		let level = 0;
 
 		const getCollection = async (t) => {
 			if (t === "Character") return await client.getAgents()
@@ -38,8 +37,8 @@ module.exports.execute = async (client, message, args, send) => {
 			else return client[t.toLowerCase() + "Data"]
 		}
 
-		const getLevel = async (l) => {
-			const lvl = data.chapters[chapter].levels[(chapter === 0 ? level : level - 5)]
+		const getLevel = async () => {
+			const lvl = data.chapters[0].levels[level];
 			let entity = (await getCollection(lvl.reward.type)).find(a => a.uuid === lvl.reward.uuid) || undefined
 			if (!entity) {
 				entity = (await client.getBuddies()).find(a => a.levels.some(l => l.uuid === lvl.reward.uuid))
@@ -47,9 +46,9 @@ module.exports.execute = async (client, message, args, send) => {
 			}
 
 			const rewardType = (t) => {
-				if (t === 'EquippableCharmLevel') return 'Buddy'
-				else if (t === 'EquippableSkinLevel') return 'Skin'
-				else return t
+				if (t === 'EquippableCharmLevel') return 'Buddy';
+				else if (t === 'EquippableSkinLevel') return 'Skin';
+				else return t;
 			}
 
 			const emb = new Discord.EmbedBuilder()
@@ -72,13 +71,11 @@ module.exports.execute = async (client, message, args, send) => {
 		const collector = msg.createMessageComponentCollector({ filter, idle: 45000 })
 		collector.on('collect', async i => {
 			level = Number(i.customId) - 1
-			if (level > 4) chapter = 1
-			else chapter = 0
 			row.components.forEach(c => c.setDisabled(false))
 			row2.components.forEach(c => c.setDisabled(false))
 			if (chapter === 0) row.components[level].setDisabled(true)
 			if (chapter === 1) row2.components[level - 5].setDisabled(true)
-			embed = await getLevel(level)
+			embed = await getLevel(level);
 			await send(i, { edit: true, embeds: [embed], components: [row, row2] })
 		})
 	} else send(message, "Contract not found! Make sure you type the agent name correct.")
