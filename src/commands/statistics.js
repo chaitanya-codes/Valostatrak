@@ -82,30 +82,30 @@ module.exports.execute = async (client, message, args, send) => {
 
 			let y = 90;
 			ctx.font = '18px Sans';
-      ctx.fillStyle = textColor;
+			ctx.fillStyle = textColor;
 
-      for (const line of details.lines) {
-        if (line.startsWith("Climbed: ")) {
-          const climbed = line.slice(9).split(" → ");
-          let chunk = "Climbed: ";
-          for (let i = 0; i < climbed.length; i++) {
-            const part = climbed[i] + (i !== climbed.length - 1 ? " → " : "");
-            if ((chunk + part).length > 50) {
-              ctx.fillText(chunk, 20, y);
-              y += 25;
-              chunk = "";
-            }
-            chunk += part;
-          }
-          if (chunk.length > 0) {
-            ctx.fillText(chunk, 20, y);
-            y += 25;
-          }
-        } else {
-          ctx.fillText(line, 20, y);
-          y += 25;
-        }
-      }
+			for (const line of details.lines) {
+				if (line.startsWith("Climbed: ")) {
+					const climbed = line.slice(9).split(" → ");
+					let chunk = "Climbed: ";
+					for (let i = 0; i < climbed.length; i++) {
+						const part = climbed[i] + (i !== climbed.length - 1 ? " → " : "");
+						if ((chunk + part).length > 50) {
+							ctx.fillText(chunk, 20, y);
+							y += 25;
+							chunk = "";
+						}
+						chunk += part;
+					}
+					if (chunk.length > 0) {
+						ctx.fillText(chunk, 20, y);
+						y += 25;
+					}
+				} else {
+					ctx.fillText(line, 20, y);
+					y += 25;
+				}
+			}
 
 			if (details.progress !== undefined) {
 				ctx.fillStyle = '#3b82f6';
@@ -120,7 +120,7 @@ module.exports.execute = async (client, message, args, send) => {
 				ctx.drawImage(mmrChange >= 0 ? upImg : downImg, 20, y, 30, 30);
 				ctx.fillStyle = mmrChange >= 0 ? '#00ff88' : '#ff5555';
 				ctx.font = '18px Sans';
-				ctx.fillText(`${mmrChange >= 0 ? "+" : ""}${mmrChange} MMR`, 60, y + 22);
+				ctx.fillText(`${mmrChange >= 0 ? "+" : ""}${mmrChange} RR`, 60, y + 22);
 			}
 
 			return new AttachmentBuilder(canvas.toBuffer(), { name: 'valorant_stats.png' });
@@ -133,8 +133,7 @@ module.exports.execute = async (client, message, args, send) => {
 					img: currentData.images.large,
 					lines: [
 						`Rank: ${currentData.currenttierpatched || "Unranked"}`,
-						`RR: ${currentData.ranking_in_tier || 0}/100`,
-						`ELO: ${currentData.elo}`,
+						`RR: ${currentData.ranking_in_tier || 0}/100`
 					],
 					progress: rrBar,
 					change: currentData.mmr_change_to_last_game
@@ -158,9 +157,9 @@ module.exports.execute = async (client, message, args, send) => {
 
 		const row = new Discord.ActionRowBuilder()
 			.addComponents([new Discord.StringSelectMenuBuilder()
-                      .setCustomId("acts")
-                      .setPlaceholder("Choose act...")
-                      .addOptions([{ label: "Current statistics", value: "current" }, seasons.map(value => { return { label: value.replace("e", "Episode ").replace("a", ": Act "), value: value } }).reverse().slice(0, 24)].flat(1))])
+				.setCustomId("acts")
+				.setPlaceholder("Choose act...")
+				.addOptions([{ label: "Current statistics", value: "current" }, seasons.map(value => { return { label: value.replace("e", "Episode ").replace("a", ": Act "), value: value } }).reverse().slice(0, 24)].flat(1))])
 
 
 		const statMsg = await send(msg, { content: "", files: [attachment], components: [row] });
