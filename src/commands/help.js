@@ -21,15 +21,19 @@ module.exports.execute = async (client, message, args, send) => {
 	})
 	let helpEmb = new Discord.EmbedBuilder()
 		.setColor(753221)
-		.setTitle("Commands")
+		.setTitle("ValoStatrak | Commands")
 		.setDescription("For more info on an command, use /help [command]")
 		.setFooter({ text: "Assets commands powered by https://valorant-api.com" })
+	
+	const embed2 = new Discord.EmbedBuilder()
+		.setColor('36393E')
+		.setDescription('[Invite Bot](' + require("../info.json").bot.invite + ') • [Website](https://valostatrak.onrender.com) • [Vote](https://top.gg/bot/855083775460769793/vote)')
 
 	Object.keys(sortedCmds).forEach(key => {
 		if (key !== "Owner") helpEmb.addFields([{ name: key, value: sortedCmds[key].join("\n"), inline: true }])
 	})
 
-	if (!args[0]) send(message, { embeds: [helpEmb] })
+	if (!args[0]) send(message, { embeds: [helpEmb, embed2] })
 	else {
 		const { commands } = client
 		const name = args[0].toLowerCase();

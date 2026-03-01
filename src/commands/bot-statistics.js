@@ -20,7 +20,7 @@ module.exports.execute = async (client, message, args, send) => {
 	const Discord = require('discord.js')
 	const embed2 = new Discord.EmbedBuilder()
 		.setColor('36393E')
-		.setDescription('[Invite Bot](' + require("../info.json").bot.invite + ') • [Website](https://valostatrak.cf) • [Vote](https://top.gg/bot/855083775460769793/vote)')
+		.setDescription('[Invite Bot](' + require("../info.json").bot.invite + ') • [Website](https://valostatrak.onrender.com) • [Vote](https://top.gg/bot/855083775460769793/vote)')
 
 	const stats = new Discord.EmbedBuilder()
 		.setColor('828329')
