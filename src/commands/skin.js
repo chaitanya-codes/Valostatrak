@@ -26,12 +26,19 @@ module.exports.execute = async (client, message, args, send) => {
 	if (!findSkin) return send(message, "Could not find skin! Command usage: `/skin <collectionName> <weaponName>`\nExample: `/skin Reaver Vandal`")
 
 	if (['Luxe Knife', 'Prime Guardian', 'Sovereign Guardian', 'Sovereign Marshal', "Hush Ghost", "Soul Silencer Ghost", "Game Over Sheriff"].includes(findSkin.displayName)) findSkin.displayIcon = findSkin.levels[0].displayIcon
+	
+	const contentTier = findSkin.contentTierUuid;
+	const contentTiers = await client.getContentTiers();
+
+	const tier = contentTiers.find(tier => tier.uuid === contentTier);
 
 	const emb = new Discord.EmbedBuilder()
 		.setTitle(findSkin.displayName || findWeapon.displayName)
-		.setColor(388422)
+		.setDescription(tier.displayName)
+		.setThumbnail(tier.displayIcon)
 		.setImage(findSkin.displayIcon || findSkin.chromas[0].displayIcon || findWeapon.displayIcon)
-		.setFooter({ text: "If you want to see different skin levels and the preview of this skin ingame, use the button below" })
+		.setColor(388422)
+		.setFooter({ text: "If you want to view skin levels and preview of the skin in-game, use the buttons below" })
 
 	const row = new Discord.ActionRowBuilder()
 		.addComponents([new Discord.ButtonBuilder().setLabel("View skin levels and preview").setCustomId("levels").setStyle("Primary"), new Discord.ButtonBuilder().setLabel("View skin color variants").setCustomId("colors").setStyle("Primary")])
