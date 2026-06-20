@@ -23,7 +23,7 @@ const desc = (arg) => {
 const choicesMap = {
 	'region': [{ name: "Asia", value: "ap" }, { name: "North America / LATAM / BR", value: "na" }, { name: "Korea", value: "kr" }, { name: "Europe", value: "eu" }],
 	'agent': [],
-	'leaderboard': [{ name: "global", value: "global" }, { name: "this-server ", value: "server"}],
+	'leaderboard': [{ name: "global", value: "global" }, { name: "this-server ", value: "server" }],
 	'weapon': [],
 	'match-type': ['unrated', 'competitive', 'spikerush', 'deathmatch', 'teamdeathmatch', 'replication', 'escalation', 'snowballfight', 'swiftplay', 'premier', 'custom'].map(a => ({ name: a, value: a })),
 	'map': [],
@@ -33,19 +33,36 @@ const choicesMap = {
 
 const checkChoices = (arg) => choicesMap[arg] || null;
 
+const makeOption = (arg, optional = false) => {
+	arg = arg.toLowerCase();
+	return {
+		name: arg,
+		description: desc(arg),
+		autocomplete: ['agent', 'command', 'username', 'skin', 'buddy', 'bundle', 'player-card', 'player-title', 'spray', 'input', 'league', 'flex'].includes(arg),
+		choices: checkChoices(arg),
+		type: commonArgs[arg] ? ApplicationCommandOptionType[commonArgs[arg]] : ApplicationCommandOptionType.String,
+		required: optional && arg !== "username" ? false : true
+	}
+}
+
 const data = async (client, guild) => {
-	return await client.commands.map(cmd => ({
-		name: (guild ? cmd.info.name + '-t' : cmd.info.name),
-		description: cmd.info.description || null,
-		options: (cmd.info.usage ? cmd.info.usage.map(arg => ({
-			name: arg.toLowerCase(),
-			description: desc(arg.toLowerCase()),
-			autocomplete: (['agent', 'command', 'username', 'skin', 'buddy', 'bundle', 'player-card', 'player-title', 'spray', 'input', 'league', 'flex'].includes(arg) ? true : false),
-			choices: checkChoices(arg),
-			type: (commonArgs[arg] ? ApplicationCommandOptionType[commonArgs[arg]] : ApplicationCommandOptionType.String),
-			required: (cmd.info.optional && (arg.toLowerCase() !== "username") ? false : true)
-		})) : null)
-	}))
+	return await client.commands.map(cmd => {
+		const command = {
+			name: guild ? cmd.info.name + '-t' : cmd.info.name,
+			description: cmd.info.description || "No description"
+		}
+		if (cmd.info.subcommands) {
+			command.options = cmd.info.subcommands.map(sub => ({
+				name: sub.name.toLowerCase(),
+				description: sub.description || desc(sub.name),
+				type: ApplicationCommandOptionType.Subcommand,
+				options: sub.usage ? sub.usage.map(arg => makeOption(arg, sub.optional || cmd.info.optional)) : []
+			}))
+		} else {
+			command.options = cmd.info.usage ? cmd.info.usage.map(arg => makeOption(arg, cmd.info.optional)) : []
+		}
+		return command;
+	})
 }
 
 module.exports.execute = async (client, message, args, send) => {
@@ -58,7 +75,7 @@ module.exports.execute = async (client, message, args, send) => {
 		await client.getMaps().then(maps => {
 			choicesMap['map'] = maps.map(a => ({ name: a.displayName, value: a.displayName }))
 		})
-		
+
 		if (args[0] && args[0] === '--global') {
 			client.application.commands.set(await data(client, false))
 			send(message, "Deployed slash commands globally!")

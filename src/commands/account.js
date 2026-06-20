@@ -1,36 +1,67 @@
 module.exports.info = {
 	name: "account",
-	description: "View account level of any user",
+	description: "View and manage Valorant accounts",
 	aliases: ["account-level", "level-account", "level", "acc"],
-	usage: ['query', 'username'],
 	ratelimit: true,
-	module: "Statistics"
+	module: "Statistics",
+	subcommands: [{
+			name: "find",
+			description: "Find account level of a linked Valorant account",
+			usage: ["username"]
+		},
+		{
+			name: "link",
+			description: "Link your Discord account with a Valorant account",
+			usage: ["username"]
+		},
+		{
+			name: "settings",
+			description: "Change your linked Valorant account settings",
+			usage: ["username"]
+		}
+	]
 }
 
 const Discord = require('discord.js')
 
 module.exports.execute = async (client, message, args, send) => {
-	let subcommand = args[0].toLowerCase()
-	args.shift()
+	let subcommand;
+	let username;
 
-	let [name, tag] = args.join(" ").toLowerCase().split("#")
-	if (!args.join(" ").includes("#") || !name || !tag) return message.reply("Account not found. Use the format name#tag")
+	if (message.options) {
+		subcommand = message.options.getSubcommand();
+		username = message.options.getString("username");
+	} else {
+		subcommand = args[0]?.toLowerCase();
+		args.shift();
+		username = args.join(" ");
+	}
 
-	let region = await client.accounts.get(args.join(" ").toLowerCase())
+	if (!subcommand) return message.reply("Invalid account subcommand.");
 
-	if (!region && subcommand !== 'link') return client.newUser(args.join(" "), this.info.name, message, subcommand)
+	let [name, tag] = username.toLowerCase().split("#");
 
-	if (subcommand === 'find') {
-		await findAccount(client, name, tag, message, send)
-	} else if (subcommand === 'link') {
-		await linkAccount(client, name, tag, message, send)
-	} else if (subcommand === 'settings') {
-		await accountSettings(client, name, tag, message, send)
+	if (!username.includes("#") || !name || !tag) {
+		return message.reply("Account not found. Use the format name#tag");
+	}
+
+	let region = await client.accounts.get(username.toLowerCase());
+
+	if (!region && subcommand !== "link") {
+		return client.newUser(username, this.info.name, message, subcommand);
+	}
+
+	if (subcommand === "find") {
+		await findAccount(client, name, tag, message, send);
+	} else if (subcommand === "link") {
+		await linkAccount(client, name, tag, message, send);
+	} else if (subcommand === "settings") {
+		await accountSettings(client, name, tag, message, send);
 	}
 }
 
 async function findAccount(client, name, tag, message, send) {
-	if (!(await client.linked.has(name+"#"+tag))) return send(message, { embeds: [client.embed({ color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account Link account`" })] })
+	if (!(await client.linked.has(name+"#"+tag))) return send(message, { embeds: [client.embed({ color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account link username:name#tag`" })] })
 
 	const linked = await client.linked.get(name+"#"+tag)
 	if (linked.private) return send(message, "Account is set to private by owner")
