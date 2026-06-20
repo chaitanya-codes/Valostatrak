@@ -95,14 +95,25 @@ async function findAccount(client, name, tag, message, send) {
 }
 
 async function linkAccount(client, name, tag, message, send) {
-	const existing = await client.linked.findByUserId(message.author.id);
+	const userId = message.author?.id || message.user?.id;
+	const nametag = `${name}#${tag}`;
+	const existing = await client.linked.findByUserId(userId);
+	if (existing && existing.nametag !== nametag) {
+		return send(message, {
+			embeds: [new Discord.EmbedBuilder().setTitle("Account already linked").setColor("Red").setDescription(`You already have \`${existing.nametag}\` linked.\nUse \`/account settings\` to remove it before linking another account.`)]
+		})
+	}
 
-	if (existing && existing.nametag !== `${name}#${tag}`) {
-		return send(message, { embeds: [new Discord.EmbedBuilder().setTitle("Account already linked").setColor("Red").setDescription(`You already have \`${existing.nametag}\` linked.\nUse \`/account settings\` to remove it before linking another account.`)] })
+	const alreadyLinked = await client.linked.get(nametag);
+
+	if (alreadyLinked && alreadyLinked.id !== userId) {
+		return send(message, {
+			embeds: [new Discord.EmbedBuilder().setTitle("Account already linked").setColor("Red").setDescription("This Valorant account is already linked to another Discord user.")]
+		})
 	}
 
 	const modal = new Discord.ModalBuilder()
-		.setCustomId('modal')
+		.setCustomId(`account_link_${message.author.id}`)
 		.setTitle('Verification')
 
 	const actionrow = new Discord.ActionRowBuilder().addComponents([new Discord.TextInputBuilder()
@@ -121,7 +132,7 @@ async function linkAccount(client, name, tag, message, send) {
 
 	message.showModal(modal)
 
-	const filter = i => i.user.id === message.author.id
+	const filter = i => i.user.id === message.author.id && i.customId === `account_link_${message.author.id}`;
 	message.awaitModalSubmit({ filter, time: 30000 })
 		.then(async interaction => {
 			let lvl = interaction.fields.getTextInputValue('lvl')
@@ -146,7 +157,7 @@ async function accountSettings(client, message, send) {
 	])
 
 	const emb = new Discord.EmbedBuilder()
-		.setTitle("Account Settings")
+		.setTitle("Account Settings - " + nametag)
 		.setDescription("Statistics by default are set to be public which allows anyone to view your account info, however you can turn this off to only let you see your account statistics.\nYou can re-link your account by removing the linked account if you edited username.");
 
 	const m = await send(message, { embeds: [emb], components: [row] });
