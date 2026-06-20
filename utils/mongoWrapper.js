@@ -17,7 +17,7 @@ class MongoDBMap {
 
 		const doc = await this.Model.findOne({ [this.keyField]: key });
 		if (!doc) return undefined;
-		
+
 		const value = doc.value !== undefined ? doc.value : doc;
 		this.cache.set(key, { value, timestamp: Date.now() });
 		return value;
@@ -84,7 +84,7 @@ class TriviaStatsMap extends MongoDBMap {
 
 		const doc = await this.Model.findOne({ userId: key });
 		if (!doc) return undefined;
-		
+
 		this.cache.set(key, { value: doc.score, timestamp: Date.now() });
 		return doc.score;
 	}
@@ -101,7 +101,7 @@ class TriviaStatsMap extends MongoDBMap {
 	async math(key, operation, value) {
 		const doc = await this.Model.findOne({ userId: key });
 		let currentScore = doc ? doc.score : 0;
-		
+
 		switch (operation) {
 			case '+':
 				currentScore += value;
@@ -118,7 +118,7 @@ class TriviaStatsMap extends MongoDBMap {
 			default:
 				throw new Error(`Unknown math operation: ${operation}`);
 		}
-		
+
 		await this.set(key, currentScore);
 		return currentScore;
 	}
@@ -142,7 +142,7 @@ class AccountsMap extends MongoDBMap {
 
 		const doc = await this.Model.findOne({ nametag: key.toLowerCase() });
 		if (!doc) return undefined;
-		
+
 		this.cache.set(key.toLowerCase(), { value: doc.region, timestamp: Date.now() });
 		return doc.region;
 	}
@@ -189,7 +189,7 @@ class LinkedMap extends MongoDBMap {
 
 		const doc = await this.Model.findOne({ nametag: key.toLowerCase() });
 		if (!doc) return undefined;
-		
+
 		const value = { id: doc.discordId, private: doc.private };
 		this.cache.set(key.toLowerCase(), { value, timestamp: Date.now() });
 		return value;
@@ -204,6 +204,26 @@ class LinkedMap extends MongoDBMap {
 				{ upsert: true, new: true }
 			);
 			this.cache.set(key.toLowerCase(), { value, timestamp: Date.now() });
+		}
+	}
+
+	async findByUserId(userId) {
+		const doc = await this.Model.findOne({ discordId: userId });
+		if (!doc) return null;
+
+		const value = {
+			id: doc.discordId,
+			private: doc.private
+		}
+
+		this.cache.set(doc.nametag.toLowerCase(), {
+			value,
+			timestamp: Date.now()
+		})
+
+		return {
+			nametag: doc.nametag.toLowerCase(),
+			linked: value
 		}
 	}
 

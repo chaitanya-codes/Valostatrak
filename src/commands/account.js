@@ -17,7 +17,7 @@ module.exports.info = {
 		{
 			name: "settings",
 			description: "Change your linked Valorant account settings",
-			usage: ["username"]
+			usage: []
 		}
 	]
 }
@@ -30,14 +30,22 @@ module.exports.execute = async (client, message, args, send) => {
 
 	if (message.options) {
 		subcommand = message.options.getSubcommand();
-		username = message.options.getString("username");
+		if (subcommand !== "settings") {
+			username = message.options.getString("username");
+		}
 	} else {
 		subcommand = args[0]?.toLowerCase();
 		args.shift();
-		username = args.join(" ");
+		if (subcommand !== "settings") {
+			username = args.join(" ");
+		}
 	}
 
 	if (!subcommand) return message.reply("Invalid account subcommand.");
+
+	if (subcommand === "settings") {
+		return accountSettings(client, message, send);
+	}
 
 	let [name, tag] = username.toLowerCase().split("#");
 
@@ -55,8 +63,6 @@ module.exports.execute = async (client, message, args, send) => {
 		await findAccount(client, name, tag, message, send);
 	} else if (subcommand === "link") {
 		await linkAccount(client, name, tag, message, send);
-	} else if (subcommand === "settings") {
-		await accountSettings(client, name, tag, message, send);
 	}
 }
 
@@ -123,38 +129,39 @@ async function linkAccount(client, name, tag, message, send) {
 	})
 }
 
-async function accountSettings(client, name, tag, message, send) {
-	const nametag = `${name}#${tag}`
-	const linked = await client.linked.get(nametag)
+async function accountSettings(client, message, send) {
+	const found = await client.linked.findByUserId(message.author.id);
 
-	if (!linked || linked.id !== message.author.id) return send(message, "You have not linked your valorant account with the bot!")
+	if (!found) return send(message, "You have not linked your valorant account with the bot!");
+	const { nametag, linked } = found;
 
 	const row = new Discord.ActionRowBuilder().addComponents([
-		new Discord.ButtonBuilder().setCustomId("private").setLabel(linked.private ? "Statistics are private" : "Statistics are public").setStyle(linked.private ? "Danger" : "Primary"),
-		new Discord.ButtonBuilder().setCustomId("remove").setLabel("Remove account from bot").setStyle("Secondary")
+		new Discord.ButtonBuilder().setCustomId("private").setLabel(linked.private ? "Statistics are private" : "Statistics are public").setStyle(linked.private ? Discord.ButtonStyle.Danger : Discord.ButtonStyle.Primary),
+		new Discord.ButtonBuilder().setCustomId("remove").setLabel("Remove account from bot").setStyle(Discord.ButtonStyle.Secondary)
 	])
 
 	const emb = new Discord.EmbedBuilder()
 		.setTitle("Account Settings")
-		.setDescription("Statistics by default are set to be public which allows anyone to view your account info, however you can turn this off to only let you see your account statistics.\nYou can re-link your account by removing the linked account if you edited username.")
-	
-	const m = await send(message, { embeds: [emb], components: [row] })
+		.setDescription("Statistics by default are set to be public which allows anyone to view your account info, however you can turn this off to only let you see your account statistics.\nYou can re-link your account by removing the linked account if you edited username.");
 
-	const filter = (i) => i.user.id === message.author.id
-	const col = m.createMessageComponentCollector({ filter, time: 30000 })
+	const m = await send(message, { embeds: [emb], components: [row] });
+
+	const filter = i => i.user.id === message.author.id;
+	const col = m.createMessageComponentCollector({ filter, time: 30000 });
+
 	col.on("collect", async i => {
-		if (i.customId === 'private') {
-			await client.linked.setPrivate(nametag, !linked.private)
-			row.components[0].setStyle(!linked.private ? "Danger" : "Primary")
-			row.components[0].setLabel(!linked.private ? "Statistics are private" : "Statistics are public")
-			row.components[0].setDisabled(true)
-			send(i, { edit: true, components: [row] })
-		} else if (i.customId === 'remove') {
-			await client.accounts.delete(nametag)
-			await client.linked.delete(nametag)
-			send(i, 'Removed account from the bot database!')
+		if (i.customId === "private") {
+			const newPrivate = !linked.private;
+			await client.linked.setPrivate(nametag, newPrivate);
+			row.components[0].setStyle(newPrivate ? Discord.ButtonStyle.Danger : Discord.ButtonStyle.Primary).setLabel(newPrivate ? "Statistics are private" : "Statistics are public").setDisabled(true);
+			return send(i, { edit: true, components: [row] });
 		}
-	})
+		if (i.customId === "remove") {
+			await client.accounts.delete(nametag);
+			await client.linked.delete(nametag);
+			return send(i, "Removed account from the bot database!");
+		}
+	});
 }
 
 async function fetchAccountData(name, tag) {
