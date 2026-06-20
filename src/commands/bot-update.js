@@ -10,7 +10,7 @@ const Discord = require('discord.js')
 module.exports.execute = async (client, message, args, send) => {
 	try {
 		if (message.deferReply) await message.deferReply()
-		const updatesChannel = client.channels.cache.get('974211599176974396')
+		const updatesChannel = await client.channels.fetch('974211599176974396')
 		if (!updatesChannel) return send(message, "Could not find updates channel. You can check on support server")
 
 		const messages = await updatesChannel.messages.fetch({ limit: 10 })
