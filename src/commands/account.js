@@ -5,20 +5,20 @@ module.exports.info = {
 	ratelimit: true,
 	module: "Statistics",
 	subcommands: [{
-			name: "find",
-			description: "Find account level of a linked Valorant account",
-			usage: ["username"]
-		},
-		{
-			name: "link",
-			description: "Link your Discord account with a Valorant account",
-			usage: ["username"]
-		},
-		{
-			name: "settings",
-			description: "Change your linked Valorant account settings",
-			usage: []
-		}
+		name: "find",
+		description: "Find account level of a linked Valorant account",
+		usage: ["username"]
+	},
+	{
+		name: "link",
+		description: "Link your Discord account with a Valorant account",
+		usage: ["username"]
+	},
+	{
+		name: "settings",
+		description: "Change your linked Valorant account settings",
+		usage: []
+	}
 	]
 }
 
@@ -67,38 +67,43 @@ module.exports.execute = async (client, message, args, send) => {
 }
 
 async function findAccount(client, name, tag, message, send) {
-	if (!(await client.linked.has(name+"#"+tag))) return send(message, { embeds: [client.embed({ color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account link username:name#tag`" })] })
+	if (!(await client.linked.has(name + "#" + tag))) return send(message, { embeds: [client.embed({ color: '417543', title: "Account not linked", description: "This account is not linked with the bot!\nIf this is your account use `/account link username:name#tag`" })] })
 
-	const linked = await client.linked.get(name+"#"+tag)
+	const linked = await client.linked.get(name + "#" + tag)
 	if (linked.private) return send(message, "Account is set to private by owner")
 
 	let wait = new Discord.EmbedBuilder()
-	.setColor(428985)
-	.setTitle("Searching...")
+		.setColor(428985)
+		.setTitle("Searching...")
 	let msg = await send(message, { reply: true, embeds: [wait] })
 
 	const response = await fetchAccountData(name, tag)
 
 	if (!response || response.status !== 200) return send(message, client.notFound(response?.message || "Account not found."))
-		const data = response.data
+	const data = response.data
 	if (!data) return send(message, client.notFound(response?.message || "No data found for account."))
 
 	const levelborders = await client.getLevelborders()
 	const statEmbed = new Discord.EmbedBuilder()
-	.setColor(342852)
-	.setTitle(`Account - ${name}#${tag}`)
-	.setDescription(`**Account Level**: ${data.account_level}\n**Region**: ${data.region}`)
-	.setFooter({ text: "To view match history, use /matches command" })
-	.setImage(data.card?.large)
-	.setThumbnail(levelborders.find(border => border.startingLevel == (Math.floor(data.account_level / 20) * 20))?.levelNumberAppearance || levelborders.find(border => border.startingLevel == 1)?.levelNumberAppearance)
+		.setColor(342852)
+		.setTitle(`Account - ${name}#${tag}`)
+		.setDescription(`**Account Level**: ${data.account_level}\n**Region**: ${data.region}`)
+		.setFooter({ text: "To view match history, use /matches command" })
+		.setImage(data.card?.large)
+		.setThumbnail(levelborders.find(border => border.startingLevel == (Math.floor(data.account_level / 20) * 20))?.levelNumberAppearance || levelborders.find(border => border.startingLevel == 1)?.levelNumberAppearance)
 	send(msg, { edit: true, embeds: [statEmbed] })
 }
 
 async function linkAccount(client, name, tag, message, send) {
-	const Discord = require('discord.js')
+	const existing = await client.linked.findByUserId(message.author.id);
+
+	if (existing && existing.nametag !== `${name}#${tag}`) {
+		return send(message, { embeds: [new Discord.EmbedBuilder().setTitle("Account already linked").setColor("Red").setDescription(`You already have \`${existing.nametag}\` linked.\nUse \`/account settings\` to remove it before linking another account.`)] })
+	}
+
 	const modal = new Discord.ModalBuilder()
-	.setCustomId('modal')
-	.setTitle('Verification')
+		.setCustomId('modal')
+		.setTitle('Verification')
 
 	const actionrow = new Discord.ActionRowBuilder().addComponents([new Discord.TextInputBuilder()
 		.setCustomId("lvl")
@@ -118,15 +123,15 @@ async function linkAccount(client, name, tag, message, send) {
 
 	const filter = i => i.user.id === message.author.id
 	message.awaitModalSubmit({ filter, time: 30000 })
-	.then(async interaction => {
-		let lvl = interaction.fields.getTextInputValue('lvl')
-		if (isNaN(lvl)) return send(interaction, 'Level entered was not a number!')
+		.then(async interaction => {
+			let lvl = interaction.fields.getTextInputValue('lvl')
+			if (isNaN(lvl)) return send(interaction, 'Level entered was not a number!')
 
-		if (data.account_level === Number(lvl)) {
-			await client.linked.set(name + "#" + tag, { id: message.author.id, private: false })
-			send(interaction, { embeds: [new Discord.EmbedBuilder().setTitle("Linked account").setColor("Green").setDescription(`Your discord account has been linked to the valorant account \`${name}#${tag}\``)] })
-		} else return send(interaction, { embeds: [new Discord.EmbedBuilder().setTitle("Failed verification").setColor("Red").setDescription("Account level did not match")] })
-	})
+			if (data.account_level === Number(lvl)) {
+				await client.linked.set(name + "#" + tag, { id: message.author.id, private: false })
+				send(interaction, { embeds: [new Discord.EmbedBuilder().setTitle("Linked account").setColor("Green").setDescription(`Your discord account has been linked to the valorant account \`${name}#${tag}\``)] })
+			} else return send(interaction, { embeds: [new Discord.EmbedBuilder().setTitle("Failed verification").setColor("Red").setDescription("Account level did not match")] })
+		})
 }
 
 async function accountSettings(client, message, send) {
