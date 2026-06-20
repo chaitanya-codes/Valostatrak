@@ -12,7 +12,7 @@ const format = (dmg) => (dmg % 1 === 0 ? String(dmg) : dmg.toFixed(1)).padEnd(4)
 module.exports.execute = async (client, message, args, send) => {
 	if (!args[0]) return send(message, "Command usage: /weapon <weapon-name>")
 
-	const weaponName = args.join(" ").toLowerCase()
+	let weaponName = args.join(" ").toLowerCase()
 	const weaponData = await client.getWeapons()
 
 	if (["melee", "tactical knife", "knife"].includes(weaponName.toLowerCase())) weaponName = "Melee"
