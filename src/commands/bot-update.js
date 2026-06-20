@@ -5,19 +5,27 @@ module.exports.info = {
 	module: "Other"
 }
 
-module.exports.execute = (client, message, args, send) => {
-	message.deferReply()
-	const updatesChannel = client.channels.cache.get('974211599176974396')
+const Discord = require('discord.js')
 
-	updatesChannel.messages.fetch({ limit: 10 })
-	.then(messages => {
-		const latestUpdate = messages.map(m => m.author.id === client.user.id).slice(0,5).reverse().join("\n\n")
-    if (!latestUpdate.length) return send(message, "Could not fetch latest update. You can check on support server")
-		const Discord = require('discord.js')
+module.exports.execute = async (client, message, args, send) => {
+	try {
+		if (message.deferReply) await message.deferReply()
+		const updatesChannel = client.channels.cache.get('974211599176974396')
+		if (!updatesChannel) return send(message, "Could not find updates channel. You can check on support server")
+
+		const messages = await updatesChannel.messages.fetch({ limit: 10 })
+
+		const latestUpdate = messages.filter(m => m.author.id === client.user.id).first(5).reverse().map(m => m.content || m.embeds[0]?.description || m.embeds[0]?.title).filter(Boolean).join("\n\n")
+		if (!latestUpdate.length) return send(message, "Could not fetch latest update. You can check on support server")
+
 		const updatesEm = new Discord.EmbedBuilder()
-			.setColor(message.member.roles.highest.color)
+			.setColor(message.member?.roles?.highest?.color || 342852)
 			.setTitle('Bot updates')
-			.setDescription('**Latest updates:**\n' + latestUpdate + '```')
-		send(message, updatesEm)
-	})
+			.setDescription('**Latest updates:**\n' + latestUpdate)
+
+		send(message, { embeds: [updatesEm] })
+	} catch (e) {
+		console.error("Error fetching bot updates: ", e)
+		send(message, "Could not fetch latest update. You can check on support server")
+	}
 }

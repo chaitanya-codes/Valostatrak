@@ -47,9 +47,13 @@ module.exports.execute = async (client, message, args, send) => {
 		return accountSettings(client, message, send);
 	}
 
+	if (!username || !username.includes("#")) {
+		return message.reply("Account not found. Use the format name#tag");
+	}
+
 	let [name, tag] = username.toLowerCase().split("#");
 
-	if (!username.includes("#") || !name || !tag) {
+	if (!name || !tag) {
 		return message.reply("Account not found. Use the format name#tag");
 	}
 
@@ -113,7 +117,7 @@ async function linkAccount(client, name, tag, message, send) {
 	}
 
 	const modal = new Discord.ModalBuilder()
-		.setCustomId(`account_link_${message.author.id}`)
+		.setCustomId(`account_link_${userId}`)
 		.setTitle('Verification')
 
 	const actionrow = new Discord.ActionRowBuilder().addComponents([new Discord.TextInputBuilder()
@@ -130,23 +134,24 @@ async function linkAccount(client, name, tag, message, send) {
 	const data = response.data
 	if (!data) return send(message, client.notFound(response?.message || "No data found for the account."))
 
-	message.showModal(modal)
+	await message.showModal(modal)
 
-	const filter = i => i.user.id === message.author.id && i.customId === `account_link_${message.author.id}`;
+	const filter = i => i.user.id === userId && i.customId === `account_link_${userId}`;
 	message.awaitModalSubmit({ filter, time: 30000 })
 		.then(async interaction => {
 			let lvl = interaction.fields.getTextInputValue('lvl')
 			if (isNaN(lvl)) return send(interaction, 'Level entered was not a number!')
 
 			if (data.account_level === Number(lvl)) {
-				await client.linked.set(name + "#" + tag, { id: message.author.id, private: false })
+				await client.linked.set(nametag, { id: userId, private: false })
 				send(interaction, { embeds: [new Discord.EmbedBuilder().setTitle("Linked account").setColor("Green").setDescription(`Your discord account has been linked to the valorant account \`${name}#${tag}\``)] })
 			} else return send(interaction, { embeds: [new Discord.EmbedBuilder().setTitle("Failed verification").setColor("Red").setDescription("Account level did not match")] })
 		})
 }
 
 async function accountSettings(client, message, send) {
-	const found = await client.linked.findByUserId(message.author.id);
+	const userId = message.author?.id || message.user?.id;
+	const found = await client.linked.findByUserId(userId);
 
 	if (!found) return send(message, "You have not linked your valorant account with the bot!");
 	const { nametag, linked } = found;
@@ -162,7 +167,7 @@ async function accountSettings(client, message, send) {
 
 	const m = await send(message, { embeds: [emb], components: [row] });
 
-	const filter = i => i.user.id === message.author.id;
+	const filter = i => i.user.id === userId;
 	const col = m.createMessageComponentCollector({ filter, time: 30000 });
 
 	col.on("collect", async i => {

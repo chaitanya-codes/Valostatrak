@@ -200,7 +200,7 @@ class LinkedMap extends MongoDBMap {
 		if (typeof value === 'object' && value.id !== undefined) {
 			await this.Model.findOneAndUpdate(
 				{ nametag: key.toLowerCase() },
-				{ nametag: key.toLowerCase(), discordId: value.id, private: value.private || false },
+				{ nametag: key.toLowerCase(), discordId: value.id, private: value.private ?? false },
 				{ upsert: true, new: true }
 			);
 			this.cache.set(key.toLowerCase(), { value, timestamp: Date.now() });
