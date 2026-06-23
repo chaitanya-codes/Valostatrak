@@ -10,6 +10,20 @@ const embed = (object = {}) => {
 	return new Discord.EmbedBuilder(object)
 }
 
+const getSlashArgs = (options = []) => {
+	let args = []
+	for (const option of options) {
+		if (option.options?.length) {
+			args.push(option.name)
+			args.push(...getSlashArgs(option.options))
+		} else if (option.value !== undefined) {
+			args.push(String(option.value))
+		}
+	}
+
+	return args
+}
+
 module.exports.Interaction = async (client, interaction) => {
 	if (interaction.isChatInputCommand() || interaction.type === InteractionType.ApplicationCommandAutocomplete) {
 		let commandName = interaction.commandName
@@ -68,8 +82,7 @@ module.exports.Interaction = async (client, interaction) => {
 					return;
 			}
 		}
-		if (args && args.length) args = args.map(a => a.value || a).flat(Infinity).join(" ").split(" ")
-		else args = []
+		args = getSlashArgs(interaction.options.data);
 
 		let command = client.commands.get(commandName) || client.commands.find(cmd => cmd.info.aliases && cmd.info.aliases.includes(commandName))
 
@@ -84,7 +97,7 @@ module.exports.Interaction = async (client, interaction) => {
 			interaction.author = interaction.user
 			interaction.edit = (o) => interaction.editReply(o);
 			interaction.delete = () => { }
-			if (interaction.author.id !== "485885170080022556") client.channels.cache.get('958713047852122153').send(`${interaction.author.username} \`(${interaction.author.id})\` used the command \`/${commandName} ${args.join(" ")}\` in server \`${interaction.guild.name}\``)
+			if (interaction.author.id !== "485885170080022556") client.channels.cache.get('958713047852122153').send(`${interaction.author.username} \`(${interaction.author.id})\` used the command \`/${commandName}${args.length ? ' ' + args.join(" ") : ''}\` in server \`${interaction.guild.name}\``)
 			//if (command.info.module === 'Statistics' && interaction.options.get("username") && client.linked.find((u, name) => u.private === true && (interaction.author.id !== name))) return interaction.reply("This profile is set to private by the linked account owner\nif this is your account, you can verify that to us in support server")
 			await command.execute(client, interaction, args, client.send, client.ratelimit)
 			await mapInc(client.statistics, "total_commands");
